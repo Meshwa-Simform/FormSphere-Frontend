@@ -1,0 +1,39 @@
+<div class="form-container log-in">
+    <form [formGroup]="signInForm" (ngSubmit)="signIn()">
+        <h1>Log In</h1>
+        <br>
+        <!-- input box for email -->
+        <mat-form-field>
+          <mat-label>Enter your email</mat-label>
+          <input matInput
+                 formControlName="email" 
+                 placeholder="pat@example.com"
+                 required>
+          @if (email.touched && emailErrorMessage()) {
+            <mat-error>{{emailErrorMessage()}}</mat-error>
+          }
+        </mat-form-field>
+        <!-- input box for password -->
+        <mat-form-field>
+            <mat-label>Enter your password</mat-label>
+            <input matInput formControlName="password" [type]="hide() ? 'password' : 'text'" required/>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="clickEvent($event)"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide()"
+            >
+              <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (password.touched && passwordErrorMessage()) {
+              <mat-error>{{passwordErrorMessage()}}</mat-error>
+            }
+        </mat-form-field>
+        <a href="#">Forgot Password?</a>
+        <!-- submit button -->
+        <button mat-flat-button color="primary" class="btn" type="submit" [disabled]="signInForm.invalid">Sign In</button>
+    </form>
+</div>
+  
