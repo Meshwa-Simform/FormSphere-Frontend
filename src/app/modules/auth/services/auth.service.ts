@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
-import { User } from '../interface/user';
 import { Observable } from 'rxjs';
+import { loginUser, registerUser } from '../interface/user';
 
 @Injectable({
   providedIn: 'root'
@@ -19,14 +19,14 @@ export class AuthService {
   }
 
   constructor(private http:HttpClient) { }
-  LoginUser(user: User) : Observable<User>{
-    return this.http.post<User>(`${environment.API_URL}/auth/login`,user, {
+  LoginUser(user: loginUser) : Observable<loginUser>{
+    return this.http.post<loginUser>(`${environment.API_URL}/auth/login`,user, {
       withCredentials: true
     })
   }
 
-  registerUser(user:User) : Observable<User>{
-    return this.http.post<User>(`${environment.API_URL}/auth/signup`,user, {
+  registerUser(user:registerUser) : Observable<registerUser>{
+    return this.http.post<registerUser>(`${environment.API_URL}/auth/signup`,user, {
       withCredentials: true
     })
   }

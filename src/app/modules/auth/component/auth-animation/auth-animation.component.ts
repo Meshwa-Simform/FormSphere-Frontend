@@ -1,26 +1,26 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-auth-animation',
-  standalone: false,
+  
   templateUrl: './auth-animation.component.html',
   styleUrl: './auth-animation.component.css'
 })
-export class AuthAnimationComponent {
+export class AuthAnimationComponent implements OnInit {
   isSignUpMode = false;
   isMobile = false;
 
 
-  constructor(private route: ActivatedRoute,private router : Router , private authService:AuthService) {}
+  constructor(private _route: ActivatedRoute,private _router : Router , private _authService:AuthService) {}
   ngOnInit() {
     // Listen for route changes dynamically
-    this.route.children.forEach((childRoute) => {
+    this._route.children.forEach((childRoute) => {
       childRoute.url.subscribe((urlSegments) => {
         const path = urlSegments[0]?.path; // Get the route (e.g., 'login' or 'signup')
         this.isSignUpMode = path === 'signup';
-        this.authService.setMode(this.isSignUpMode);
+        this._authService.setMode(this.isSignUpMode);
       });
     });
     this.checkScreenSize();
@@ -37,10 +37,10 @@ export class AuthAnimationComponent {
 
   toggleMode(signUp: boolean) {
     this.isSignUpMode = signUp;
-    this.authService.setMode(this.isSignUpMode);
+    this._authService.setMode(this.isSignUpMode);
 
     // Navigate to the child route
     const mode = signUp ? 'signup' : 'login';
-    this.router.navigate([`/auth/${mode}`]);
+    this._router.navigate([`/auth/${mode}`]);
   }
 }

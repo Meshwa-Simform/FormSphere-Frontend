@@ -1,40 +1,33 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../interface/user';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  standalone: false,
+  
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   signInForm: FormGroup;
-  user!: User;
-
-  // Form controls
-  readonly email = new FormControl('', [Validators.required, Validators.email]);
-  readonly password = new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]);
 
   // Error messages
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
-  constructor(private fb: FormBuilder, private authService: AuthService, private toastr: ToastrService, private router: Router) {
-    this.signInForm = this.fb.group({
-      email: this.email,
-      password: this.password,
+  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router) {
+    this.signInForm = this._fb.group({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]),
     });
 
     // Subscribe to all field changes for validation
     merge(
-      this.email.valueChanges,
-      this.password.valueChanges,
+      this.signInForm.value.email.valueChanges,
+      this.signInForm.value.password.valueChanges,
     ).pipe(takeUntilDestroyed()).subscribe(() => {
       this.updateErrorMessages();
     });
@@ -46,16 +39,15 @@ export class LoginComponent {
 
   signIn() {
     if (this.signInForm.valid) {
-      this.user = this.signInForm.value;
-      this.authService.LoginUser(this.user).subscribe({
-        next: (data) => {
-          this.toastr.success('Login Successful');
+      this._authService.LoginUser(this.signInForm.value).subscribe({
+        next: () => {
+          this._toastr.success('Login Successful');
         },
         error: (error) => {
-          this.toastr.error(error.error.message);
+          this._toastr.error(error.error.message);
         },
         complete: () => {
-          this.router.navigate(['/']);
+          this._router.navigate(['/']);
         }
       });
     } else {
@@ -69,9 +61,9 @@ export class LoginComponent {
   }
 
   updateEmailErrorMessage() {
-    if (this.email.hasError('required')) {
+    if (this.signInForm.value.email.hasError('required')) {
       this.emailErrorMessage.set('Email is required');
-    } else if (this.email.hasError('email')) {
+    } else if (this.signInForm.value.email.hasError('email')) {
       this.emailErrorMessage.set('Please enter a valid email');
     } else {
       this.emailErrorMessage.set('');
@@ -79,11 +71,13 @@ export class LoginComponent {
   }
 
   updatePasswordErrorMessage() {
-    if (this.password.hasError('required')) {
+    if (this.signInForm.value.password.hasError('required')) {
       this.passwordErrorMessage.set('Password is required');
-    } else if (this.password.hasError('minlength')) {
+    } else if (this.signInForm.value.password.hasError('minlength')) {
       this.passwordErrorMessage.set('Password must be at least 8 characters');
-    } else if (this.password.hasError('pattern')) {
+    } else if (this.signInForm.value.password.hasError('maxlength')) {
+      this.passwordErrorMessage.set('Password must be at less than 15 characters');
+    } else if (this.signInForm.value.password.hasError('pattern')) {
       this.passwordErrorMessage.set('must contain alpha-numeric & special character');
     } else {
       this.passwordErrorMessage.set('');
