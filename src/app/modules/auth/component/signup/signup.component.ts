@@ -2,13 +2,15 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
-  
+  // prettier-ignore
+  // eslint-disable-next-line 
+  standalone: false,
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
@@ -21,38 +23,44 @@ export class SignupComponent implements OnInit {
   passwordErrorMessage = signal('');
   confirmPasswordErrorMessage = signal('');
   passwordsMatchError = signal('');
-  
+
+  // Form controls for html checks
+  name = new FormControl('', [Validators.required, Validators.minLength(3)]);
+  email = new FormControl('', [Validators.required, Validators.email]);
+  password = new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]);
+  confirmPassword = new FormControl('', [Validators.required]);
+
   // Separate visibility toggles for each password field
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
-  
+
   constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router) {
     this.signUpForm = this._fb.group({
-      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(8),Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]),
-      confirmPassword: new FormControl('', [Validators.required])
+      name: this.name,
+      email: this.email,
+      password: this.password,
+      confirmPassword: this.confirmPassword
     });
 
     // Subscribe to password field changes to check match
     merge(
-      this.signUpForm.value.password.valueChanges,
-      this.signUpForm.value.confirmPassword.valueChanges
+      this.password.valueChanges,
+      this.confirmPassword.valueChanges
     ).pipe(takeUntilDestroyed()).subscribe(() => {
       this.checkPasswordsMatch();
     });
 
     // Subscribe to all field changes for validation
     merge(
-      this.signUpForm.value.name.valueChanges,
-      this.signUpForm.value.email.valueChanges,
-      this.signUpForm.value.password.valueChanges,
-      this.signUpForm.value.confirmPassword.valueChanges
+      this.name.valueChanges,
+      this.email.valueChanges,
+      this.password.valueChanges,
+      this.confirmPassword.valueChanges
     ).pipe(takeUntilDestroyed()).subscribe(() => {
       this.updateErrorMessages();
     });
   }
-  
+
   ngOnInit() {
     this.updateErrorMessages();
   }
@@ -64,7 +72,7 @@ export class SignupComponent implements OnInit {
           this._toastr.success('SignUp Successful');
         },
         error: (error) => {
-            this._toastr.error(error.error.message);
+          this._toastr.error(error.error.message);
         },
         complete: () => {
           this._router.navigate(['/']);
@@ -84,9 +92,9 @@ export class SignupComponent implements OnInit {
   }
 
   updateNameErrorMessage() {
-    if (this.signUpForm.value.name.hasError('required')) {
+    if (this.name.hasError('required')) {
       this.nameErrorMessage.set('Name is required');
-    } else if (this.signUpForm.value.name.hasError('minlength')) {
+    } else if (this.name.hasError('minlength')) {
       this.nameErrorMessage.set('Name must be at least 3 characters');
     } else {
       this.nameErrorMessage.set('');
@@ -94,9 +102,9 @@ export class SignupComponent implements OnInit {
   }
 
   updateEmailErrorMessage() {
-    if (this.signUpForm.value.email.hasError('required')) {
+    if (this.email.hasError('required')) {
       this.emailErrorMessage.set('Email is required');
-    } else if (this.signUpForm.value.email.hasError('email')) {
+    } else if (this.email.hasError('email')) {
       this.emailErrorMessage.set('Please enter a valid email');
     } else {
       this.emailErrorMessage.set('');
@@ -104,11 +112,11 @@ export class SignupComponent implements OnInit {
   }
 
   updatePasswordErrorMessage() {
-    if (this.signUpForm.value.password.hasError('required')) {
+    if (this.password.hasError('required')) {
       this.passwordErrorMessage.set('Password is required');
-    } else if (this.signUpForm.value.password.hasError('minlength')) {
+    } else if (this.password.hasError('minlength')) {
       this.passwordErrorMessage.set('Password must be at least 8 characters');
-    } else if (this.signUpForm.value.password.hasError('pattern')) {
+    } else if (this.password.hasError('pattern')) {
       this.passwordErrorMessage.set('must contain alpha-numeric & special character');
     } else {
       this.passwordErrorMessage.set('');
@@ -116,7 +124,7 @@ export class SignupComponent implements OnInit {
   }
 
   updateConfirmPasswordErrorMessage() {
-    if (this.signUpForm.value.confirmPassword.hasError('required')) {
+    if (this.confirmPassword.hasError('required')) {
       this.confirmPasswordErrorMessage.set('Please confirm your password');
     } else {
       this.confirmPasswordErrorMessage.set('');
@@ -124,15 +132,15 @@ export class SignupComponent implements OnInit {
   }
 
   checkPasswordsMatch() {
-    if (this.signUpForm.value.password.value !== this.signUpForm.value.confirmPassword.value) {
-      this.signUpForm.value.confirmPassword.setErrors({ passwordMismatch: true });
+    if (this.password.value !== this.confirmPassword.value) {
+      this.confirmPassword.setErrors({ passwordMismatch: true });
       this.passwordsMatchError.set('Passwords do not match');
     } else {
       // Only clear password match error, preserve other errors if any
-      const errors = this.signUpForm.value.confirmPassword.errors;
+      const errors = this.confirmPassword.errors;
       if (errors) {
         delete errors['passwordMismatch'];
-        this.signUpForm.value.confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
+        this.confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
       }
       this.passwordsMatchError.set('');
     }
