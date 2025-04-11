@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
+
   // prettier-ignore
   // eslint-disable-next-line 
   standalone: false,
@@ -23,6 +24,7 @@ export class SignupComponent implements OnInit {
   passwordErrorMessage = signal('');
   confirmPasswordErrorMessage = signal('');
   passwordsMatchError = signal('');
+
 
   // Form controls for html checks
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
@@ -40,6 +42,7 @@ export class SignupComponent implements OnInit {
       email: this.email,
       password: this.password,
       confirmPassword: this.confirmPassword
+
     });
 
     // Subscribe to password field changes to check match
