@@ -1,10 +1,12 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-auth-animation',
-  
+  // prettier-ignore
+  // eslint-disable-next-line 
+  standalone: false,
   templateUrl: './auth-animation.component.html',
   styleUrl: './auth-animation.component.css'
 })
