@@ -1,0 +1,13 @@
+<!-- "+" button to open the sidebar -->
+<div *ngIf="!isSidebarOpen" class="open-sidebar-button">
+    <button mat-fab color="primary" (click)="toggleSidebar()" matTooltip="Add Element" matTooltipPosition="right">+</button>
+</div>
+<!-- show side bar -->
+<div class="form-elements-sidebar" [class.open]="isSidebarOpen">
+    <div class="header">
+        <div class="sidebar-header">
+            <h3>Form Elements</h3>
+            <mat-icon (click)="toggleSidebar()">close</mat-icon>
+        </div>
+    </div>
+</div>
