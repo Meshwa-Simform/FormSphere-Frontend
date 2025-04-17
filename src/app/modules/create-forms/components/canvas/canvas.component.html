@@ -5,6 +5,83 @@
     </div>
 
     <div class="form-canvas">
+        <ng-container *ngFor="let field of formElements">
+            <div>
+                <!-- Render field input -->
+                <ng-container [ngSwitch]="field.type">
+                    <!-- Headings -->
+                    <h1 *ngSwitchCase="'heading'" class="form-heading" contenteditable="true">{{ field.label }}</h1>
+                    
+                    <!-- Editable label for each field -->
+                    <h2 *ngIf="field.type !== 'heading'" class="form-heading" contenteditable="true">{{ field.label }}
+                    </h2>
+                    <!-- Text / Email / Number -->
+                    <mat-form-field *ngSwitchCase="'text'" appearance="fill" class="input-field form-field">
+                        <input matInput disabled />
+                        <mat-hint>{{ field.placeholder }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field *ngSwitchCase="'email'" appearance="fill" class="input-field form-field">
+                        <input matInput type="email" disabled />
+                        <mat-hint>{{ field.placeholder }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field *ngSwitchCase="'number'" appearance="fill" class="input-field form-field">
+                        <input matInput type="number" disabled />
+                        <mat-hint>{{ field.placeholder }}</mat-hint>
+                    </mat-form-field>
+
+                    <!-- Textarea -->
+                    <mat-form-field *ngSwitchCase="'textarea'" appearance="fill" class="input-field form-field">
+                        <textarea matInput disabled></textarea>
+                        <mat-hint>{{ field.placeholder }}</mat-hint>
+                    </mat-form-field>
+
+                    <!-- Date -->
+                    <mat-form-field *ngSwitchCase="'date'" appearance="fill" class="input-field form-field">
+                        <input matInput [matDatepicker]="picker" [placeholder]="field.placeholder || 'Select Date'"
+                            disabled />
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-hint>Date</mat-hint>
+                    </mat-form-field>
+
+                    <!-- Dropdown -->
+                    <mat-form-field *ngSwitchCase="'dropdown'" appearance="fill" class="input-field form-field">
+                        <mat-select disabled placeholder="Select option">
+                            <mat-option *ngFor="let option of field.options" [value]="option">{{ option }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- Radio -->
+                    <mat-radio-group *ngSwitchCase="'radio'" class="radio-group form-field" disabled>
+                        <mat-radio-button *ngFor="let option of field.options" [value]="option">{{ option
+                            }}</mat-radio-button>
+                    </mat-radio-group>
+
+                    <!-- Checkbox -->
+                    <div *ngSwitchCase="'checkbox'" class="checkbox-group form-field">
+                        <mat-checkbox *ngFor="let option of field.options" disabled>{{ option }}</mat-checkbox>
+                    </div>
+
+                    <!-- File -->
+                    <label *ngSwitchCase="'file'" class="input-field form-field">
+                        <input type="file" disabled />
+                    </label>
+
+
+                    <!-- Signature -->
+                    <mat-card *ngSwitchCase="'signature'" class="form-field">
+                        <signature-pad [options]="signaturePadOptions" (onEnd)="drawComplete()"></signature-pad>
+
+                        <div class="actions">
+                            <button mat-raised-button color="warn" (click)="clearSignature()">Clear</button>
+                            <button mat-raised-button color="primary" (click)="saveSignature()">Save</button>
+                        </div>
+                    </mat-card>
+                </ng-container>
+            </div>
+        </ng-container>
     </div>
 
     <div class="create-form">

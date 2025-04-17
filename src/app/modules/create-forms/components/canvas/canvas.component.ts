@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilderService } from '../../../../services/formbuilder/form-builder.service';
+import { Element } from '../../interface/element';
+import { SignaturePad } from 'angular2-signaturepad';
 
 @Component({
   selector: 'app-canvas',
@@ -8,9 +11,19 @@ import { Component } from '@angular/core';
   templateUrl: './canvas.component.html',
   styleUrl: './canvas.component.css'
 })
-export class CanvasComponent {
+export class CanvasComponent implements OnInit{
   formTitle = 'Form Title';
   formDescription = 'Form Description';
+  formElements: Element[] = [];
+  isEditing: boolean = false;
+
+  constructor(private _formBuilderService:FormBuilderService){}
+
+  ngOnInit(): void {
+    this._formBuilderService.elements$.subscribe((elements) => {
+      this.formElements = elements;
+    });
+  }
   
   // for changing of field title and description(placeholder)
   clearPlaceholder(field: 'formTitle' | 'formDescription', event: FocusEvent) {
@@ -28,4 +41,31 @@ export class CanvasComponent {
       this[field] = text; // save typed content
     }
   }
+
+    // signature field
+    @ViewChild(SignaturePad) signaturePad!: SignaturePad;
+
+    signaturePadOptions: Object = {
+      minWidth: 1,
+      canvasWidth: 500,
+      canvasHeight: 200
+    };
+  
+    drawComplete() {
+      const dataURL = this.signaturePad.toDataURL();
+      console.log('Signature captured:', dataURL);
+    }
+  
+    clearSignature() {
+      this.signaturePad.clear();
+    }
+  
+    saveSignature() {
+      if (this.signaturePad.isEmpty()) {
+        alert('Please provide a signature first.');
+      } else {
+        const dataURL = this.signaturePad.toDataURL();
+        console.log('Saved signature image:', dataURL);
+      }
+    }
 }
