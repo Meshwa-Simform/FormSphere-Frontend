@@ -1,0 +1,13 @@
+<div class="form-preview">
+    <div class="form-preview-header">
+        <h1 class="form-title" contenteditable="true" (focus)="clearPlaceholder('formTitle', $event)" (blur)="restorePlaceholder('formTitle', $event)">{{formTitle}}</h1>
+        <h3 class="form-subtitle" contenteditable="true" (focus)="clearPlaceholder('formDescription', $event)" (blur)="restorePlaceholder('formDescription', $event)">{{formDescription}}</h3>
+    </div>
+
+    <div class="form-canvas">
+    </div>
+
+    <div class="create-form">
+        <button mat-flat-button color="accent" aria-label="Create form">create form</button>
+    </div>
+</div>
