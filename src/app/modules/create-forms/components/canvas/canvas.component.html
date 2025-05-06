@@ -1,19 +1,30 @@
 <div class="form-preview">
     <div class="form-preview-header">
-        <h1 class="form-title" contenteditable="true" (focus)="clearPlaceholder('formTitle', $event)" (blur)="restorePlaceholder('formTitle', $event)">{{formTitle}}</h1>
-        <h3 class="form-subtitle" contenteditable="true" (focus)="clearPlaceholder('formDescription', $event)" (blur)="restorePlaceholder('formDescription', $event)">{{formDescription}}</h3>
+        <h1 class="form-title" contenteditable="true" (focus)="clearPlaceholder('formTitle', $event)"
+            (blur)="restorePlaceholder('formTitle', $event)">{{formTitle}}</h1>
+        <h3 class="form-subtitle" contenteditable="true" (focus)="clearPlaceholder('formDescription', $event)"
+            (blur)="restorePlaceholder('formDescription', $event)">{{formDescription}}</h3>
     </div>
 
-    <div class="form-canvas">
+    <div class="form-canvas" cdkDropList id="targetList" [cdkDropListConnectedTo]="['sourceList']"
+        [cdkDropListData]="formElements" (cdkDropListDropped)="drop($event)">
+        <ng-container *ngIf="formElements.length === 0">
+            <div class="empty-canvas">
+                <p>Click or Drag and drop elements here to create your form.</p>
+            </div>
+        </ng-container>
         <ng-container *ngFor="let field of formElements">
-            <div>
+            <div cdkDrag [cdkDragData]="field" [cdkDragDisabled]="isEditing" cdkDragLockAxis="y"
+                cdkDragBoundary=".form-canvas">
                 <!-- Render field input -->
                 <ng-container [ngSwitch]="field.type">
                     <!-- Headings -->
-                    <h1 *ngSwitchCase="'heading'" class="form-heading" contenteditable="true">{{ field.label }}</h1>
-                    
+                    <h1 *ngSwitchCase="'heading'" class="form-heading" contenteditable="true" (focus)="onEditStart()"
+                        (blur)="updateLabel(field, $event)">{{ field.outLabel }}</h1>
+
                     <!-- Editable label for each field -->
-                    <h2 *ngIf="field.type !== 'heading'" class="form-heading" contenteditable="true">{{ field.label }}
+                    <h2 *ngIf="field.type !== 'heading'" class="form-heading" contenteditable="true"
+                        (focus)="onEditStart()" (blur)="updateLabel(field, $event)">{{ field.outLabel }}
                     </h2>
                     <!-- Text / Email / Number -->
                     <mat-form-field *ngSwitchCase="'text'" appearance="fill" class="input-field form-field">
@@ -47,21 +58,56 @@
                     </mat-form-field>
 
                     <!-- Dropdown -->
-                    <mat-form-field *ngSwitchCase="'dropdown'" appearance="fill" class="input-field form-field">
-                        <mat-select disabled placeholder="Select option">
-                            <mat-option *ngFor="let option of field.options" [value]="option">{{ option }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                    <div *ngSwitchCase="'dropdown'" class="form-card">
+                        <div *ngFor="let option of field.options; let i = index" class="option-item">
+                          <input
+                            matInput
+                            [value]="option"
+                            (focus)="onOptionFocus($event, i)"
+                            (blur)="updateOption(field, i, $event)"
+                            placeholder="Option {{ i + 1 }}"
+                          />
+                          <button mat-icon-button (click)="removeOption(field, i)">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </div>
+                        <button mat-button (click)="addOption(field)">Add Option</button>
+                    </div>
 
                     <!-- Radio -->
-                    <mat-radio-group *ngSwitchCase="'radio'" class="radio-group form-field" disabled>
-                        <mat-radio-button *ngFor="let option of field.options" [value]="option">{{ option
-                            }}</mat-radio-button>
-                    </mat-radio-group>
+                    <div *ngSwitchCase="'radio'" class="radio-group form-field">
+                        <div *ngFor="let option of field.options; let i = index" class="option-item">
+                          <mat-radio-button disabled [value]="option"></mat-radio-button>
+                          <input
+                            matInput
+                            [value]="option"
+                            (focus)="onOptionFocus($event, i)"
+                            (blur)="updateOption(field, i, $event)"
+                            placeholder="Option {{ i + 1 }}"
+                          />
+                          <button mat-icon-button (click)="removeOption(field, i)">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </div>
+                        <button mat-button (click)="addOption(field)">Add Option</button>
+                    </div>
 
                     <!-- Checkbox -->
-                    <div *ngSwitchCase="'checkbox'" class="checkbox-group form-field">
-                        <mat-checkbox *ngFor="let option of field.options" disabled>{{ option }}</mat-checkbox>
+                    <div *ngSwitchCase="'checkbox'" class="form-card">
+                        <div *ngFor="let option of field.options; let i = index" class="option-item">
+                          <mat-checkbox disabled [value]="option"></mat-checkbox>
+                          <input
+                            matInput
+                            [value]="option"
+                            (focus)="onOptionFocus($event, i)"
+                            (blur)="updateOption(field, i, $event)"
+                            placeholder="Option {{ i + 1 }}"
+                          />
+                          <button mat-icon-button (click)="removeOption(field, i)">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </div>
+                        <button mat-button (click)="addOption(field)">Add Option</button>
                     </div>
 
                     <!-- File -->
@@ -84,7 +130,8 @@
         </ng-container>
     </div>
 
-    <div class="create-form">
-        <button mat-flat-button color="accent" aria-label="Create form">create form</button>
+    <div class="form-buttons">
+        <button mat-flat-button color="accent" aria-label="Clear form" [disabled]="formElements.length===0" (click)="clearForm()">Clear Form</button>
+        <button mat-flat-button color="accent" aria-label="Create form" (click)="saveForm()">{{ formId ? 'Update Form' : 'Create Form' }}</button>
     </div>
 </div>

@@ -3,5 +3,6 @@ export interface Element {
     icon:string,
     type: string, 
     placeholder?:string,
-    options?: string[]
+    options?: string[],
+    outLabel: string
 }

@@ -7,8 +7,9 @@
     flex-direction: column;
     border-radius: 10px;
     width: 60%;
-    position: fixed;
-    top: 10%;
+    height: auto;
+    max-height: none; 
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-preview-header {
@@ -57,32 +58,45 @@ h1[contenteditable="true"]:focus, h2[contenteditable="true"]:focus, h3[contented
     border-radius: 8px;
     min-height: 400px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    overflow: visible; 
+    max-height: none;
+    position: relative;
 }
 
-.create-form{
-    margin: 20px 40px 0 0;
+.form-canvas::-webkit-scrollbar {
+    width: 8px;
+}
+
+.form-canvas::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.form-canvas::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+.form-buttons {
+    margin: 20px 0 0 0;
     text-align: right;
 }
 
-.label-field {
-    width: 100%;
-    margin-top: 15px;
+.form-buttons button {
+    margin-left: 10px;
+}
+
+.empty-canvas{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #aaa;
+    font-size: 2rem;
+    cursor: default;
 }
 
 .input-field {
     width: 100%;
-    margin-bottom: 10px;
-}
-
-.radio-group {
-    margin: 10px 0;
-    display: flex;
-    gap: 15px;
-}
-
-.checkbox-group {
-    display: flex;
-    flex-direction: column;
     margin-bottom: 10px;
 }
 

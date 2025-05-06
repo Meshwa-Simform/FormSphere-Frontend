@@ -17,8 +17,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     SidebarComponent,
     CanvasComponent,
     StylebarComponent,
-    FormBuilderComponent,
-    FormsnavComponent
+    FormBuilderComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +25,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     MaterialModule,
     FormModule,
     SignaturePadModule,
-    DragDropModule
+    DragDropModule,
+    FormsnavComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
