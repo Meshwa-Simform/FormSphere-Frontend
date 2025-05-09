@@ -22,31 +22,35 @@ export class SidebarComponent {
   constructor(private _formBuilderService: FormBuilderService) { }
 
   basicElements: Element[] = [
-    { label: 'Heading', icon: 'title', type: 'heading', placeholder: 'Enter heading' },
-    { label: 'Full Name', icon: 'person', type: 'text', placeholder: 'Enter full name' },
-    { label: 'Email', icon: 'email', type: 'email', placeholder: 'Enter email' },
-    { label: 'Address', icon: 'location_on', type: 'text', placeholder: 'Enter address' },
-    { label: 'Phone', icon: 'phone', type: 'text', placeholder: 'Enter phone number' },
-    { label: 'Date', icon: 'event', type: 'date', placeholder: 'DD-MM-YYYY' },
-    { label: 'Appointment', icon: 'schedule', type: 'date', placeholder: 'DD-MM-YYYY'},
-    { label: 'Signature', icon: 'edit', type: 'signature' }
+    { label: 'Heading', icon: 'title', type: 'heading', placeholder: 'Enter heading', outLabel: 'Heading' },
+    { label: 'Full Name', icon: 'person', type: 'text', placeholder: 'Enter full name', outLabel: 'Full Name' },
+    { label: 'Email', icon: 'email', type: 'email', placeholder: 'Enter email', outLabel: 'Email' },
+    { label: 'Address', icon: 'location_on', type: 'text', placeholder: 'Enter address', outLabel: 'Address' },
+    { label: 'Phone', icon: 'phone', type: 'text', placeholder: 'Enter phone number', outLabel: 'Phone Number' },
+    { label: 'Date', icon: 'event', type: 'date', placeholder: 'DD-MM-YYYY', outLabel: 'Date' },
+    { label: 'Appointment', icon: 'schedule', type: 'date', placeholder: 'DD-MM-YYYY', outLabel: 'Appointment' },
+    { label: 'Signature', icon: 'edit', type: 'signature', outLabel: 'Signature' }
   ];
 
   basicInputs: Element[] = [
-    { label: 'Short Text', icon: 'text_fields', type: 'text', placeholder: 'Enter short text' },
-    { label: 'Long Text', icon: 'notes', type: 'textarea', placeholder: 'Enter long text' },
-    { label: 'Paragraph', icon: 'article', type: 'textarea', placeholder: 'Enter paragraph' },
-    { label: 'Dropdown', icon: 'arrow_drop_down', type: 'dropdown', options: ['Option 1', 'Option 2', 'Option 3'] },
-    { label: 'Single Choice', icon: 'radio_button_checked', type: 'radio', options: ['Yes', 'No'] },
-    { label: 'Multiple Choice', icon: 'check_box', type: 'checkbox', options: ['Option A', 'Option B', 'Option C'] },
-    { label: 'Number', icon: 'pin', type: 'number', placeholder: 'Enter a number' },
-    { label: 'File Upload', icon: 'upload_file', type: 'file' }
+    { label: 'Short Text', icon: 'text_fields', type: 'text', placeholder: 'Enter short text', outLabel: 'Enter Question' },
+    { label: 'Long Text', icon: 'notes', type: 'textarea', placeholder: 'Enter long text', outLabel: 'Enter Question' },
+    { label: 'Paragraph', icon: 'article', type: 'textarea', placeholder: 'Enter paragraph', outLabel: 'Enter Question' },
+    { label: 'Dropdown', icon: 'arrow_drop_down', type: 'dropdown', options: ['Option 1', 'Option 2', 'Option 3'], outLabel: 'Enter Question' },
+    { label: 'Single Choice', icon: 'radio_button_checked', type: 'radio', options: ['Option 1', 'Option 2', 'Option 3'], outLabel: 'Enter Question' },
+    { label: 'Multiple Choice', icon: 'check_box', type: 'checkbox', options: ['Option 1', 'Option 2', 'Option 3'], outLabel: 'Enter Question' },
+    { label: 'Number', icon: 'pin', type: 'number', placeholder: 'Enter a number', outLabel: 'Enter Question' },
+    { label: 'File Upload', icon: 'upload_file', type: 'file', outLabel: 'Field Upload' }
   ];
 
   // add elements to the form builder
   onElementClick(item: Element): void {
     console.log('Clicked element:', item);
-    this._formBuilderService.addElement(item);
+
+    // Clone the item to ensure no shared references for options
+    const newItem = { ...item, options: item.options ? [...item.options] : undefined };
+
+    this._formBuilderService.addElement(newItem);
   }
   
   // function for search functionality

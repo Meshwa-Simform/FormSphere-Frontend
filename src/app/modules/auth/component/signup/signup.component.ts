@@ -4,7 +4,7 @@ import { merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -34,7 +34,7 @@ export class SignupComponent implements OnInit {
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
 
-  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router) {
+  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router, private _route: ActivatedRoute) {
     this.signUpForm = this._fb.group({
       name: this.name,
       email: this.email,
@@ -75,7 +75,8 @@ export class SignupComponent implements OnInit {
           this._toastr.error(error.error.message);
         },
         complete: () => {
-          this._router.navigate(['/']);
+          const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl') || '/';
+          this._router.navigate([returnUrl]);
         }
       });
     } else {
