@@ -46,6 +46,7 @@ export class SidebarComponent {
   // add elements to the form builder
   onElementClick(item: Element): void {
     console.log('Clicked element:', item);
+
     // Clone the item to ensure no shared references for options
     const newItem = { ...item, options: item.options ? [...item.options] : undefined };
 
