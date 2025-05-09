@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
 import { FormBuilderService } from '../../../../services/formbuilder/form-builder.service';
 import { Element } from '../../interface/element';
 import { SignaturePad } from 'angular2-signaturepad';
@@ -8,6 +8,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../../../services/forms/form.service';
 import { FormDetails } from '../../interface/form';
 import { Form } from '../../../my-forms/interface/formOutput';
+import { MatDialog } from '@angular/material/dialog';
+import { TemplatesService } from '../../../../services/templates/templates.service';
+import { TemplateOutput } from '../../../templates/interfaces/templates';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-canvas',
@@ -17,23 +21,81 @@ import { Form } from '../../../my-forms/interface/formOutput';
   templateUrl: './canvas.component.html',
   styleUrl: './canvas.component.css'
 })
-export class CanvasComponent implements OnInit {
+export class CanvasComponent implements OnInit, AfterViewInit {
   formTitle = 'Form Title';
   formDescription = 'Form Description';
   formElements: Element[] = [];
   isEditing = false;
   formId: string | null = null;
+  templateId: string | null = null;
+  selectedElement: Element | null = null; // Track the selected element
+  isDragging = false; // Track whether a drag operation is in progress
+  isLogin = false;
 
-  constructor(private _formBuilderService: FormBuilderService, private _toastr: ToastrService, private _router: Router, private _formService: FormService, private _route: ActivatedRoute) { }
+  constructor(private _formBuilderService: FormBuilderService, private _toastr: ToastrService, private _router: Router, private _formService: FormService, private _route: ActivatedRoute, private _dialog: MatDialog, private _templateService: TemplatesService, private _authService: AuthService) { }
 
   ngOnInit(): void {
     this._formBuilderService.elements$.subscribe((elements) => {
       this.formElements = elements;
     });
-    // Check if a formId is provided in the route
-    this.formId = this._route.snapshot.paramMap.get('formId');
-    if (this.formId) {
-      this.loadFormDetails(this.formId);
+    // Check if the user is logged in
+    this._authService.authenticateUser().subscribe((isLoggedIn: boolean) => {
+      this.isLogin = isLoggedIn;
+    });
+    // Listen for route changes
+    this._route.params.subscribe((params) => {
+      this.formId = params['formId'] || null;
+      this.templateId = params['templateId'] || null;
+
+      // Reset form state
+      this.resetFormState();
+
+      // Load form or template details based on the route
+      if (this.formId) {
+        this.loadFormDetails(this.formId);
+      } else if (this.templateId) {
+        this.loadTemplateDetails(this.templateId);
+      }
+    });
+  }
+
+  resetFormState(): void {
+    this.formElements = [];
+    this.formTitle = 'Form Title';
+    this.formDescription = 'Form Description';
+    this.selectedElement = null;
+    this._formBuilderService.clearElements(); // Clear elements in the service
+  }
+
+  // Method to handle drag start
+  onDragStart(): void {
+    this.isDragging = true;
+  }
+
+  // Method to handle drag end
+  onDragEnd(): void {
+    this.isDragging = false;
+  }
+
+  // Method to handle element click
+  onElementClick(element: Element, event: MouseEvent): void {
+    if (!this.isDragging) {
+      // Only select the element if it's not being dragged
+      this.selectedElement = element;
+      event.stopPropagation(); // Prevent click from propagating to parent elements
+    }
+  }
+
+  // Method to select an element
+  selectElement(element: Element): void {
+    this.selectedElement = element;
+  }
+
+  // Method to delete the selected element
+  deleteElement(): void {
+    if (this.selectedElement) {
+      this._formBuilderService.removeElement(this.selectedElement); // Use the service to remove the element
+      this.selectedElement = null; // Clear the selection
     }
   }
 
@@ -42,10 +104,10 @@ export class CanvasComponent implements OnInit {
     this._formService.getFormById(formId).subscribe({
       next: (data) => {
         const newElements = Array.isArray(data.form)
-        ? data.form.flatMap((form) => this.mapFormToElement(form))
-        : this.mapFormToElement(data.form);
-       
-        newElements.forEach((element)=>{
+          ? data.form.flatMap((form) => this.mapFormToElement(form))
+          : this.mapFormToElement(data.form);
+
+        newElements.forEach((element) => {
           this._formBuilderService.addElement(element); // add each element to the form builder
         })
 
@@ -59,13 +121,34 @@ export class CanvasComponent implements OnInit {
     });
   }
 
-  // Helper method to map Form to Element
-  private mapFormToElement(form: Form): Element[] {
+  // Load template details if templateId is provided
+  loadTemplateDetails(templateId: string): void {
+    console.log('Template ID:', templateId);
+    this._templateService.getTemplateById(templateId).subscribe({
+      next: (data) => {
+        const newElements = Array.isArray(data.template)
+          ? data.template.flatMap((template) => this.mapFormToElement(template))
+          : this.mapFormToElement(data.template);
+        newElements.forEach((element) => {
+          this._formBuilderService.addElement(element); // add each element to the form builder
+        })
+        this.formTitle = data.template.title || 'Form Title';
+        this.formDescription = data.template.description || 'Form Description';
+        console.log('Loaded template details:', this.formElements);
+      },
+      error: (err) => {
+        console.error('Error loading template details:', err);
+      }
+    });
+  }
+
+  // Helper method to map Form/Tmplate to Element
+  private mapFormToElement(form: Form | TemplateOutput): Element[] {
     return form.questions.map((question) => ({
-      label: form.title, 
-      icon: '', 
+      label: form.title,
+      icon: '',
       type: question.questionType,
-      placeholder: '', 
+      placeholder: '',
       options: question.questionOptions,
       outLabel: question.questionText
     }));
@@ -92,30 +175,30 @@ export class CanvasComponent implements OnInit {
     this.isEditing = true;
     console.log(`Editing option at index ${index}`);
   }
-  
-  updateOption(field: any, index: number, event: FocusEvent): void {
+
+  updateOption(field: Element, index: number, event: FocusEvent): void {
     const inputElement = event.target as HTMLInputElement;
     const newValue = inputElement.value.trim();
-  
+
     if (newValue) {
-      field.options[index] = newValue; // Update the option in the array
+      (field.options ??= [])[index] = newValue; // Ensure options is initialized and update the option in the array
     } else {
       // If the input is empty, revert to the original value
-      inputElement.value = field.options[index];
+      inputElement.value = (field.options ??= [])[index];
     }
   }
 
-  addOption(field: any) {
-    field.options.push('');
-  }
-  
-  removeOption(field: any, index: number) {
-    field.options.splice(index, 1);
+  addOption(field: Element) {
+    (field.options ??= []).push('');
   }
 
-  saveForm(){
-     // Check if formElements is empty
-     if (this.formElements.length === 0) {
+  removeOption(field: Element, index: number) {
+    (field.options ??= []).splice(index, 1);
+  }
+
+  saveForm() {
+    // Check if formElements is empty
+    if (this.formElements.length === 0) {
       this._toastr.warning('The form is empty. Please add some elements.');
       return;
     }
@@ -141,7 +224,7 @@ export class CanvasComponent implements OnInit {
           questionText: element.outLabel,
           questionOptions: element.options || [],
           questionAnswer: undefined,
-          questionOrder: index+1,
+          questionOrder: index + 1,
           isRequired: false,
           isHidden: false,
           conditionalLogic: undefined,
@@ -150,10 +233,10 @@ export class CanvasComponent implements OnInit {
       privateSharingToken: undefined,
       styling: undefined,
     };
-  
+
     console.log('Form Details:', formDetails);
     // Call the service for update form
-    if(this.formId) {
+    if (this.formId) {
       this._formService.updateForm(this.formId, formDetails).subscribe({
         next: () => {
           this._toastr.success('Form updated successfully!');
@@ -165,7 +248,7 @@ export class CanvasComponent implements OnInit {
         }
       });
     }
-    else{
+    else {
       // Call the service to create the form
       this._formService.createForm(formDetails).subscribe({
         next: () => {
@@ -180,7 +263,21 @@ export class CanvasComponent implements OnInit {
     }
   }
 
-  clearForm(){
+  openDeleteDialog(templateRef: TemplateRef<void>): void {
+    const dialogRef = this._dialog.open(templateRef, {
+      width: '400px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      console.log('Dialog result:', confirmed);
+      if (confirmed) {
+        this.clearForm();
+      }
+    });
+  }
+
+  clearForm() {
     this.formElements = [];
     this._formBuilderService.clearElements();
   }
@@ -191,10 +288,10 @@ export class CanvasComponent implements OnInit {
     this.isEditing = true;
   }
   // Called when editing ends
-  updateLabel(field: any, event: FocusEvent): void {
+  updateLabel(field: Element, event: FocusEvent): void {
     const element = event.target as HTMLElement;
     const newLabel = element.innerText.trim();
-  
+
     if (newLabel) {
       field.outLabel = newLabel; // Update the label in the formElements array
     } else {

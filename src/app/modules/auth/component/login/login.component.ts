@@ -4,7 +4,7 @@ import { merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   email= new FormControl('', [Validators.required, Validators.email]);
   password= new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]);
 
-  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router) {
+  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router, private _route: ActivatedRoute) {
     this.signInForm = this._fb.group({
       email: this.email,
       password: this.password,
@@ -54,7 +54,8 @@ export class LoginComponent implements OnInit {
           this._toastr.error(error.error.message);
         },
         complete: () => {
-          this._router.navigate(['/']);
+          const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl') || '/';
+          this._router.navigate([returnUrl]);
         }
       });
     } else {

@@ -4,9 +4,29 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from './modules/auth/auth.module';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { ToastrModule } from 'ngx-toastr';
+import {
+  NgxUiLoaderModule,
+  NgxUiLoaderConfig,
+  SPINNER,
+  POSITION,
+  PB_DIRECTION,
+  NgxUiLoaderHttpModule,
+  NgxUiLoaderRouterModule
+} from 'ngx-ui-loader';
+
+const ngxUiLoaderConfig: NgxUiLoaderConfig = {
+  fgsType: SPINNER.threeStrings, 
+  fgsPosition: POSITION.centerCenter,
+  overlayColor: 'rgba(40, 40, 40, 0.98)',
+  fgsColor: '#12A3EB',
+  fgsSize: 120,
+  pbDirection: PB_DIRECTION.leftToRight,
+  pbThickness: 5,
+  hasProgressBar: true
+};
 
 @NgModule({
   declarations: [
@@ -27,7 +47,11 @@ import { ToastrModule } from 'ngx-toastr';
       tapToDismiss: true,
       maxOpened: 5,
       autoDismiss: true
-    })
+    }),
+    HttpClientModule,
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
+    NgxUiLoaderHttpModule.forRoot({ showForeground: true }),
+    NgxUiLoaderRouterModule.forRoot({ exclude: ['/auth/login', '/auth/signup']})
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

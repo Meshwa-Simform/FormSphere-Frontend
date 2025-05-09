@@ -1,3 +1,16 @@
+<!-- Confirmation Dialog Template -->
+<ng-template #clearDialog let-dialogRef="dialogRef">
+    <h2 mat-dialog-title>Confirm Clear Form</h2>
+    <mat-dialog-content>
+      <p>Are you sure you want to clear this form?</p>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="dialogRef.close(false)">Cancel</button>
+      <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Clear</button>
+    </mat-dialog-actions>
+</ng-template>
+  
+
 <div class="form-preview">
     <div class="form-preview-header">
         <h1 class="form-title" contenteditable="true" (focus)="clearPlaceholder('formTitle', $event)"
@@ -15,7 +28,7 @@
         </ng-container>
         <ng-container *ngFor="let field of formElements">
             <div cdkDrag [cdkDragData]="field" [cdkDragDisabled]="isEditing" cdkDragLockAxis="y"
-                cdkDragBoundary=".form-canvas">
+                cdkDragBoundary=".form-canvas"(cdkDragStarted)="onDragStart()" (cdkDragEnded)="onDragEnd()" (click)="selectElement(field)" [class.selected]="field === selectedElement">
                 <!-- Render field input -->
                 <ng-container [ngSwitch]="field.type">
                     <!-- Headings -->
@@ -126,12 +139,15 @@
                         </div>
                     </mat-card>
                 </ng-container>
+
+                <!-- Delete button for the selected element -->
+                <button *ngIf="field === selectedElement" class="delete-button" (click)="deleteElement()"><mat-icon>delete</mat-icon></button>
             </div>
         </ng-container>
     </div>
 
     <div class="form-buttons">
-        <button mat-flat-button color="accent" aria-label="Clear form" [disabled]="formElements.length===0" (click)="clearForm()">Clear Form</button>
-        <button mat-flat-button color="accent" aria-label="Create form" (click)="saveForm()">{{ formId ? 'Update Form' : 'Create Form' }}</button>
+        <button mat-flat-button color="accent" aria-label="Clear form" [disabled]="formElements.length===0" (click)="openDeleteDialog(clearDialog)">Clear Form</button>
+        <button mat-flat-button color="accent" aria-label="Create form" [disabled]="!isLogin" (click)="saveForm()">{{ formId ? 'Update Form' : 'Create Form' }}</button>
     </div>
 </div>

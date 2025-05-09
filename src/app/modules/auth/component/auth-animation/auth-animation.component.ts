@@ -41,8 +41,11 @@ export class AuthAnimationComponent implements OnInit {
     this.isSignUpMode = signUp;
     this._authService.setMode(this.isSignUpMode);
 
+    // Get the returnUrl from the current query parameters
+    const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl') || '/';
+
     // Navigate to the child route
     const mode = signUp ? 'signup' : 'login';
-    this._router.navigate([`/auth/${mode}`]);
+    this._router.navigate([`/auth/${mode}`], { queryParams: { returnUrl } });
   }
 }
