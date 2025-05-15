@@ -5,8 +5,6 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-formsnav',
-  // prettier-ignore
-   
   standalone: true,
   imports:[MaterialModule, RouterModule, CommonModule],
   templateUrl: './formsnav.component.html',

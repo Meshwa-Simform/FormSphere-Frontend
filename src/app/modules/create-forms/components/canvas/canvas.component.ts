@@ -21,6 +21,7 @@ import { AuthService } from '../../../../services/auth/auth.service';
   templateUrl: './canvas.component.html',
   styleUrl: './canvas.component.css'
 })
+
 export class CanvasComponent implements OnInit, AfterViewInit {
   formTitle = 'Form Title';
   formDescription = 'Form Description';
