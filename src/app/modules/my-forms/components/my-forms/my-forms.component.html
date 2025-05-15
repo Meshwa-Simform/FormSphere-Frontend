@@ -1,0 +1,85 @@
+<mat-toolbar color="primary" class="nav-bar">
+  <div class="logo">
+      <a routerLink="/" aria-label="Home">FormSphere</a>
+  </div>
+  <div class="nav">
+    <ul>
+      <li>
+        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+      </li>
+    </ul>
+  </div>
+  <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">Logout</button>
+</mat-toolbar>
+
+<!-- Confirmation Dialog Template -->
+<ng-template #deleteDialog let-dialogRef="dialogRef">
+  <h2 mat-dialog-title>Confirm Deletion</h2>
+  <mat-dialog-content>
+    <p>Are you sure you want to delete this form?</p>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="dialogRef.close(false)">Cancel</button>
+    <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Delete</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Main Content -->
+<div class="my-forms-container">
+  <h1>My Forms</h1>
+  
+  <!-- Display message if no forms are available -->
+  <div *ngIf="forms?.form?.length === 0" class="no-forms">
+    <p>No forms created yet.</p>
+  </div>
+  
+  <!-- Display forms if available -->
+  <div class="forms-list" *ngIf="forms?.form?.length !== 0">
+    <mat-card *ngFor="let form of forms.form" class="form-card">
+      <mat-card-title [routerLink]="['/forms', form.id]">
+        {{ form.title }}
+      </mat-card-title>
+      <!-- Copy Button -->
+      <button mat-icon-button matSuffix (click)="copyLink('http://localhost:4200/shared-form/' + form.id)" class="copy-button" matTooltip="Copy Link">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <!-- 3-dot menu button -->
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button" matTooltip="More Options">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <!-- Dropdown menu -->
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="viewResponses(form.id)">
+          <mat-icon>article</mat-icon>
+          View Responses
+        </button>
+        <button mat-menu-item (click)="updateForm(form.id)">
+          <mat-icon>edit</mat-icon>
+          Update Form
+        </button>
+        <button mat-menu-item [matMenuTriggerFor]="shareMenu">
+          <mat-icon>share</mat-icon>
+          Share Link
+        </button>
+        <button mat-menu-item (click)="openDeleteDialog(deleteDialog, form.id)">
+          <mat-icon>delete</mat-icon>
+          Delete Form
+        </button>
+      </mat-menu>
+       <!-- Submenu for Share Link -->
+       <mat-menu #shareMenu="matMenu">
+        <div class="share-link-container">
+          <mat-form-field appearance="outline" class="share-link-field">
+            <input matInput [value]="'http://localhost:4200/shared-form/' + form.id" readonly>
+            <button mat-icon-button matSuffix (click)="copyLink('http://localhost:4200/shared-form/' + form.id)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </mat-menu>
+    </mat-card>
+  </div>
+</div>

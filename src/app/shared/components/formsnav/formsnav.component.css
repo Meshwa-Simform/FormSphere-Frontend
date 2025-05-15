@@ -3,9 +3,11 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    height: 7.9vh;
     background-color: #79b1ee;
     position: fixed;
     top: 0;
+    z-index: 1000;
 }
 
 .logo a {
@@ -13,6 +15,8 @@
     font-weight: bold;
     color: #033367;
     text-decoration: none;
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 button {
