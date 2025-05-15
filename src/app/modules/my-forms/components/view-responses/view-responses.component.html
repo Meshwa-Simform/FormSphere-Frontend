@@ -1,0 +1,92 @@
+<mat-toolbar color="primary" class="nav-bar">
+  <div class="logo">
+    <a routerLink="/" aria-label="Home">FormSphere</a>
+  </div>
+  <div class="nav">
+    <ul>
+      <li>
+        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
+      </li>
+    </ul>
+  </div>
+  <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">
+    Logout
+  </button>
+</mat-toolbar>
+
+<!-- Responses container -->
+<div class="responses-container">
+  <h1>Responses</h1>
+
+  <ng-container *ngIf="responses.length > 0; else noResponses">
+    <div *ngFor="let response of responses" class="response-card">
+      <h2>User: {{ response.userName }} ({{ response.userEmail }})</h2>
+      <p>Submitted on: {{ response.createdAt | date: 'medium' }}</p>
+
+            <div class="form-preview">
+        <ng-container *ngFor="let answer of response.answers">
+          <ng-container [ngSwitch]="answer.questionType">
+            <!-- Heading -->
+            <h1 *ngSwitchCase="'heading'" class="form-header">
+              {{ answer.questionText }}
+            </h1>
+      
+            <!-- Text -->
+            <div *ngSwitchCase="'text'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+      
+            <!-- Date -->
+            <div *ngSwitchCase="'date'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer | date: 'mediumDate' }}</p>
+            </div>
+      
+            <!-- Dropdown -->
+            <div *ngSwitchCase="'dropdown'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+      
+            <!-- Radio -->
+            <div *ngSwitchCase="'radio'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+      
+            <!-- Checkbox -->
+            <div *ngSwitchCase="'checkbox'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+      
+            <!-- File -->
+            <div *ngSwitchCase="'file'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+      
+            <!-- Default -->
+            <div *ngSwitchDefault class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <p>{{ answer.responseAnswer }}</p>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noResponses>
+    <div class="no-responses">
+      <p>No responses available for this form.</p>
+    </div>
+  </ng-template>
+</div>
