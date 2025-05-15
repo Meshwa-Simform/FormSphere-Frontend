@@ -14,6 +14,8 @@ const routes: Routes = [
   { path: 'shared-form/:formId', component: SharedFormComponent, canActivate: [AuthGuard] },
   { path: 'thank-you', component: ThankYouComponent, canActivate: [AuthGuard] },
   { path: 'responses/:formId', component: ViewResponsesComponent, canActivate: [AuthGuard] },
+  { path: 'templates', loadChildren: () => import('./modules/templates/templates.module').then(m => m.TemplatesModule)},
+  { path: 'templates/:templateId', loadChildren: () => import('./modules/create-forms/create-forms.module').then(m => m.CreateFormsModule)}
 ];
 
 @NgModule({
