@@ -13,8 +13,8 @@ export class FormBuilderService {
   private currentElements: Element[] = [];
 
   addElement(newElement: Element): void {
-    const currentElements = this.elementsSubject.value;
-    this.elementsSubject.next([...currentElements, newElement]);
+    this.currentElements.push(newElement);
+    this.elementsSubject.next([...this.currentElements]);
   }
 
   clearElements() {
@@ -22,4 +22,13 @@ export class FormBuilderService {
     this.elementsSubject.next([]);
   }
   
+  removeElement(selectedElement: Element){
+    const index = this.currentElements.findIndex(
+      (element) => element === selectedElement
+    );
+    if (index > -1) {
+      this.currentElements.splice(index, 1); // Remove the element from the array
+      this.elementsSubject.next([...this.currentElements]); // Emit the updated list
+    }
+  }
 }
