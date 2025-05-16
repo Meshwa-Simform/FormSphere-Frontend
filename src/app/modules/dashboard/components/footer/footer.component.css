@@ -1,0 +1,155 @@
+.footer-top {
+  background: #d9d9d9a6;
+  backdrop-filter: blur(3px);
+  text-align: center;
+  padding: 2rem;
+  width: 80%;
+  border-radius: 50px;
+  margin: auto;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -3%;
+  margin-top: -5%;
+}
+
+.footer-top h2 {
+  font-size: 3rem;
+  color: #033367;
+}
+
+.footer-top p {
+  margin-top: 0.8rem;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.singup {
+  background-color: #033367 !important;
+  color: white !important;
+  padding: 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #033367;
+  color: white;
+  padding: 1rem 5vw;
+  padding-top: 5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.footer-logo-section {
+  width: 50%;
+  margin-left: 20%;
+}
+
+.footer-logo {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #4d97e7;
+}
+
+.footer-subtitle {
+  margin: 0.3rem 0 1.5rem;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.footer-links {
+  width: 50%;
+  margin-left: 20%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.footer-links a {
+  color: #f5f5f5;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    padding: 1.5rem;
+    width: 90%;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .footer-top h2 {
+    font-size: 2rem;
+  }
+
+  .footer-top p {
+    font-size: 0.85rem;
+  }
+
+  footer {
+    flex-direction: column;
+    padding: 2rem 5vw;
+  }
+
+  .footer-logo-section {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-size: 2rem;
+  }
+
+  .footer-links {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .footer-links a {
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .footer-top {
+    padding: 1rem;
+    gap: 10px;
+  }
+
+  .footer-top h2 {
+    font-size: 1.5rem;
+  }
+
+  .footer-top p {
+    font-size: 0.75rem;
+  }
+
+  .singup {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  footer {
+    padding: 1rem 2vw;
+  }
+
+  .footer-logo {
+    font-size: 1.8rem;
+  }
+
+  .footer-links a {
+    font-size: 0.8rem;
+  }
+}
