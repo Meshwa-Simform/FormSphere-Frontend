@@ -28,7 +28,9 @@
         </ng-container>
         <ng-container *ngFor="let field of formElements">
             <div cdkDrag [cdkDragData]="field" [cdkDragDisabled]="isEditing" cdkDragLockAxis="y"
-                cdkDragBoundary=".form-canvas"(cdkDragStarted)="onDragStart()" (cdkDragEnded)="onDragEnd()" tabindex="0" (click)="selectElement(field)" (keydown.enter)="selectElement(field)" (keydown.space)="selectElement(field)" [class.selected]="field === selectedElement">
+                cdkDragBoundary=".form-canvas"(cdkDragStarted)="onDragStart()" (cdkDragEnded)="onDragEnd()" 
+                 tabindex="0" (click)="selectElement(field)" (keydown.enter)="selectElement(field)" 
+                 (keydown.space)="selectElement(field)" [class.selected]="field === selectedElement">
                 <!-- Render field input -->
                 <ng-container [ngSwitch]="field.type">
                     <!-- Headings -->
