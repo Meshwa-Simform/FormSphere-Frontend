@@ -1,0 +1,70 @@
+<div class="main">
+  <div class="tab-container">
+    <div class="tab active" tabindex="0" (click)="switchTab('forms')" (keydown.enter)="switchTab('forms')" (keydown.space)="switchTab('forms')">Forms</div>
+    <div class="tab" tabindex="0" (click)="switchTab('signatures')" (keydown.enter)="switchTab('forms')" (keydown.space)="switchTab('forms')">Signatures</div>
+  </div>
+  <div class="content-wrapper">
+    <div id="forms" class="content active">
+      <div class="content-inner">
+        <!-- Left Section: Text -->
+        <div class="text-section">
+          <h5>FORMS</h5>
+          <div class="title">Make any form, quiz, or survey in minutes</div>
+          <div class="features">
+            <div class="feature-item">
+              <mat-icon class="feature-icon">build</mat-icon>
+              <span>Simple yet powerful form builder</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon class="feature-icon">link</mat-icon>
+              <span>Connect to 50+ native integrations</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon class="feature-icon">group</mat-icon>
+              <span>Analyze and collaborate on results with your team</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Section: Image -->
+        <div class="image-section">
+          <img
+            src="images/forms.png"
+            alt="Forms UI"
+          />
+        </div>
+      </div>
+    </div>
+    <div id="signatures" class="content">
+      <div class="content-inner">
+        <!-- Left Section: Text -->
+        <div class="text-section">
+          <h5>SIGNATURES</h5>
+          <div class="title">Create, track, and e-sign documents</div>
+          <div class="features">
+            <div class="feature-item">
+              <mat-icon class="feature-icon">edit</mat-icon>
+              <span>Collect electronic signatures</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon class="feature-icon">lock</mat-icon>
+              <span>Securely sign documents and generate PDFs</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon class="feature-icon">autorenew</mat-icon>
+              <span>Automate agreement workflows</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Section: Image -->
+        <div class="image-section">
+          <img
+            src="images/signature.png"
+            alt="Signature UI"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
