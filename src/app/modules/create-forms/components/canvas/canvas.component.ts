@@ -89,6 +89,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   // Method to select an element
   selectElement(element: Element): void {
+    if(this.selectedElement === element){
+      // If the element is already selected, deselect it
+      this.selectedElement = null;
+      return;
+    }
+    // Set the selected element
     this.selectedElement = element;
   }
 
@@ -298,17 +304,17 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     } else {
       element.innerText = field.outLabel; // Revert to the original label if empty
     }
+
+    this.isEditing = false; // End editing mode
+    console.log('Label updated:', field.outLabel);
   }
 
   // Drag and Drop
   drop(event: CdkDragDrop<Element[]>) {
-    if (this.isEditing) {
-      // Prevent drag-and-drop while editing
-      return;
-    }
     console.log('canvas drop event:', event);
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this._formBuilderService.updateElements([...this.formElements]);
     } else {
       copyArrayItem(
         event.previousContainer.data,
@@ -316,6 +322,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         event.previousIndex,
         event.currentIndex
       );
+      this._formBuilderService.updateElements([...this.formElements]);
     }
   }
 

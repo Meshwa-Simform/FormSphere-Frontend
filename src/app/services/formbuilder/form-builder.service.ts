@@ -31,4 +31,9 @@ export class FormBuilderService {
       this.elementsSubject.next([...this.currentElements]); // Emit the updated list
     }
   }
+
+  updateElements(updatedElements: Element[]): void {
+    this.currentElements = updatedElements;
+    this.elementsSubject.next([...this.currentElements]);
+  }
 }
