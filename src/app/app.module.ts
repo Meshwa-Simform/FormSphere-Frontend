@@ -16,6 +16,8 @@ import {
   NgxUiLoaderHttpModule,
   NgxUiLoaderRouterModule
 } from 'ngx-ui-loader';
+import { MyFormsModule } from './modules/my-forms/my-forms.module';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   fgsType: SPINNER.threeStrings, 
@@ -37,6 +39,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     BrowserAnimationsModule,
     AppRoutingModule,
     AuthModule,
+    MyFormsModule,
     ToastrModule.forRoot({
       positionClass: 'toast-top-right',
       timeOut: 3000,
@@ -53,7 +56,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     NgxUiLoaderHttpModule.forRoot({ showForeground: true }),
     NgxUiLoaderRouterModule.forRoot({ exclude: ['/auth/login', '/auth/signup']})
   ],
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
