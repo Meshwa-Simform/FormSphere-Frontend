@@ -1,0 +1,71 @@
+<mat-toolbar color="primary" class="nav-bar">
+  <div class="logo">
+    <a routerLink="/" aria-label="Home">FormSphere</a>
+  </div>
+  <div class="nav">
+    <ul>
+      <li>
+        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
+      </li>
+      <li>
+        <a mat-button routerLink="/responses/{{formId}}" aria-label="Responses">Responses</a>
+      </li>
+    </ul>
+  </div>
+  <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">
+    Logout
+  </button>
+</mat-toolbar>
+
+<!-- Analytics Component Template -->
+<div class="analytics-container">
+  <div class="header">
+    <h1>Analytics for Form</h1>
+    <div class="chart-type-selector">
+      <label for="chartType">Select Chart Type:</label>
+      <select id="chartType" [(ngModel)]="selectedChartType">
+        <option value="bar">Bar</option>
+        <option value="pie">Pie</option>
+        <option value="doughnut">Doughnut</option>
+        <option value="line">Line</option>
+        <option value="radar">Radar</option>
+        <option value="polarArea">Polar Area</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Summary Analytics -->
+  <div class="summary-chart-container">
+    <h2>Summary Analytics of Responses</h2>
+    <canvas baseChart
+            [datasets]="getSummaryChartData()"
+            [labels]="getSummaryChartLabels()"
+            [options]="chartOptions"
+            [legend]="true"
+            [type]="selectedChartType"
+            width="400"
+            height="400">
+    </canvas>
+  </div>
+
+  <!-- Question Analytics -->
+  <div class="chart-container" *ngFor="let question of questionAnalytics | keyvalue">
+    <h2>{{ question.key }}</h2>
+    <p>Responses:</p>
+    <canvas baseChart
+            [datasets]="getChartData(question.value)"
+            [labels]="getChartLabels(question.value)"
+            [options]="chartOptions"
+            [legend]="true"
+            [type]="selectedChartType"
+            width="400"
+            height="400">
+    </canvas>
+  </div>
+</div>

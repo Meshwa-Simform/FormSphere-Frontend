@@ -4,6 +4,7 @@ import { SharedFormComponent } from './modules/my-forms/components/shared-form/s
 import { AuthGuardsService as AuthGuard } from './services/auth/auth-guards.service';
 import { ThankYouComponent } from './shared/components/thank-you/thank-you.component';
 import { ViewResponsesComponent } from './modules/my-forms/components/view-responses/view-responses.component';
+import { AnalyticsComponent } from './shared/components/analytics/analytics.component';
 
 const routes: Routes = [
   { path:'', pathMatch: 'full', loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule) },
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'thank-you', component: ThankYouComponent, canActivate: [AuthGuard] },
   { path: 'responses/:formId', component: ViewResponsesComponent, canActivate: [AuthGuard] },
   { path: 'templates', loadChildren: () => import('./modules/templates/templates.module').then(m => m.TemplatesModule)},
-  { path: 'templates/:templateId', loadChildren: () => import('./modules/create-forms/create-forms.module').then(m => m.CreateFormsModule)}
+  { path: 'templates/:templateId', loadChildren: () => import('./modules/create-forms/create-forms.module').then(m => m.CreateFormsModule)},
+  { path: 'analytics/:formId', component: AnalyticsComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

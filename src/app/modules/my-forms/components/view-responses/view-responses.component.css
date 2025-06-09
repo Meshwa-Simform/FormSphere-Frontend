@@ -53,7 +53,7 @@
 .responses-container {
   max-width: 900px;
   margin: 2rem auto;
-  margin-top: 5rem;
+  margin-top: 2.5rem;
   padding: 1.5rem;
   background-color: #cee1f6d9;
   border-radius: 10px;
@@ -137,6 +137,47 @@
   font-size: 1.25rem;
   color: #888;
   margin-top: 2rem;
+}
+
+.signature-preview {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.form-field a {
+  color: #1976d2;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.form-field a:hover {
+  color: #0d47a1;
+}
+
+.search-container {
+  max-width: 900px;
+  margin: 1rem auto;
+  text-align: center;
+  margin-top: 7rem;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 600px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
 }
 
 @media (max-width: 768px) {

@@ -38,7 +38,7 @@
                         (blur)="updateLabel(field, $event)">{{ field.outLabel }}</h1>
 
                     <!-- Editable label for each field -->
-                    <h2 *ngIf="field.type !== 'heading'" class="form-heading" contenteditable="true"
+                    <h2 *ngIf="field.type !== 'heading'" class="form-subHeading" contenteditable="true"
                         (focus)="onEditStart()" (blur)="updateLabel(field, $event)">{{ field.outLabel }}
                     </h2>
                     <!-- Text / Email / Number -->
@@ -142,6 +142,9 @@
                     </mat-card>
                 </ng-container>
 
+                <!-- Drag button -->
+                <button *ngIf="field === selectedElement" class="drag-button" cdkDragHandle><mat-icon>drag_indicator</mat-icon></button>
+                
                 <!-- Delete button for the selected element -->
                 <button *ngIf="field === selectedElement" class="delete-button" (click)="deleteElement()"><mat-icon>delete</mat-icon></button>
             </div>
