@@ -1,0 +1,27 @@
+<div class="maincontainer">
+  <div class="container" [ngClass]="{ 'active': isSignUpMode }">
+    <app-signup *ngIf="isSignUpMode"></app-signup>
+    <app-login *ngIf="!isSignUpMode"></app-login>
+
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1>Welcome Back!</h1>
+          <p>Already have an account?</p>
+          <button mat-flat-button class="hidden" (click)="toggleMode(false)">Sign In</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1>Hello, Welcome!</h1>
+          <p>Don't have account?</p>
+          <button mat-flat-button class="hidden" (click)="toggleMode(true)">Sign Up</button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile View -->
+    <div class="mobile-toggle" *ngIf="isMobile">
+      <button mat-stroked-button (click)="toggleMode(!isSignUpMode)">
+        {{ isSignUpMode ? 'Already have an account? Sign In' : 'New here? Sign Up' }}
+      </button>
+    </div>
+  </div>
+</div>

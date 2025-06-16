@@ -1,0 +1,13 @@
+<!-- button to open the stylebar -->
+<div *ngIf="!isStylebarOpen" class="open-stylebar-button">
+    <button mat-fab color="primary" (click)="toggleStylebar()" matTooltip="Add Designs" matTooltipPosition="left"><mat-icon>imagesearch_roller</mat-icon></button>
+</div>
+<!-- show style bar -->
+<div class="form-elements-stylebar" [class.open]="isStylebarOpen">
+    <div class="header">
+        <div class="stylebar-header">
+            <h3>Form Styles</h3>
+            <mat-icon (click)="toggleStylebar()">close</mat-icon>
+        </div>
+    </div>
+</div>

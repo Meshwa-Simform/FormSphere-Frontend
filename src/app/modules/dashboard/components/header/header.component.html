@@ -1,0 +1,24 @@
+<mat-toolbar color="primary" class="nav-bar">
+  <div class="logo">
+    <a routerLink="/" aria-label="Home">FormSphere</a>
+  </div>
+  <div class="nav">
+    <ul>
+      <li>
+        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+      </li>
+      <li *ngIf="isLogin">
+        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+      </li>
+      <li *ngIf="isLogin">
+        <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
+      </li>
+    </ul>
+  </div>
+  <div class="auth">
+    <button mat-stroked-button *ngIf="!isLogin" routerLink="/auth/login" aria-label="Login" class="login">Login</button>
+    <button mat-raised-button *ngIf="!isLogin" color="accent" routerLink="/auth/signup" aria-label="Get Started"
+      class="signup">Get Started</button>
+    <button mat-stroked-button *ngIf="isLogin" (click)="logout()" aria-label="Logout" class="logout">Logout</button>
+  </div>
+</mat-toolbar>

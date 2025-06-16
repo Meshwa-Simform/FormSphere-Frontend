@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" class="nav-bar">
+    <div class="logo">
+        <a routerLink="/" aria-label="Home">FormSphere</a>
+    </div>
+    <div class="nav" *ngIf="isLogin">
+        <ul>
+            <li>
+                <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+            </li>
+            <li>
+                <a mat-button routerLink="/my-forms" aria-label="MY Forms">My Forms</a>
+            </li>
+        </ul>
+    </div>
+    <button mat-stroked-button *ngIf="isLogin" aria-label="LogOut button" class="logout" (click)="logoutUser()">Logout</button>
+    <button mat-stroked-button *ngIf="!isLogin" aria-label="Login button" class="login" routerLink="/login">Login</button>
+</mat-toolbar>
+
+<!-- Main Content -->
+<div class="my-forms-container">
+    <h1>My Forms</h1>
+    
+    <!-- Display message if no forms are available -->
+    <div *ngIf="templates?.length === 0" class="no-forms">
+      <p>No forms created yet.</p>
+    </div>
+    
+    <!-- Display forms if available -->
+    <div class="forms-list" *ngIf="templates?.length !== 0">
+      <mat-card *ngFor="let form of templates" class="form-card">
+        <mat-card-title [routerLink]="['/templates', form.id]">
+          {{ form.title }}
+        </mat-card-title>
+      </mat-card>
+    </div>
+</div>

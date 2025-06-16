@@ -1,0 +1,9 @@
+<mat-toolbar color="primary" class="nav-bar">
+    <div class="logo">
+        <a routerLink="/" aria-label="Home">FormSphere</a>
+    </div>
+    <div *ngIf="formId">
+        <h3>Update Form</h3>
+    </div>
+    <button mat-raised-button color="accent" aria-label="Preview button" class="preview-btn">Preview</button>
+</mat-toolbar>
