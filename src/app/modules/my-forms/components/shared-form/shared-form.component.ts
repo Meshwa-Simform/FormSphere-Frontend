@@ -48,9 +48,9 @@ export class SharedFormComponent implements OnInit {
   loadFormDetails(formId: string): void {
     this._formService.getFormById(formId).subscribe({
       next: (data: FormOutputWithId) => {
-        this.formTitle = data.form.title || 'Form Title';
-        this.formDescription = data.form.description || 'Form Description';
-        this.formElements = data.form.questions.map((q) => {
+        this.formTitle = data.data.title || 'Form Title';
+        this.formDescription = data.data.description || 'Form Description';
+        this.formElements = data.data.questions.map((q) => {
           return {
             id: q.id,
             outLabel: q.questionText,
