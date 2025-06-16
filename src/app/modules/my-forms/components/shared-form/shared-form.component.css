@@ -1,0 +1,78 @@
+/* General form container */
+:host{
+  display: flex;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+}
+.form-preview {
+  max-width: 800px;
+  min-width: 400px;
+  min-height: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+.form-preview-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.form-subtitle {
+  font-size: 18px;
+  font-weight: normal;
+  color: #666;
+  margin: 0;
+}
+
+/* Form canvas */
+.form-canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Form field styles */
+.form-field {
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Form buttons */
+.form-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+button {
+  min-width: 120px;
+}
