@@ -15,7 +15,7 @@ import { AuthService } from '../../../../services/auth/auth.service';
   styleUrl: './my-forms.component.css'
 })
 export class MyFormsComponent implements OnInit {
-  forms: FormOutput = { message: '', form: [] };
+  forms: FormOutput = { message: '', data: [] };
 
   constructor(private _formsService: FormService, private _tostr: ToastrService, private _router:Router, private _dialog: MatDialog, private _authService: AuthService) {}
 

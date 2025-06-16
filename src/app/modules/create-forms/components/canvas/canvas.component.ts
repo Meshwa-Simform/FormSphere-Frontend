@@ -89,6 +89,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   // Method to select an element
   selectElement(element: Element): void {
+    if(this.selectedElement === element){
+      // If the element is already selected, deselect it
+      this.selectedElement = null;
+      return;
+    }
+    // Set the selected element
     this.selectedElement = element;
   }
 
@@ -104,16 +110,16 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   loadFormDetails(formId: string): void {
     this._formService.getFormById(formId).subscribe({
       next: (data) => {
-        const newElements = Array.isArray(data.form)
-          ? data.form.flatMap((form) => this.mapFormToElement(form))
-          : this.mapFormToElement(data.form);
+        const newElements = Array.isArray(data.data)
+          ? data.data.flatMap((data) => this.mapFormToElement(data))
+          : this.mapFormToElement(data.data);
 
         newElements.forEach((element) => {
           this._formBuilderService.addElement(element); // add each element to the form builder
         })
 
-        this.formTitle = data.form.title || 'Form Title';
-        this.formDescription = data.form.description || 'Form Description';
+        this.formTitle = data.data.title || 'Form Title';
+        this.formDescription = data.data.description || 'Form Description';
         console.log('Loaded form details:', this.formElements);
       },
       error: (err) => {
@@ -127,14 +133,14 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     console.log('Template ID:', templateId);
     this._templateService.getTemplateById(templateId).subscribe({
       next: (data) => {
-        const newElements = Array.isArray(data.template)
-          ? data.template.flatMap((template) => this.mapFormToElement(template))
-          : this.mapFormToElement(data.template);
+        const newElements = Array.isArray(data.data)
+          ? data.data.flatMap((data) => this.mapFormToElement(data))
+          : this.mapFormToElement(data.data);
         newElements.forEach((element) => {
           this._formBuilderService.addElement(element); // add each element to the form builder
         })
-        this.formTitle = data.template.title || 'Form Title';
-        this.formDescription = data.template.description || 'Form Description';
+        this.formTitle = data.data.title || 'Form Title';
+        this.formDescription = data.data.description || 'Form Description';
         console.log('Loaded template details:', this.formElements);
       },
       error: (err) => {
@@ -245,7 +251,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error('Error updating form:', err);
-          this._toastr.error('Failed to update form. Please try again.');
+          this._toastr.error(err.error.message || 'Failed to update form. Please try again.');
         }
       });
     }
@@ -298,17 +304,17 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     } else {
       element.innerText = field.outLabel; // Revert to the original label if empty
     }
+
+    this.isEditing = false; // End editing mode
+    console.log('Label updated:', field.outLabel);
   }
 
   // Drag and Drop
   drop(event: CdkDragDrop<Element[]>) {
-    if (this.isEditing) {
-      // Prevent drag-and-drop while editing
-      return;
-    }
     console.log('canvas drop event:', event);
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this._formBuilderService.updateElements([...this.formElements]);
     } else {
       copyArrayItem(
         event.previousContainer.data,
@@ -316,6 +322,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         event.previousIndex,
         event.currentIndex
       );
+      this._formBuilderService.updateElements([...this.formElements]);
     }
   }
 

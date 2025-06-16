@@ -17,7 +17,7 @@ export class ResponseService {
   }
 
   getResponsesByFormId(formId: string) {
-    return this._http.get<{form:Responses[], message:string}>(`${environment.API_URL}/responses/${formId}`, {
+    return this._http.get<{data:Responses[], message:string}>(`${environment.API_URL}/responses/${formId}`, {
       withCredentials: true
     });
   }

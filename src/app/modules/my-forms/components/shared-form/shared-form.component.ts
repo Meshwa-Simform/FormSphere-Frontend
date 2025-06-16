@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Answer } from '../../interface/responce';
 import { Element } from '../../../create-forms/interface/element';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
 
 
 @Component({
@@ -26,7 +27,7 @@ export class SharedFormComponent implements OnInit {
   formElements: Element[] = [];
   formGroup!: FormGroup;
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _fb: FormBuilder, private _formService: FormService, private _responseService: ResponseService, private _tostr: ToastrService,private ngxService: NgxUiLoaderService) { }
+  constructor(private _route: ActivatedRoute, private _router: Router, private _fb: FormBuilder, private _formService: FormService, private _responseService: ResponseService, private _tostr: ToastrService,private ngxService: NgxUiLoaderService, private _fileUploadService: FileUploadService) { }
 
   ngOnInit(): void {
     this.ngxService.start(); // Start the loader
@@ -47,9 +48,9 @@ export class SharedFormComponent implements OnInit {
   loadFormDetails(formId: string): void {
     this._formService.getFormById(formId).subscribe({
       next: (data: FormOutputWithId) => {
-        this.formTitle = data.form.title || 'Form Title';
-        this.formDescription = data.form.description || 'Form Description';
-        this.formElements = data.form.questions.map((q) => {
+        this.formTitle = data.data.title || 'Form Title';
+        this.formDescription = data.data.description || 'Form Description';
+        this.formElements = data.data.questions.map((q) => {
           return {
             id: q.id,
             outLabel: q.questionText,
@@ -90,14 +91,25 @@ export class SharedFormComponent implements OnInit {
     });
   }
 
-  selectedFiles: Record<string, File> = {}; // Store files by field ID
+  selectedFiles: Record<string, string | File> = {}; // Store files by field ID
 
   onFileSelected(event: Event, fieldId: string): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.selectedFiles[fieldId] = file; // Store the file with its field ID
-      console.log('Selected file for field', fieldId, ':', file);
+      
+      // Upload the file and store the URL
+    this._fileUploadService.uploadFile(file).subscribe({
+      next: (response) => {
+        console.log('File uploaded successfully:', response);
+        this.selectedFiles[fieldId] = response.url; // Replace the file with its URL
+        console.log('Uploaded file URL for field', fieldId, ':', response.url);
+      },
+      error: (err) => {
+        console.error('Error uploading file:', err);
+      }
+    });
     }
   }
 
@@ -137,7 +149,7 @@ export class SharedFormComponent implements OnInit {
       
           case 'file': {
             const file = field.id ? this.selectedFiles[field.id] : undefined;
-            return { ...baseData, responseAnswer: file ? file.name : '' };
+            return { ...baseData, responseAnswer: file || '' };
           }
       
           default: {

@@ -19,7 +19,7 @@ import { ThankYouComponent } from '../../shared/components/thank-you/thank-you.c
     MaterialModule,
     FormModule,
     SignaturePadModule,
-    ThankYouComponent
+    ThankYouComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

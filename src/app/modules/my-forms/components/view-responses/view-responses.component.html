@@ -13,6 +13,9 @@
       <li>
         <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
       </li>
+      <li>
+        <a mat-button routerLink="/analytics/{{formId}}" aria-label="Analytics">Analytics</a>
+      </li>
     </ul>
   </div>
   <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">
@@ -20,12 +23,24 @@
   </button>
 </mat-toolbar>
 
+<!-- Search Bar -->
+<div class="search-container">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search by name or email..."
+    [(ngModel)]="searchQuery"
+    (ngModelChange)="filterResponses()"
+    aria-label="Search"
+  />
+</div>
+
 <!-- Responses container -->
 <div class="responses-container">
   <h1>Responses</h1>
 
-  <ng-container *ngIf="responses.length > 0; else noResponses">
-    <div *ngFor="let response of responses" class="response-card">
+  <ng-container *ngIf="filteredResponses.length > 0; else noResponses">
+    <div *ngFor="let response of filteredResponses" class="response-card">
       <h2>User: {{ response.userName }} ({{ response.userEmail }})</h2>
       <p>Submitted on: {{ response.createdAt | date: 'medium' }}</p>
 
@@ -37,40 +52,18 @@
               {{ answer.questionText }}
             </h1>
       
-            <!-- Text -->
-            <div *ngSwitchCase="'text'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
-            </div>
-      
-            <!-- Date -->
-            <div *ngSwitchCase="'date'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer | date: 'mediumDate' }}</p>
-            </div>
-      
-            <!-- Dropdown -->
-            <div *ngSwitchCase="'dropdown'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
-            </div>
-      
-            <!-- Radio -->
-            <div *ngSwitchCase="'radio'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
-            </div>
-      
-            <!-- Checkbox -->
-            <div *ngSwitchCase="'checkbox'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
-            </div>
-      
             <!-- File -->
             <div *ngSwitchCase="'file'" class="form-field">
               <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
+              <a href="#" (click)="downloadFile(answer.responseAnswer); $event.preventDefault()">
+                Download File
+              </a>
+            </div>
+
+            <!-- Signature -->
+            <div *ngSwitchCase="'signature'" class="form-field">
+              <p class="question-text">{{ answer.questionText }}</p>
+              <img [src]="answer.responseAnswer" alt="Signature" class="signature-preview" />
             </div>
       
             <!-- Default -->
