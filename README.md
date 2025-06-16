@@ -1,59 +1,157 @@
-# FormsphereFrontend
+# FormSphere Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.1.
+This is the frontend application for FormSphere, built with Angular, Angular Material, and TypeScript.  
+It provides a modern, responsive UI for form creation, management, analytics, and user authentication, supporting advanced features like drag-and-drop form building, reusable templates, and secure user flows.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🚀 Tech Stack
 
-```bash
-ng serve
+- **Framework:** Angular 19
+- **Language:** TypeScript
+- **UI:** Angular Material
+- **State Management:** RxJS Services
+- **Forms:** Reactive Forms
+- **Charts:** ng2-charts, Chart.js
+- **Notifications:** ngx-toastr
+- **Loader:** ngx-ui-loader
+- **Signature:** angular2-signaturepad
+- **Linting/Formatting:** ESLint, Prettier, Husky, lint-staged
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── modules/
+│   │   ├── auth/               # Authentication (login, signup, animation)
+│   │   ├── create-forms/       # Form builder (form builder, canvas, sidebar)
+│   │   ├── dashboard/          # main, hero sections, footer, etc.
+│   │   ├── my-forms/           # User's forms, shared forms, responses
+│   │   ├── templates/          # Form templates
+│   ├── services/               # Shared Angular services (auth, forms, file upload, etc.)
+│   ├── shared/                 # Shared modules, components, interfaces
+│   ├── app-routing.module.ts   # Root routing module
+│   ├── app.module.ts           # Root app module
+│   └── app.component.*         # Root app component files
+├── environments/               # Environment configs
+├── styles.css                  # Global styles
+├── index.html                  # Main HTML file
+└── main.ts                     # Main entry point
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🎯 Core Functionality
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **User Authentication**
+  - Register, login, logout, session management
+  - Route guards for protected pages
 
-```bash
-ng generate component component-name
-```
+- **Form Builder**
+  - Drag-and-drop form creation
+  - Support for various field types (text, choice, file, signature, etc.)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- **Template Management**
+  - Use and manage reusable form templates
 
-```bash
-ng generate --help
-```
+- **Form Responses**
+  - Submit and view responses
+  - File uploads and signature capture
 
-## Building
+- **Analytics**
+  - Visualize form data with charts
 
-To build the project run:
+- **User Dashboard**
+  - Manage created forms, view analytics, and responses
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🛠️ Prerequisites
 
-## Running unit tests
+- Node.js (v14 or higher)
+- npm (Node Package Manager)
+- Angular CLI
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## 🔧 Installation
 
-## Running end-to-end tests
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/Meshwa-Simform/FormSphere-Frontend.git
+   cd FormSphere-Frontend
+   ```
 
-For end-to-end (e2e) testing, run:
+2. **Install dependencies**
+   ```sh
+   npm install
+   ```
 
-```bash
-ng e2e
-```
+3. **Set up environment variables**
+   - Generate and Edit `src/environments/environment.ts` and `environment.development.ts` setting the `API_URL` to your backend endpoint.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## 🚀 Running the Application
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Development Mode**
+  ```sh
+  npm start
+  ```
+- **Production Build**
+  ```sh
+  npm run build
+  ```
+
+---
+
+## 📦 Available Scripts
+
+| Script           | Description                                   |
+|------------------|-----------------------------------------------|
+| `npm start`      | Start development server (`ng serve`)         |
+| `npm run build`  | Build the application for production          |
+| `npm run test`   | Run unit tests                                |
+| `npm run lint`   | Run ESLint and auto-fix issues                |
+| `npm run format` | Format code with Prettier                     |
+
+---
+
+## 📝 Code Quality
+
+- **TypeScript** for type safety
+- **ESLint** for code linting (`npm run lint`)
+- **Prettier** for code formatting (`npm run format`)
+- **Husky** and **lint-staged** for pre-commit checks
+
+---
+
+## 🔐 Environment Variables
+
+- `API_URL`: Backend API endpoint (set in `src/environments/environment.ts`)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/feature-name`)
+3. Commit your changes (`git commit -m 'Add some feature description'`)
+4. Push to the branch (`git push origin feature/feature-name`)
+5. Open a Pull Request
+
+---
+
+## Author
+
+**Meshwa Patel**
+
+---
+
+## 📣 Notes
+
+- This project is tightly integrated with the [FormSphere Backend](https://github.com/Meshwa-Simform/FormSphere-Backend).
+---
