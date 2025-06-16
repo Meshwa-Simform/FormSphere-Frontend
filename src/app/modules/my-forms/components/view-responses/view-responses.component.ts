@@ -32,8 +32,8 @@ export class ViewResponsesComponent implements OnInit {
   getResponses(formId: string): void {
     this._responseService.getResponsesByFormId(formId).subscribe({
       next: (data) => {
-        this.responses = data.form;
-        this.filteredResponses = data.form;
+        this.responses = data.data;
+        this.filteredResponses = data.data;
         console.log('Responses:', this.responses);
       },
       error: (err) => {

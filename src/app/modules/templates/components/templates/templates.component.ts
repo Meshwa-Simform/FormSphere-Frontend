@@ -36,8 +36,8 @@ export class TemplatesComponent implements OnInit {
 
   getTemplates(): void {
     this._templateService.getTemplates().subscribe({
-      next: (data: {message:string, template: TemplateOutput[]}) => {
-        this.templates = data.template;
+      next: (data) => {
+        this.templates = data.data;
         console.log("Templates data : ", data);
       },
       error: (err: Error) => {

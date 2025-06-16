@@ -35,7 +35,7 @@ export class AnalyticsComponent implements OnInit {
   getResponses(formId: string): void {
     this._responseService.getResponsesByFormId(formId).subscribe({
       next: (data) => {
-        this.responses = data.form;
+        this.responses = data.data;
         this.totalResponses = this.responses.length;
         this.calculateQuestionAnalytics();
       },

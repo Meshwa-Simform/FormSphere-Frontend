@@ -1,11 +1,11 @@
 export interface FormOutput{
     message: string,
-    form: Form[],
+    data: Form[],
 }
 
 export interface FormOutputWithId{
     message: string,
-    form: Form,
+    data: Form,
 }
 
 export interface Form{

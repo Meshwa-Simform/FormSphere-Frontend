@@ -32,13 +32,13 @@
   <h1>My Forms</h1>
   
   <!-- Display message if no forms are available -->
-  <div *ngIf="forms?.form?.length === 0" class="no-forms">
+  <div *ngIf="forms?.data?.length === 0" class="no-forms">
     <p>No forms created yet.</p>
   </div>
   
   <!-- Display forms if available -->
-  <div class="forms-list" *ngIf="forms?.form?.length !== 0">
-    <mat-card *ngFor="let form of forms.form" class="form-card">
+  <div class="forms-list" *ngIf="forms?.data?.length !== 0">
+    <mat-card *ngFor="let form of forms.data" class="form-card">
       <mat-card-title [routerLink]="['/forms', form.id]">
         {{ form.title }}
       </mat-card-title>
