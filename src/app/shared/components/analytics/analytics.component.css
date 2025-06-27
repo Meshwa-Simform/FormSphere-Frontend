@@ -79,25 +79,20 @@
   margin: auto;
 }
 
-.chart-type-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.chart-type-selector label {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #033367;
-}
-
 .chart-type-selector select {
-  padding: 0.5rem;
+  height: 40px;
   font-size: 1rem;
-  border: 1px solid #033367;
-  color: #033367;
-  background-color: #cee1f6d9;
   border-radius: 4px;
+  border: 1px solid #63a1e4;
+  margin-left: 0.5rem;
+  padding: 0 8px;
+  background: #cee1f6d9;
+  color: #033367;
+}
+
+.chart-type-selector select:focus {
+  outline: none;
+  border-color: #1976d2;
 }
 
 .summary-chart-container {

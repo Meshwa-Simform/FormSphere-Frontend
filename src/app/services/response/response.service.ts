@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Responses } from '../../modules/my-forms/interface/responce';
+import { Responses, ResponsesOutput } from '../../modules/my-forms/interface/response';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -17,7 +17,21 @@ export class ResponseService {
   }
 
   getResponsesByFormId(formId: string) {
-    return this._http.get<{data:Responses[], message:string}>(`${environment.API_URL}/responses/${formId}`, {
+    return this._http.get<ResponsesOutput>(`${environment.API_URL}/responses/${formId}`, {
+      withCredentials: true
+    });
+  }
+
+  getPaginatedResponses(formId: string, page: number, pageSize: number, search: string = '', sortBy: string = 'createdAt', sortOrder: string = 'desc') {
+    const params = {
+      page,
+      pageSize,
+      search,
+      sortBy,
+      sortOrder
+    };
+    return this._http.get<ResponsesOutput>(`${environment.API_URL}/responses/${formId}`, {
+      params,
       withCredentials: true
     });
   }

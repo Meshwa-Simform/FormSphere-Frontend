@@ -15,6 +15,21 @@
   <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">Logout</button>
 </mat-toolbar>
 
+<!-- Search Bar and Page Size -->
+<div class="search-container">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search by form title..."
+    [(ngModel)]="searchInput"
+    (ngModelChange)="onSearchInputChange($event)"
+    aria-label="Search"
+  />
+  <select class="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" >
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }} / page</option>
+  </select>
+</div>
+
 <!-- Confirmation Dialog Template -->
 <ng-template #deleteDialog let-dialogRef="dialogRef">
   <h2 mat-dialog-title>Confirm Deletion</h2>
@@ -32,14 +47,14 @@
   <h1>My Forms</h1>
   
   <!-- Display message if no forms are available -->
-  <div *ngIf="forms?.data?.length === 0" class="no-forms">
+  <div *ngIf="forms.length === 0" class="no-forms">
     <p>No forms created yet.</p>
   </div>
   
   <!-- Display forms if available -->
-  <div class="forms-list" *ngIf="forms?.data?.length !== 0">
-    <mat-card *ngFor="let form of forms.data" class="form-card">
-      <mat-card-title [routerLink]="['/forms', form.id]">
+  <div class="forms-list" *ngIf="(forms.length || 0) !== 0">
+    <mat-card *ngFor="let form of forms || []" class="form-card">
+      <mat-card-title [routerLink]="['/update-form', form.id]">
         {{ form.title }}
       </mat-card-title>
       <!-- Copy Button -->
@@ -81,5 +96,17 @@
         </div>
       </mat-menu>
     </mat-card>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="totalPages">
+    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt; Prev</button>
+    <ng-container *ngFor="let p of pageNumbers">
+      <button mat-stroked-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+        {{ p }}
+      </button>
+    </ng-container>
+    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">Next &gt;</button>
+    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
   </div>
 </div>

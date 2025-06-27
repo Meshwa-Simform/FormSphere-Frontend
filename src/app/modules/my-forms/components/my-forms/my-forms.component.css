@@ -51,7 +51,7 @@
 }
 
 .my-forms-container {
-  margin: 7.9vh auto;
+  margin: 0 auto;
   padding: 2rem;
   font-family: 'Roboto', sans-serif;
 }
@@ -124,4 +124,76 @@ mat-icon {
 
 ::ng-deep .mat-menu-submenu-icon {
   display: none !important;
+}
+
+.search-container {
+  max-width: 900px;
+  margin: 1rem auto;
+  text-align: center;
+  margin-top: 7rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #6eaaeb;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #033367;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  background-color: #cee1f6d9;
+  color: #033367;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+}
+
+.page-size-select {
+  height: 40px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #6eaaeb;
+  margin-left: 0.5rem;
+  padding: 0 8px;
+  background: #cee1f6d9;
+  color: #033367;
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-container button[mat-stroked-button] {
+  min-width: 36px;
+  padding: 0 8px;
+}
+
+.pagination-container button[mat-stroked-button][color="primary"] {
+  background: #1976d2;
+  color: #fff;
+}
+
+.pagination-info {
+  font-size: 1rem;
+  color: #033367;
+  font-weight: 600;
+  margin-left: 1rem;
 }
