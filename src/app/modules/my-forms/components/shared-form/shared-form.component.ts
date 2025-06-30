@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormService } from '../../../../services/forms/form.service';
-import { FormOutputWithId } from '../../interface/formOutput';
+import { FormOutputWithId, Styling } from '../../interface/formOutput';
 import { SignaturePad } from 'angular2-signaturepad';
 import { ResponseService } from '../../../../services/response/response.service';
 import { ToastrService } from 'ngx-toastr';
@@ -26,6 +26,7 @@ export class SharedFormComponent implements OnInit {
   formDescription = 'Form Description';
   formElements: Element[] = [];
   formGroup!: FormGroup;
+  styling: Styling | undefined;
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _fb: FormBuilder, private _formService: FormService, private _responseService: ResponseService, private _tostr: ToastrService,private ngxService: NgxUiLoaderService, private _fileUploadService: FileUploadService) { }
 
@@ -61,6 +62,7 @@ export class SharedFormComponent implements OnInit {
             icon: ''
           }
         }) || [];
+        this.styling = data.data.styling;
         this.initializeForm();
         this.ngxService.stop(); // Stop the loader
       },

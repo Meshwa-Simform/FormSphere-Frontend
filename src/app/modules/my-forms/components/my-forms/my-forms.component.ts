@@ -1,7 +1,7 @@
 import { Component, TemplateRef, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormService } from '../../../../services/forms/form.service';
-import { Form, FormOutput } from '../../interface/formOutput';
+import { Form } from '../../interface/formOutput';
 import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';

@@ -22,7 +22,7 @@ export class ResponseService {
     });
   }
 
-  getPaginatedResponses(formId: string, page: number, pageSize: number, search: string = '', sortBy: string = 'createdAt', sortOrder: string = 'desc') {
+  getPaginatedResponses(formId: string, page: number, pageSize: number, search = '', sortBy = 'createdAt', sortOrder = 'desc') {
     const params = {
       page,
       pageSize,

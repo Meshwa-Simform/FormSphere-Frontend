@@ -1,3 +1,5 @@
+import { Styling } from "../../create-forms/interface/form";
+
 export interface TemplateOutput {
     id: string;
     title: string;
@@ -5,7 +7,7 @@ export interface TemplateOutput {
     logoUrl: string | null;
     isSinglePage: boolean;
     noOfPages: number;
-    styling: JSON | null;
+    styling: Styling;
     privateSharingToken: string | null;
     createdAt: Date;
     updatedAt: Date;

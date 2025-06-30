@@ -11,16 +11,45 @@
 </ng-template>
   
 
-<div class="form-preview">
+<div class="form-preview"
+     [ngStyle]="{
+        'background-color': (styling && styling.formColor) ? styling.formColor : '#fff',
+        'color': (styling && styling.fontColor) ? styling.fontColor : '#000',
+        'font-family': (styling && styling.fontFamily) ? styling.fontFamily : 'Montserrat',
+        'font-size': (styling && styling.fontSize) ? (typeof styling.fontSize === 'number' ? styling.fontSize + 'px' : styling.fontSize) : '16px'
+     }">
     <div class="form-preview-header">
-        <h1 class="form-title" contenteditable="true" (focus)="clearPlaceholder('formTitle', $event)"
-            (blur)="restorePlaceholder('formTitle', $event)">{{formTitle}}</h1>
-        <h3 class="form-subtitle" contenteditable="true" (focus)="clearPlaceholder('formDescription', $event)"
-            (blur)="restorePlaceholder('formDescription', $event)">{{formDescription}}</h3>
+        <h1 class="form-title"
+            [ngStyle]="{
+                'color': (styling && styling.fontColor) ? styling.fontColor : '#000',
+                'font-family': (styling && styling.fontFamily) ? styling.fontFamily : 'Montserrat',
+                'font-size.px': (styling && styling.fontSize) ? styling.fontSize + 4 : 20
+            }"
+            contenteditable="true"
+            (focus)="clearPlaceholder('formTitle', $event)"
+            (blur)="restorePlaceholder('formTitle', $event)">
+            {{formTitle}}
+        </h1>
+        <h3 class="form-subtitle"
+            [ngStyle]="{
+                'color': (styling && styling.fontColor) ? styling.fontColor : '#000',
+                'font-family': (styling && styling.fontFamily) ? styling.fontFamily : 'Montserrat',
+                'font-size.px': (styling && styling.fontSize) ? styling.fontSize : 16
+            }"
+            contenteditable="true"
+            (focus)="clearPlaceholder('formDescription', $event)"
+            (blur)="restorePlaceholder('formDescription', $event)">
+            {{formDescription}}
+        </h3>
     </div>
 
-    <div class="form-canvas" cdkDropList id="targetList" [cdkDropListConnectedTo]="['sourceList']"
-        [cdkDropListData]="formElements" (cdkDropListDropped)="drop($event)">
+    <div class="form-canvas"
+         [style.background]="(styling && styling.formColor) ? styling.formColor : '#f8f9fa'"
+         [style.color]="(styling && styling.fontColor) ? styling.fontColor : '#000'"
+         [style.font-family]="(styling && styling.fontFamily) ? styling.fontFamily : 'Montserrat'"
+         [style.font-size]="(styling && styling.fontSize) ? (typeof styling.fontSize === 'number' ? styling.fontSize + 'px' : styling.fontSize) : '16px'"
+         cdkDropList id="targetList" [cdkDropListConnectedTo]="['sourceList']"
+         [cdkDropListData]="formElements" (cdkDropListDropped)="drop($event)">
         <ng-container *ngIf="formElements.length === 0">
             <div class="empty-canvas">
                 <p>Click or Drag and drop elements here to create your form.</p>
@@ -30,15 +59,17 @@
             <div cdkDrag [cdkDragData]="field" [cdkDragDisabled]="isEditing" cdkDragLockAxis="y"
                 cdkDragBoundary=".form-canvas"(cdkDragStarted)="onDragStart()" (cdkDragEnded)="onDragEnd()" 
                  tabindex="0" (click)="selectElement(field)" (keydown.enter)="selectElement(field)" 
-                 (keydown.space)="selectElement(field)" [class.selected]="field === selectedElement">
+                 (keydown.space)="selectElement(field)" [class.selected]="field === selectedElement" >
                 <!-- Render field input -->
                 <ng-container [ngSwitch]="field.type">
                     <!-- Headings -->
                     <h1 *ngSwitchCase="'heading'" class="form-heading" contenteditable="true" (focus)="onEditStart()"
+                        [style.font-size]="(styling && styling.fontSize) ? (typeof styling.fontSize === 'number' ? styling.fontSize + 'px' : styling.fontSize) : '16px'"
                         (blur)="updateLabel(field, $event)">{{ field.outLabel }}</h1>
 
                     <!-- Editable label for each field -->
                     <h2 *ngIf="field.type !== 'heading'" class="form-subHeading" contenteditable="true"
+                        [style.font-size]="(styling && styling.fontSize) ? (typeof styling.fontSize === 'number' ? styling.fontSize + 'px' : styling.fontSize) : '16px'"
                         (focus)="onEditStart()" (blur)="updateLabel(field, $event)">{{ field.outLabel }}
                     </h2>
                     <!-- Text / Email / Number -->

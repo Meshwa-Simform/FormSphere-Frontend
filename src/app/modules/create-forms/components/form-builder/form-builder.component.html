@@ -9,12 +9,12 @@
     </div>
 
     <!-- Center: Canvas -->
-    <div class="canvas">
-        <app-canvas></app-canvas>
+    <div class="canvas" [ngStyle]="canvasStyling">
+        <app-canvas [styling]="rawTheme" (stylingChange)="onCanvasStylingChange($event)"></app-canvas>
     </div>
 
     <!-- Right: Style Panel -->
     <div class="style-panel">
-        <app-stylebar></app-stylebar>
+        <app-stylebar [theme]="rawTheme" (styleChange)="canvasStyling = $event.css; rawTheme = $event.theme"></app-stylebar>
     </div>
 </div>

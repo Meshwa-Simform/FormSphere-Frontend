@@ -56,6 +56,56 @@
     border-bottom: 1px solid #444;
 }
 
+.stylebar-content {
+    padding: 20px 10px;
+}
+
+.stylebar-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.field-row label {
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 400;
+}
+
+.field-row input[type="color"] {
+    width: 50px;
+    height: 30px;
+    border: none;
+    background: white;
+    cursor: pointer;
+}
+
+.field-row input[type="number"] {
+    width: 50px;
+    height: 25px;
+    border: none;
+    background: white;
+    font-size: 19px;
+    padding-left: 10px;
+}
+
+.field-row select {
+    background: #232533;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    margin-left: 10px;
+}
+
 @media screen and (max-width: 768px) {
     .open-stylebar-button {
         top: 90%;
