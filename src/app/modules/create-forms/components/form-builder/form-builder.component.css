@@ -1,55 +1,56 @@
 .form-builder-container {
-    display: flex;
-    flex-direction: column; 
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    height: 92.1vh;
-    overflow-y: auto;
-    position: fixed;
-    top: 7.9vh;
-    background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 92.1vh;
+  overflow-y: auto;
+  position: fixed;
+  top: 7.9vh;
+  background-color: #f5f5f5;
 }
-.nav-bar , app-formsnav{
-    height: 7.9vh;
-    width: 100%;
+.nav-bar,
+app-formsnav {
+  height: 7.9vh;
+  width: 100%;
 }
 
 .sidebar {
-    background-color: #f5f5f5;
-    color: white;
+  background-color: #f5f5f5;
+  color: white;
 }
 
 .canvas {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding-top: 3%;
-    align-items: flex-start;
-    width: 100%;
-    height: 100%;
-    background-color: #f5f5f5;
-    text-align: center;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding-top: 3%;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 4%;
+  background-color: #f5f5f5;
+  text-align: center;
 }
 
 .canvas app-canvas {
-    width: 60%;
-    display: flex;
-    justify-content: center;
-    position: relative;
-    top: 2.5rem;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  top: 2.5rem;
 }
 
 .style-panel {
-    background-color: #f5f5f5;
-    color: white;
+  background-color: #f5f5f5;
+  color: white;
 }
 
 @media screen and (max-width: 768px) {
-    .canvas app-canvas {
-        width: 100%;
-        height: auto;
-        top: 3.1rem;
-        padding: 10px;
-    }
+  .canvas app-canvas {
+    width: 100%;
+    height: auto;
+    top: 3.1rem;
+    padding: 10px;
+  }
 }

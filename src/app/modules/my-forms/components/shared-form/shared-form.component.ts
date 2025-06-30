@@ -11,14 +11,13 @@ import { Element } from '../../../create-forms/interface/element';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
 
-
 @Component({
   selector: 'app-shared-form',
   // prettier-ignore
   // eslint-disable-next-line
   standalone: false,
   templateUrl: './shared-form.component.html',
-  styleUrl: './shared-form.component.css'
+  styleUrl: './shared-form.component.css',
 })
 export class SharedFormComponent implements OnInit {
   formId: string | null = null;
@@ -28,7 +27,16 @@ export class SharedFormComponent implements OnInit {
   formGroup!: FormGroup;
   styling: Styling | undefined;
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _fb: FormBuilder, private _formService: FormService, private _responseService: ResponseService, private _tostr: ToastrService,private ngxService: NgxUiLoaderService, private _fileUploadService: FileUploadService) { }
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _fb: FormBuilder,
+    private _formService: FormService,
+    private _responseService: ResponseService,
+    private _tostr: ToastrService,
+    private ngxService: NgxUiLoaderService,
+    private _fileUploadService: FileUploadService
+  ) {}
 
   ngOnInit(): void {
     this.ngxService.start(); // Start the loader
@@ -40,8 +48,7 @@ export class SharedFormComponent implements OnInit {
     this.formId = this._route.snapshot.paramMap.get('formId');
     if (this.formId) {
       this.loadFormDetails(this.formId);
-    }
-    else {
+    } else {
       this.ngxService.stop(); // Stop the loader
     }
   }
@@ -51,17 +58,18 @@ export class SharedFormComponent implements OnInit {
       next: (data: FormOutputWithId) => {
         this.formTitle = data.data.title || 'Form Title';
         this.formDescription = data.data.description || 'Form Description';
-        this.formElements = data.data.questions.map((q) => {
-          return {
-            id: q.id,
-            outLabel: q.questionText,
-            type: q.questionType,
-            options: q.questionOptions,
-            isRequired: q.isRequired,
-            label: q.questionText,
-            icon: ''
-          }
-        }) || [];
+        this.formElements =
+          data.data.questions.map((q) => {
+            return {
+              id: q.id,
+              outLabel: q.questionText,
+              type: q.questionType,
+              options: q.questionOptions,
+              isRequired: q.isRequired,
+              label: q.questionText,
+              icon: '',
+            };
+          }) || [];
         this.styling = data.data.styling;
         this.initializeForm();
         this.ngxService.stop(); // Stop the loader
@@ -69,7 +77,7 @@ export class SharedFormComponent implements OnInit {
       error: (err: Error) => {
         console.error('Error loading form details:', err);
         this.ngxService.stop(); // Stop the loader
-      }
+      },
     });
   }
 
@@ -77,7 +85,9 @@ export class SharedFormComponent implements OnInit {
     this.formElements.forEach((element) => {
       if (element.type === 'checkbox') {
         // Create a FormArray for checkboxes
-        const checkboxes = (element.options ?? []).map(() => this._fb.control(false));
+        const checkboxes = (element.options ?? []).map(() =>
+          this._fb.control(false)
+        );
         if (element.id) {
           this.formGroup.addControl(element.id, this._fb.array(checkboxes));
         }
@@ -100,18 +110,23 @@ export class SharedFormComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.selectedFiles[fieldId] = file; // Store the file with its field ID
-      
+
       // Upload the file and store the URL
-    this._fileUploadService.uploadFile(file).subscribe({
-      next: (response) => {
-        console.log('File uploaded successfully:', response);
-        this.selectedFiles[fieldId] = response.url; // Replace the file with its URL
-        console.log('Uploaded file URL for field', fieldId, ':', response.url);
-      },
-      error: (err) => {
-        console.error('Error uploading file:', err);
-      }
-    });
+      this._fileUploadService.uploadFile(file).subscribe({
+        next: (response) => {
+          console.log('File uploaded successfully:', response);
+          this.selectedFiles[fieldId] = response.url; // Replace the file with its URL
+          console.log(
+            'Uploaded file URL for field',
+            fieldId,
+            ':',
+            response.url
+          );
+        },
+        error: (err) => {
+          console.error('Error uploading file:', err);
+        },
+      });
     }
   }
 
@@ -131,54 +146,64 @@ export class SharedFormComponent implements OnInit {
             questionAnswer: field.defaultValue,
             questionOrder: this.formElements.indexOf(field) + 1,
           };
-      
-        switch (field.type) {
-          case 'checkbox': {
-            const selectedOptions = field.id && formValues[field.id]
-              ? formValues[field.id]
-                  .map((checked: boolean, i: number) => (checked ? (field.options ?? [])[i] : null))
-                  .filter((value: string | null) => value !== null)
-              : [];
-            return { ...baseData, responseAnswer: selectedOptions.join(', ')};
+
+          switch (field.type) {
+            case 'checkbox': {
+              const selectedOptions =
+                field.id && formValues[field.id]
+                  ? formValues[field.id]
+                      .map((checked: boolean, i: number) =>
+                        checked ? (field.options ?? [])[i] : null
+                      )
+                      .filter((value: string | null) => value !== null)
+                  : [];
+              return {
+                ...baseData,
+                responseAnswer: selectedOptions.join(', '),
+              };
+            }
+
+            case 'signature': {
+              const signatureData = !this.signaturePad.isEmpty()
+                ? this.signaturePad.toDataURL()
+                : null;
+              return { ...baseData, responseAnswer: signatureData };
+            }
+
+            case 'file': {
+              const file = field.id ? this.selectedFiles[field.id] : undefined;
+              return { ...baseData, responseAnswer: file || '' };
+            }
+
+            default: {
+              return {
+                ...baseData,
+                responseAnswer: field.id ? formValues[field.id] || '' : '',
+              };
+            }
           }
-      
-          case 'signature': {
-            const signatureData = !this.signaturePad.isEmpty()
-              ? this.signaturePad.toDataURL()
-              : null;
-            return { ...baseData, responseAnswer: signatureData};
-          }
-      
-          case 'file': {
-            const file = field.id ? this.selectedFiles[field.id] : undefined;
-            return { ...baseData, responseAnswer: file || '' };
-          }
-      
-          default: {
-            return { ...baseData, responseAnswer: field.id ? formValues[field.id] || '' : '' };
-          }
-        }
-      });
+        });
 
       console.log('Transformed Data:', transformedData);
 
       if (this.formId) {
-        this._responseService.createResponse({ formId: this.formId, answers: transformedData }).subscribe({
-          next: () => {
-            this._tostr.success('Response submitted successfully!');
-            this.formGroup.reset();
-            this._router.navigate(['/thank-you']);
-          },
-          error: (error) => {
-            console.error('Error submitting response:', error);
-            this._tostr.error('Error submitting response. Please try again.');
-          }
-        });
+        this._responseService
+          .createResponse({ formId: this.formId, answers: transformedData })
+          .subscribe({
+            next: () => {
+              this._tostr.success('Response submitted successfully!');
+              this.formGroup.reset();
+              this._router.navigate(['/thank-you']);
+            },
+            error: (error) => {
+              console.error('Error submitting response:', error);
+              this._tostr.error('Error submitting response. Please try again.');
+            },
+          });
       } else {
         console.error('Form ID is null. Cannot submit response.');
         this._tostr.error('Error: Form ID is missing. Please try again.');
       }
-
     } else {
       this._tostr.error('Please fill out all required fields.');
     }
@@ -189,11 +214,10 @@ export class SharedFormComponent implements OnInit {
   signaturePadOptions: object = {
     minWidth: 1,
     canvasWidth: 500,
-    canvasHeight: 200
+    canvasHeight: 200,
   };
 
   clearSignature() {
     this.signaturePad.clear();
   }
-
 }

@@ -8,9 +8,8 @@ describe('StylebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StylebarComponent]
-    })
-    .compileComponents();
+      declarations: [StylebarComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(StylebarComponent);
     component = fixture.componentInstance;

@@ -6,9 +6,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-formsnav',
   standalone: true,
-  imports:[MaterialModule, RouterModule, CommonModule],
+  imports: [MaterialModule, RouterModule, CommonModule],
   templateUrl: './formsnav.component.html',
-  styleUrl: './formsnav.component.css'
+  styleUrl: './formsnav.component.css',
 })
 export class FormsnavComponent implements OnInit {
   formId: string | null = null;

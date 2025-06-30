@@ -1,8 +1,24 @@
-import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef, Input, SimpleChanges, OnChanges, Renderer2, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  TemplateRef,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { FormBuilderService } from '../../../../services/formbuilder/form-builder.service';
 import { Element } from '../../interface/element';
 import { SignaturePad } from 'angular2-signaturepad';
-import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  copyArrayItem,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../../../services/forms/form.service';
@@ -19,17 +35,17 @@ function getDefaultStyling(): Styling {
     formColor: '#ffffff',
     fontColor: '#000000',
     fontFamily: 'Montserrat',
-    fontSize: 16
+    fontSize: 16,
   };
 }
 
 @Component({
   selector: 'app-canvas',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './canvas.component.html',
-  styleUrl: './canvas.component.css'
+  styleUrl: './canvas.component.css',
 })
 export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   formTitle = 'Form Title';
@@ -55,7 +71,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     private _templateService: TemplatesService,
     private _authService: AuthService,
     private renderer: Renderer2
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.styling = { ...getDefaultStyling(), ...this.styling };
@@ -87,7 +103,10 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['styling']) {
-      this.styling = { ...getDefaultStyling(), ...changes['styling'].currentValue };
+      this.styling = {
+        ...getDefaultStyling(),
+        ...changes['styling'].currentValue,
+      };
     }
   }
 
@@ -124,7 +143,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   // Method to select an element
   selectElement(element: Element): void {
-    if(this.selectedElement === element){
+    if (this.selectedElement === element) {
       // If the element is already selected, deselect it
       this.selectedElement = null;
       return;
@@ -159,11 +178,10 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           this.stylingChange.emit(this.styling);
         }
         console.log('Loaded template details:', data);
-        
       },
       error: (err) => {
         console.error('Error loading template details:', err);
-      }
+      },
     });
   }
 
@@ -188,7 +206,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       },
       error: (err) => {
         console.error('Error loading form details:', err);
-      }
+      },
     });
   }
 
@@ -200,22 +218,29 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       type: question.questionType,
       placeholder: '',
       options: question.questionOptions,
-      outLabel: question.questionText
+      outLabel: question.questionText,
     }));
   }
 
   // for changing of field title and description(placeholder)
   clearPlaceholder(field: 'formTitle' | 'formDescription', event: FocusEvent) {
     const element = event.target as HTMLElement;
-    if (element.innerText.trim() === 'Form Title' || element.innerText.trim() === 'Form Description') {
+    if (
+      element.innerText.trim() === 'Form Title' ||
+      element.innerText.trim() === 'Form Description'
+    ) {
       element.innerText = '';
     }
   }
-  restorePlaceholder(field: 'formTitle' | 'formDescription', event: FocusEvent) {
+  restorePlaceholder(
+    field: 'formTitle' | 'formDescription',
+    event: FocusEvent
+  ) {
     const element = event.target as HTMLElement;
     const text = element.innerText.trim();
     if (text === '') {
-      element.innerText = this[field] === this.formTitle ? 'Form Title' : 'Form Description'; // reset placeholder
+      element.innerText =
+        this[field] === this.formTitle ? 'Form Title' : 'Form Description'; // reset placeholder
     } else {
       this[field] = text; // save typed content
     }
@@ -258,7 +283,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
     // If formDescription is unchanged, set it to an empty string
-    const description = this.formDescription === 'Form Description' ? '' : this.formDescription;
+    const description =
+      this.formDescription === 'Form Description' ? '' : this.formDescription;
     // form details
     const formDetails: FormDetails = {
       title: this.formTitle,
@@ -294,11 +320,12 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         },
         error: (err) => {
           console.error('Error updating form:', err);
-          this._toastr.error(err.error.message || 'Failed to update form. Please try again.');
-        }
+          this._toastr.error(
+            err.error.message || 'Failed to update form. Please try again.'
+          );
+        },
       });
-    }
-    else {
+    } else {
       // Call the service to create the form
       this._formService.createForm(formDetails).subscribe({
         next: () => {
@@ -308,7 +335,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         error: (err) => {
           console.error('Error creating form:', err);
           this._toastr.error('Failed to create form. Please try again.');
-        }
+        },
       });
     }
   }
@@ -356,7 +383,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   drop(event: CdkDragDrop<Element[]>) {
     console.log('canvas drop event:', event);
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
       this._formBuilderService.updateElements([...this.formElements]);
     } else {
       copyArrayItem(
@@ -377,7 +408,10 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         const previews = document.querySelectorAll('.cdk-drag-preview');
         previews.forEach((preview) => {
           const rect = canvas.getBoundingClientRect();
-          preview.setAttribute('style', `top: ${rect.top}px; left: ${rect.left}px;`);
+          preview.setAttribute(
+            'style',
+            `top: ${rect.top}px; left: ${rect.left}px;`
+          );
         });
       });
     }
@@ -389,7 +423,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   signaturePadOptions: object = {
     minWidth: 1,
     canvasWidth: 500,
-    canvasHeight: 200
+    canvasHeight: 200,
   };
 
   drawComplete() {

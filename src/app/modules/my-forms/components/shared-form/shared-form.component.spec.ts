@@ -8,9 +8,8 @@ describe('SharedFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SharedFormComponent]
-    })
-    .compileComponents();
+      declarations: [SharedFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SharedFormComponent);
     component = fixture.componentInstance;

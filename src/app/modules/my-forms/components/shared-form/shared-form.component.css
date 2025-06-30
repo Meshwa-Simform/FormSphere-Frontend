@@ -1,5 +1,5 @@
 /* General form container */
-:host{
+:host {
   display: flex;
   background-color: #f5f5f5;
   min-height: 100vh;
@@ -13,7 +13,7 @@
   max-width: 800px;
   min-width: 400px;
   min-height: 600px;
-  margin: 0 auto;
+  margin: 10px auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 8px;
@@ -24,7 +24,10 @@
 
 /* Make Material filled input fields use the form color */
 :host ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-  background-color: var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))
+  background-color: var(
+    --mdc-filled-text-field-disabled-container-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent)
+  );
 }
 
 /* Header styles */

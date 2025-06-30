@@ -1,145 +1,145 @@
 .main {
-    height: 100vh;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .landing-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: #1c5eb4;
-    /* var(--mat-sys-on-primary-fixed); */
-    position: relative;
-    overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #1c5eb4;
+  /* var(--mat-sys-on-primary-fixed); */
+  position: relative;
+  overflow: hidden;
 }
 
 .half-circle {
-    position: absolute;
-    height: 150%;
-    width: 50%;
-    border-radius: 50%;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  height: 150%;
+  width: 50%;
+  border-radius: 50%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .circle1 {
-    background-color: #90c5ffb0;
-    /* var(--mat-sys-inverse-primary); */
-    width: 35%;
-    height: 115%;
+  background-color: #90c5ffb0;
+  /* var(--mat-sys-inverse-primary); */
+  width: 35%;
+  height: 115%;
 }
 
 .circle2 {
-    background-color: #77B4F9;
-    /* var(--mat-sys-primary); */
-    width: 65%;
-    height: 150%;
+  background-color: #77b4f9;
+  /* var(--mat-sys-primary); */
+  width: 65%;
+  height: 150%;
 }
 
 .circle3 {
-    background-color: #4B94E6;
-    /* var(--mat-sys-on-primary-container); */
-    width: 93%;
-    height: 180%;
+  background-color: #4b94e6;
+  /* var(--mat-sys-on-primary-container); */
+  width: 93%;
+  height: 180%;
 }
 
 .circle4 {
-    background-color: #2E6DC1;
-    /* var(--mat-sys-on-tertiary-fixed); */
-    width: 125%;
+  background-color: #2e6dc1;
+  /* var(--mat-sys-on-tertiary-fixed); */
+  width: 125%;
 }
 
 app-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 /* Main content styling */
 .main-content {
-    position: absolute;
-    z-index: 10;
-    text-align: center;
-    top: 25%;
-    width: 100%;
-    color: #033367;
-    font-family: Arial, sans-serif;
+  position: absolute;
+  z-index: 10;
+  text-align: center;
+  top: 25%;
+  width: 100%;
+  color: #033367;
+  font-family: Arial, sans-serif;
 }
 
 .main-content h1 {
-    position: relative;
-    font-size: 9vw;
-    font-weight: 900;
-    margin-bottom: 20px;
+  position: relative;
+  font-size: 9vw;
+  font-weight: 900;
+  margin-bottom: 20px;
 }
 
 .signup {
-    /* margin-top: 5%; */
-    padding: 30px;
-    font-size: 1.5rem;
-    font-weight: 400;
-    background-color: #033367 !important;
-    color: white !important;
+  /* margin-top: 5%; */
+  padding: 30px;
+  font-size: 1.5rem;
+  font-weight: 400;
+  background-color: #033367 !important;
+  color: white !important;
 }
 
 .signup:hover {
-    background-color: #033367d5 !important;
+  background-color: #033367d5 !important;
 }
 
 /* Individual icon button styling */
 .icon-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(245, 245, 245, 0.534);
-    backdrop-filter: blur(3px);
-    border: none;
-    border-radius: 10px;
-    height: 60px;
-    width: 60px;
-    position: absolute;
-    transition: transform 0.1s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 245, 245, 0.534);
+  backdrop-filter: blur(3px);
+  border: none;
+  border-radius: 10px;
+  height: 60px;
+  width: 60px;
+  position: absolute;
+  transition: transform 0.1s ease-out;
 }
 
 .icon-button mat-icon {
-    color: #033367;
-    font-size: 2rem;
-    width: auto;
-    height: auto;
+  color: #033367;
+  font-size: 2rem;
+  width: auto;
+  height: auto;
 }
 
 /* Random positions for each icon */
 .icon-button:nth-child(1) {
-    top: 0;
-    left: 17%;
+  top: 0;
+  left: 17%;
 }
 
 .icon-button:nth-child(2) {
-    top: 25%;
-    left: 46%;
+  top: 25%;
+  left: 46%;
 }
 
 .icon-button:nth-child(3) {
-    top: 60%;
-    left: 28%;
+  top: 60%;
+  left: 28%;
 }
 
 .icon-button:nth-child(4) {
-    top: 55%;
-    left: 66%;
+  top: 55%;
+  left: 66%;
 }
 
 .icon-button:nth-child(5) {
-    top: 17%;
-    left: 79%;
+  top: 17%;
+  left: 79%;
 }
 
 /* Floating animation */
@@ -155,77 +155,76 @@ app-header {
     }
 } */
 
-
 @media screen and (max-width: 768px) {
-    .main-content {
-        top: 20%;
-    }
+  .main-content {
+    top: 20%;
+  }
 
-    .main-content h1 {
-        font-size: 6vw; /* Reduce font size for tablets */
-    }
+  .main-content h1 {
+    font-size: 6vw; /* Reduce font size for tablets */
+  }
 
-    .signup {
-        padding: 20px;
-        font-size: 1.2rem;
-    }
+  .signup {
+    padding: 20px;
+    font-size: 1.2rem;
+  }
 
-    .icon-button {
-        height: 50px;
-        width: 50px;
-    }
+  .icon-button {
+    height: 50px;
+    width: 50px;
+  }
 
-    .icon-button mat-icon {
-        font-size: 1.8rem;
-    }
+  .icon-button mat-icon {
+    font-size: 1.8rem;
+  }
 }
 
 /* Responsive styles for small screens (mobile devices) */
 @media screen and (max-width: 480px) {
-    .main-content {
-        top: 15%;
-    }
+  .main-content {
+    top: 15%;
+  }
 
-    .main-content h1 {
-        font-size: 5vw; /* Further reduce font size for mobile */
-    }
+  .main-content h1 {
+    font-size: 5vw; /* Further reduce font size for mobile */
+  }
 
-    .signup {
-        padding: 15px;
-        font-size: 1rem;
-    }
+  .signup {
+    padding: 15px;
+    font-size: 1rem;
+  }
 
-    .icon-button {
-        height: 40px;
-        width: 40px;
-    }
+  .icon-button {
+    height: 40px;
+    width: 40px;
+  }
 
-    .icon-button mat-icon {
-        font-size: 1.5rem;
-    }
+  .icon-button mat-icon {
+    font-size: 1.5rem;
+  }
 
-    .icon-button:nth-child(1) {
-        top: 5%;
-        left: 10%;
-    }
+  .icon-button:nth-child(1) {
+    top: 5%;
+    left: 10%;
+  }
 
-    .icon-button:nth-child(2) {
-        top: 20%;
-        left: 40%;
-    }
+  .icon-button:nth-child(2) {
+    top: 20%;
+    left: 40%;
+  }
 
-    .icon-button:nth-child(3) {
-        top: 50%;
-        left: 25%;
-    }
+  .icon-button:nth-child(3) {
+    top: 50%;
+    left: 25%;
+  }
 
-    .icon-button:nth-child(4) {
-        top: 50%;
-        left: 60%;
-    }
+  .icon-button:nth-child(4) {
+    top: 50%;
+    left: 60%;
+  }
 
-    .icon-button:nth-child(5) {
-        top: 10%;
-        left: 70%;
-    }
+  .icon-button:nth-child(5) {
+    top: 10%;
+    left: 70%;
+  }
 }

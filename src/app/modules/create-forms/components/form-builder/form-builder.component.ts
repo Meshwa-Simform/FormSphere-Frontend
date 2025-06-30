@@ -4,10 +4,10 @@ import { Styling } from '../../interface/form'; // Import the correct Styling in
 @Component({
   selector: 'app-form-builder',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './form-builder.component.html',
-  styleUrl: './form-builder.component.css'
+  styleUrl: './form-builder.component.css',
 })
 export class FormBuilderComponent {
   canvasStyling: Partial<Styling> = {};
@@ -16,7 +16,7 @@ export class FormBuilderComponent {
     formColor: '#fff',
     fontColor: '#000',
     fontFamily: 'Montserrat',
-    fontSize: 16
+    fontSize: 16,
   };
 
   onCanvasStylingChange(style: Styling) {
@@ -27,13 +27,13 @@ export class FormBuilderComponent {
       fontColor: style.fontColor ?? '#000',
       fontFamily: style.fontFamily ?? 'Montserrat',
       fontSize: style.fontSize ?? 16,
-      ...(style.pageImage ? { pageImage: style.pageImage } : {})
+      ...(style.pageImage ? { pageImage: style.pageImage } : {}),
     };
     this.canvasStyling = {
       pageColor: this.rawTheme.pageColor,
       fontColor: this.rawTheme.fontColor,
       fontFamily: this.rawTheme.fontFamily,
-      fontSize: this.rawTheme.fontSize
+      fontSize: this.rawTheme.fontSize,
     };
   }
 }

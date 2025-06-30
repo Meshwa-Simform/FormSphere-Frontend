@@ -4,9 +4,9 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   templateUrl: './app.component.html',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'Formsphere_frontend';

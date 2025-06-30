@@ -12,18 +12,29 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, MaterialModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule,
+    BaseChartDirective,
+    MaterialModule,
+    RouterModule,
+    FormsModule,
+  ],
   templateUrl: './analytics.component.html',
-  styleUrl: './analytics.component.css'
+  styleUrl: './analytics.component.css',
 })
 export class AnalyticsComponent implements OnInit {
   formId: string | null = null;
   responses: Responses[] = [];
   totalResponses = 0;
   questionAnalytics: Record<string, Record<string, number>> = {};
-  selectedChartType: keyof ChartTypeRegistry = 'pie'; 
+  selectedChartType: keyof ChartTypeRegistry = 'pie';
 
-  constructor(private _route: ActivatedRoute, private _responseService: ResponseService, private _authService: AuthService, private _router: Router) { }
+  constructor(
+    private _route: ActivatedRoute,
+    private _responseService: ResponseService,
+    private _authService: AuthService,
+    private _router: Router
+  ) {}
 
   ngOnInit(): void {
     this.formId = this._route.snapshot.paramMap.get('formId');
@@ -41,7 +52,7 @@ export class AnalyticsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching responses:', err);
-      }
+      },
     });
   }
 
@@ -73,7 +84,7 @@ export class AnalyticsComponent implements OnInit {
     return [
       {
         data: [this.totalResponses],
-        label: 'Summary Analytics'
+        label: 'Summary Analytics',
       },
     ];
   }
@@ -85,7 +96,9 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  getChartData(data: Record<string, number>): { data: number[]; label: string }[] {
+  getChartData(
+    data: Record<string, number>
+  ): { data: number[]; label: string }[] {
     return [{ data: Object.values(data), label: 'Responses' }];
   }
 
@@ -93,5 +106,4 @@ export class AnalyticsComponent implements OnInit {
     this._authService.logoutUser().subscribe();
     this._router.navigate(['/auth/login']);
   }
-
 }

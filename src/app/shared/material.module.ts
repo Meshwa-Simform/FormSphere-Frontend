@@ -35,7 +35,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatTooltipModule,
     MatMenuModule,
     MatDialogModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
   ],
   exports: [
     MatFormFieldModule,
@@ -53,7 +53,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatTooltipModule,
     MatMenuModule,
     MatDialogModule,
-    MatSlideToggleModule
-  ]
+    MatSlideToggleModule,
+  ],
 })
-export class MaterialModule { }
+export class MaterialModule {}

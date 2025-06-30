@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
   selector: 'app-thank-you',
   standalone: true,
   templateUrl: './thank-you.component.html',
-  styleUrl: './thank-you.component.css'
+  styleUrl: './thank-you.component.css',
 })
 export class ThankYouComponent {
   constructor(private router: Router) {}

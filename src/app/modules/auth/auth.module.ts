@@ -8,16 +8,7 @@ import { LoginComponent } from './component/login/login.component';
 import { AuthAnimationComponent } from './component/auth-animation/auth-animation.component';
 
 @NgModule({
-  declarations: [
-    SignupComponent,
-    LoginComponent,
-    AuthAnimationComponent
-  ],
-  imports: [
-    CommonModule,
-    MaterialModule,
-    FormModule,
-    AuthRoutingModule
-  ]
+  declarations: [SignupComponent, LoginComponent, AuthAnimationComponent],
+  imports: [CommonModule, MaterialModule, FormModule, AuthRoutingModule],
 })
-export class AuthModule { }
+export class AuthModule {}
