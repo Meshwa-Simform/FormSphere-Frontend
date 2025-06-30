@@ -19,3 +19,14 @@ export interface Answer {
     questionOrder: number;
     responseAnswer: string;
 }
+
+export interface ResponsesOutput{
+    message: string,
+    data: {
+        responses: Responses[],
+        total: number,
+        page: number,
+        pageSize: number
+    }
+     
+}

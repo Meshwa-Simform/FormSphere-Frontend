@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service'; // Import AuthService
 import { ResponseService } from '../../../services/response/response.service';
-import { Responses } from '../../../modules/my-forms/interface/responce';
+import { Responses } from '../../../modules/my-forms/interface/response';
 import { BaseChartDirective } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
@@ -35,8 +35,8 @@ export class AnalyticsComponent implements OnInit {
   getResponses(formId: string): void {
     this._responseService.getResponsesByFormId(formId).subscribe({
       next: (data) => {
-        this.responses = data.data;
-        this.totalResponses = this.responses.length;
+        this.responses = data.data.responses;
+        this.totalResponses = data.data.total;
         this.calculateQuestionAnalytics();
       },
       error: (err) => {

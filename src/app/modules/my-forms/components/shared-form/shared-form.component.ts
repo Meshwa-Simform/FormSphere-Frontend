@@ -6,7 +6,7 @@ import { FormOutputWithId } from '../../interface/formOutput';
 import { SignaturePad } from 'angular2-signaturepad';
 import { ResponseService } from '../../../../services/response/response.service';
 import { ToastrService } from 'ngx-toastr';
-import { Answer } from '../../interface/responce';
+import { Answer } from '../../interface/response';
 import { Element } from '../../../create-forms/interface/element';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { FileUploadService } from '../../../../services/fileupload/file-upload.service';

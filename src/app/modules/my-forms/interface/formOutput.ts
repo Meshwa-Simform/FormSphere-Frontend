@@ -1,6 +1,12 @@
 export interface FormOutput{
     message: string,
-    data: Form[],
+    data: {
+        forms: Form[],
+        total: number,
+        page: number,
+        pageSize: number
+    }
+     
 }
 
 export interface FormOutputWithId{

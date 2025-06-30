@@ -36,8 +36,12 @@ export class FormService {
     });
   }
 
-  getUserForms(): Observable<FormOutput> {
-    return this._http.get<FormOutput>(`${environment.API_URL}/forms`, {
+  getUserForms(page: number = 1, pageSize: number = 10, search: string = ''): Observable<FormOutput> {
+    let url = `${environment.API_URL}/forms?page=${page}&pageSize=${pageSize}`;
+    if (search && search.trim().length > 0) {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    return this._http.get<FormOutput>(url, {
       withCredentials: true
     });
   }

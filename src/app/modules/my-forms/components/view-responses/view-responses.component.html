@@ -23,35 +23,51 @@
   </button>
 </mat-toolbar>
 
-<!-- Search Bar -->
+<!-- Search Bar, Page Size, and Sort Controls -->
 <div class="search-container">
   <input
     type="text"
     class="search-input"
     placeholder="Search by name or email..."
-    [(ngModel)]="searchQuery"
-    (ngModelChange)="filterResponses()"
+    [(ngModel)]="searchInput"
+    (ngModelChange)="onSearchInputChange($event)"
     aria-label="Search"
   />
+  <select class="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }} / page</option>
+  </select>
+  <div class="sort-bar">
+    <label for="sortBy">Sort by:</label>
+    <select id="sortBy" class="sort-select" [(ngModel)]="sortBy" (change)="onSortByChange($event)">
+      <option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
+    </select>
+    <button mat-icon-button class="sort-order-btn" (click)="onSortOrderChange()" [attr.aria-label]="'Sort ' + sortOrder">
+      <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+    </button>
+  </div>
 </div>
 
 <!-- Responses container -->
 <div class="responses-container">
   <h1>Responses</h1>
 
-  <ng-container *ngIf="filteredResponses.length > 0; else noResponses">
-    <div *ngFor="let response of filteredResponses" class="response-card">
+  <div *ngIf="responses.length === 0" class="no-responses">
+    <p>No responses available for this form.</p>
+  </div>
+
+  <div *ngIf="responses.length > 0" class="forms-list">
+    <div *ngFor="let response of responses" class="response-card">
       <h2>User: {{ response.userName }} ({{ response.userEmail }})</h2>
       <p>Submitted on: {{ response.createdAt | date: 'medium' }}</p>
 
-            <div class="form-preview">
+      <div class="form-preview">
         <ng-container *ngFor="let answer of response.answers">
           <ng-container [ngSwitch]="answer.questionType">
             <!-- Heading -->
             <h1 *ngSwitchCase="'heading'" class="form-header">
               {{ answer.questionText }}
             </h1>
-      
+
             <!-- File -->
             <div *ngSwitchCase="'file'" class="form-field">
               <p class="question-text">{{ answer.questionText }}</p>
@@ -65,7 +81,7 @@
               <p class="question-text">{{ answer.questionText }}</p>
               <img [src]="answer.responseAnswer" alt="Signature" class="signature-preview" />
             </div>
-      
+
             <!-- Default -->
             <div *ngSwitchDefault class="form-field">
               <p class="question-text">{{ answer.questionText }}</p>
@@ -75,11 +91,17 @@
         </ng-container>
       </div>
     </div>
-  </ng-container>
+  </div>
 
-  <ng-template #noResponses>
-    <div class="no-responses">
-      <p>No responses available for this form.</p>
-    </div>
-  </ng-template>
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="totalPages">
+    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt; Prev</button>
+    <ng-container *ngFor="let p of pageNumbers">
+      <button mat-stroked-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+        {{ p }}
+      </button>
+    </ng-container>
+    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">Next &gt;</button>
+    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+  </div>
 </div>
