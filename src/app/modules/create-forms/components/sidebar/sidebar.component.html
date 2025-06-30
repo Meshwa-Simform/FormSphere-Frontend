@@ -1,60 +1,105 @@
 <!-- "+" button to open the sidebar -->
 <div *ngIf="!isSidebarOpen" class="open-sidebar-button">
-    <button mat-fab color="primary" (click)="toggleSidebar()" matTooltip="Add Element"
-        matTooltipPosition="right">+</button>
+  <button
+    mat-fab
+    color="primary"
+    (click)="toggleSidebar()"
+    matTooltip="Add Element"
+    matTooltipPosition="right"
+  >
+    +
+  </button>
 </div>
 <!-- show side bar -->
 <div class="form-elements-sidebar" [class.open]="isSidebarOpen">
-    <div class="header">
-        <div class="sidebar-header">
-            <h3>Form Elements</h3>
-            <mat-icon (click)="toggleSidebar()">close</mat-icon>
-        </div>
-        <div class="sidebar-search">
-            <mat-form-field class="custom-outline" appearance="outline">
-                <mat-label>Search</mat-label>
-                <input matInput placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearch($event)" />
-                <button mat-icon-button matSuffix (click)="clearSearch()">
-                    <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>
-        </div>
+  <div class="header">
+    <div class="sidebar-header">
+      <h3>Form Elements</h3>
+      <mat-icon (click)="toggleSidebar()">close</mat-icon>
     </div>
-    <div class="element-section">
-        <div cdkDropList id="sourceList" [cdkDropListConnectedTo]="['targetList']"
-            [cdkDropListData]="filteredElements.length > 0 ? filteredElements : basicElements.concat(basicInputs)">
-            <div *ngIf="filteredElements.length > 0">
-                <div class="element-item" *ngFor="let item of filteredElements" (click)="onElementClick(item)"
-                    (keydown.enter)="onElementClick(item)" (keydown.space)="onElementClick(item)" tabindex="0"
-                    role="button" cdkDrag [cdkDragData]="item">
-                    <mat-icon>{{ item.icon }}</mat-icon>
-                    <span>{{ item.label }}</span>
-                </div>
-            </div>
-
-            <!-- Display original lists if no filtered elements -->
-            <div *ngIf="filteredElements.length === 0 && searchQuery.length === 0">
-                <div class="section-divider">BASIC ELEMENTS</div>
-                <div class="element-item" *ngFor="let item of basicElements" (click)="onElementClick(item)"
-                    (keydown.enter)="onElementClick(item)" (keydown.space)="onElementClick(item)" tabindex="0"
-                    role="button" cdkDrag [cdkDragData]="item" cdkDragBoundary="body">
-                    <mat-icon>{{ item.icon }}</mat-icon>
-                    <span>{{ item.label }}</span>
-                </div>
-
-                <div class="section-divider">BASIC INPUTS</div>
-                <div class="element-item" *ngFor="let item of basicInputs" (click)="onElementClick(item)"
-                    (keydown.enter)="onElementClick(item)" (keydown.space)="onElementClick(item)" tabindex="0"
-                    role="button" cdkDrag [cdkDragData]="item">
-                    <mat-icon>{{ item.icon }}</mat-icon>
-                    <span>{{ item.label }}</span>
-                </div>
-            </div>
-            <div *ngIf="filteredElements.length === 0 && searchQuery.length > 0">
-                <div class="no-results">
-                    <span>No results found for "{{ searchQuery }}"</span>
-                </div>
-            </div>
-        </div>
+    <div class="sidebar-search">
+      <mat-form-field class="custom-outline" appearance="outline">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          placeholder="Search"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch($event)"
+        />
+        <button mat-icon-button matSuffix (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
     </div>
+  </div>
+  <div class="element-section">
+    <div
+      cdkDropList
+      id="sourceList"
+      [cdkDropListConnectedTo]="['targetList']"
+      [cdkDropListData]="
+        filteredElements.length > 0
+          ? filteredElements
+          : basicElements.concat(basicInputs)
+      "
+    >
+      <div *ngIf="filteredElements.length > 0">
+        <div
+          class="element-item"
+          *ngFor="let item of filteredElements"
+          (click)="onElementClick(item)"
+          (keydown.enter)="onElementClick(item)"
+          (keydown.space)="onElementClick(item)"
+          tabindex="0"
+          role="button"
+          cdkDrag
+          [cdkDragData]="item"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+
+      <!-- Display original lists if no filtered elements -->
+      <div *ngIf="filteredElements.length === 0 && searchQuery.length === 0">
+        <div class="section-divider">BASIC ELEMENTS</div>
+        <div
+          class="element-item"
+          *ngFor="let item of basicElements"
+          (click)="onElementClick(item)"
+          (keydown.enter)="onElementClick(item)"
+          (keydown.space)="onElementClick(item)"
+          tabindex="0"
+          role="button"
+          cdkDrag
+          [cdkDragData]="item"
+          cdkDragBoundary="body"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </div>
+
+        <div class="section-divider">BASIC INPUTS</div>
+        <div
+          class="element-item"
+          *ngFor="let item of basicInputs"
+          (click)="onElementClick(item)"
+          (keydown.enter)="onElementClick(item)"
+          (keydown.space)="onElementClick(item)"
+          tabindex="0"
+          role="button"
+          cdkDrag
+          [cdkDragData]="item"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+      <div *ngIf="filteredElements.length === 0 && searchQuery.length > 0">
+        <div class="no-results">
+          <span>No results found for "{{ searchQuery }}"</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

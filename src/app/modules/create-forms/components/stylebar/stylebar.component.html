@@ -1,13 +1,76 @@
 <!-- button to open the stylebar -->
 <div *ngIf="!isStylebarOpen" class="open-stylebar-button">
-    <button mat-fab color="primary" (click)="toggleStylebar()" matTooltip="Add Designs" matTooltipPosition="left"><mat-icon>imagesearch_roller</mat-icon></button>
+  <button
+    mat-fab
+    color="primary"
+    (click)="toggleStylebar()"
+    matTooltip="Add Designs"
+    matTooltipPosition="left"
+  >
+    <mat-icon>imagesearch_roller</mat-icon>
+  </button>
 </div>
 <!-- show style bar -->
 <div class="form-elements-stylebar" [class.open]="isStylebarOpen">
-    <div class="header">
-        <div class="stylebar-header">
-            <h3>Form Styles</h3>
-            <mat-icon (click)="toggleStylebar()">close</mat-icon>
-        </div>
+  <div class="header">
+    <div class="stylebar-header">
+      <h3>Form Styles</h3>
+      <mat-icon (click)="toggleStylebar()">close</mat-icon>
     </div>
+  </div>
+  <div class="stylebar-content">
+    <div class="stylebar-fields">
+      <div class="field-row">
+        <label for="background-color">Background</label>
+        <input
+          id="background-color"
+          type="color"
+          [(ngModel)]="theme.pageColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="form-background-color">Form background</label>
+        <input
+          id="form-background-color"
+          type="color"
+          [(ngModel)]="theme.formColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="font-color">Font Color</label>
+        <input
+          id="font-color"
+          type="color"
+          [(ngModel)]="theme.fontColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="font-select">Font</label>
+        <select
+          id="font-select"
+          [(ngModel)]="theme.fontFamily"
+          (ngModelChange)="onThemeChange()"
+        >
+          <option *ngFor="let font of fontOptions" [value]="font">
+            {{ font }}
+          </option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="font-size">Font size</label>
+        <input
+          id="font-size"
+          type="number"
+          [(ngModel)]="theme.fontSize"
+          min="8"
+          max="36"
+          step="1"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+    </div>
+  </div>
 </div>

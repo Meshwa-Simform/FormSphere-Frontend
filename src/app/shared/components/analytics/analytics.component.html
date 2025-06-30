@@ -5,20 +5,34 @@
   <div class="nav">
     <ul>
       <li>
-        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+        <a mat-button routerLink="/templates" aria-label="Templates"
+          >Templates</a
+        >
       </li>
       <li>
-        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+        <a mat-button routerLink="/create-form" aria-label="Create Form"
+          >Create Form</a
+        >
       </li>
       <li>
         <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
       </li>
       <li>
-        <a mat-button routerLink="/responses/{{formId}}" aria-label="Responses">Responses</a>
+        <a
+          mat-button
+          routerLink="/responses/{{ formId }}"
+          aria-label="Responses"
+          >Responses</a
+        >
       </li>
     </ul>
   </div>
-  <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">
+  <button
+    mat-stroked-button
+    aria-label="LogOut button"
+    class="logout"
+    (click)="logoutUser()"
+  >
     Logout
   </button>
 </mat-toolbar>
@@ -43,29 +57,36 @@
   <!-- Summary Analytics -->
   <div class="summary-chart-container">
     <h2>Summary Analytics of Responses</h2>
-    <canvas baseChart
-            [datasets]="getSummaryChartData()"
-            [labels]="getSummaryChartLabels()"
-            [options]="chartOptions"
-            [legend]="true"
-            [type]="selectedChartType"
-            width="400"
-            height="400">
+    <canvas
+      baseChart
+      [datasets]="getSummaryChartData()"
+      [labels]="getSummaryChartLabels()"
+      [options]="chartOptions"
+      [legend]="true"
+      [type]="selectedChartType"
+      width="400"
+      height="400"
+    >
     </canvas>
   </div>
 
   <!-- Question Analytics -->
-  <div class="chart-container" *ngFor="let question of questionAnalytics | keyvalue">
+  <div
+    class="chart-container"
+    *ngFor="let question of questionAnalytics | keyvalue"
+  >
     <h2>{{ question.key }}</h2>
     <p>Responses:</p>
-    <canvas baseChart
-            [datasets]="getChartData(question.value)"
-            [labels]="getChartLabels(question.value)"
-            [options]="chartOptions"
-            [legend]="true"
-            [type]="selectedChartType"
-            width="400"
-            height="400">
+    <canvas
+      baseChart
+      [datasets]="getChartData(question.value)"
+      [labels]="getChartLabels(question.value)"
+      [options]="chartOptions"
+      [legend]="true"
+      [type]="selectedChartType"
+      width="400"
+      height="400"
+    >
     </canvas>
   </div>
 </div>

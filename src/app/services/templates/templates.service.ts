@@ -4,21 +4,26 @@ import { TemplateOutput } from '../../modules/templates/interfaces/templates';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TemplatesService {
-
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient) {}
 
   getTemplates() {
-    return this._http.get<{ message: string, data: TemplateOutput[] }>(`${environment.API_URL}/templates`, {
-      withCredentials: true
-    });
+    return this._http.get<{ message: string; data: TemplateOutput[] }>(
+      `${environment.API_URL}/templates`,
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   getTemplateById(templateId: string) {
-    return this._http.get<{ message: string, data: TemplateOutput }>(`${environment.API_URL}/templates/${templateId}`, {
-      withCredentials: true
-    });
+    return this._http.get<{ message: string; data: TemplateOutput }>(
+      `${environment.API_URL}/templates/${templateId}`,
+      {
+        withCredentials: true,
+      }
+    );
   }
 }

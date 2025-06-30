@@ -64,7 +64,7 @@
   text-align: center;
   font-size: 2rem;
   font-weight: bold;
-  color: #033367; 
+  color: #033367;
   margin-bottom: 1.5rem;
 }
 
@@ -74,7 +74,9 @@
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .response-card:hover {
@@ -85,7 +87,7 @@
 .response-card h2 {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #033367; 
+  color: #033367;
   margin-bottom: 0.5rem;
 }
 
@@ -96,7 +98,7 @@
 }
 
 .response-card p span {
-  color: #033367; 
+  color: #033367;
   font-weight: bold;
 }
 
@@ -111,7 +113,7 @@
 .form-header {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #033367; 
+  color: #033367;
   margin: 1rem 0 0.5rem;
 }
 
@@ -217,7 +219,7 @@
   padding: 0 8px;
 }
 
-.pagination-container button[mat-stroked-button][color="primary"] {
+.pagination-container button[mat-stroked-button][color='primary'] {
   background: #1976d2;
   color: #fff;
 }

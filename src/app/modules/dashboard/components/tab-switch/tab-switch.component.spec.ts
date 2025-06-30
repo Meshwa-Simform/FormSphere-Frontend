@@ -8,9 +8,8 @@ describe('TabSwitchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TabSwitchComponent]
-    })
-    .compileComponents();
+      declarations: [TabSwitchComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TabSwitchComponent);
     component = fixture.componentInstance;

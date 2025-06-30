@@ -4,22 +4,22 @@ import { AuthService } from '../../../../services/auth/auth.service';
 @Component({
   selector: 'app-hero-section',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './hero-section.component.html',
-  styleUrl: './hero-section.component.css'
+  styleUrl: './hero-section.component.css',
 })
 export class HeroSectionComponent implements OnInit {
   isLogin = false;
 
-  constructor(private _authService: AuthService){}
+  constructor(private _authService: AuthService) {}
 
   ngOnInit() {
     this._authService.authenticateUser().subscribe((isLoggedIn) => {
       this.isLogin = isLoggedIn;
     });
   }
-  
+
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     const icons = document.querySelectorAll('.icon-button');

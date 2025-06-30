@@ -1,28 +1,53 @@
-import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  TemplateRef,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { FormBuilderService } from '../../../../services/formbuilder/form-builder.service';
 import { Element } from '../../interface/element';
 import { SignaturePad } from 'angular2-signaturepad';
-import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  copyArrayItem,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../../../services/forms/form.service';
-import { FormDetails } from '../../interface/form';
+import { FormDetails, Styling } from '../../interface/form';
 import { Form } from '../../../my-forms/interface/formOutput';
 import { MatDialog } from '@angular/material/dialog';
 import { TemplatesService } from '../../../../services/templates/templates.service';
 import { TemplateOutput } from '../../../templates/interfaces/templates';
 import { AuthService } from '../../../../services/auth/auth.service';
 
+function getDefaultStyling(): Styling {
+  return {
+    pageColor: '#f8f9fa',
+    formColor: '#ffffff',
+    fontColor: '#000000',
+    fontFamily: 'Montserrat',
+    fontSize: 16,
+  };
+}
+
 @Component({
   selector: 'app-canvas',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './canvas.component.html',
-  styleUrl: './canvas.component.css'
+  styleUrl: './canvas.component.css',
 })
-
-export class CanvasComponent implements OnInit, AfterViewInit {
+export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   formTitle = 'Form Title';
   formDescription = 'Form Description';
   formElements: Element[] = [];
@@ -33,9 +58,25 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   isDragging = false; // Track whether a drag operation is in progress
   isLogin = false;
 
-  constructor(private _formBuilderService: FormBuilderService, private _toastr: ToastrService, private _router: Router, private _formService: FormService, private _route: ActivatedRoute, private _dialog: MatDialog, private _templateService: TemplatesService, private _authService: AuthService) { }
+  @Input() styling: Styling | undefined;
+  @Output() stylingChange = new EventEmitter<Styling>();
+
+  constructor(
+    private _formBuilderService: FormBuilderService,
+    private _toastr: ToastrService,
+    private _router: Router,
+    private _formService: FormService,
+    private _route: ActivatedRoute,
+    private _dialog: MatDialog,
+    private _templateService: TemplatesService,
+    private _authService: AuthService,
+    private renderer: Renderer2
+  ) {}
 
   ngOnInit(): void {
+    this.styling = { ...getDefaultStyling(), ...this.styling };
+    this.stylingChange.emit(this.styling);
+
     this._formBuilderService.elements$.subscribe((elements) => {
       this.formElements = elements;
     });
@@ -60,12 +101,25 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['styling']) {
+      this.styling = {
+        ...getDefaultStyling(),
+        ...changes['styling'].currentValue,
+      };
+    }
+  }
+
   resetFormState(): void {
     this.formElements = [];
     this.formTitle = 'Form Title';
     this.formDescription = 'Form Description';
     this.selectedElement = null;
     this._formBuilderService.clearElements(); // Clear elements in the service
+  }
+
+  applyStyling(styling: Styling) {
+    this.styling = { ...getDefaultStyling(), ...styling };
   }
 
   // Method to handle drag start
@@ -89,7 +143,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   // Method to select an element
   selectElement(element: Element): void {
-    if(this.selectedElement === element){
+    if (this.selectedElement === element) {
       // If the element is already selected, deselect it
       this.selectedElement = null;
       return;
@@ -106,28 +160,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Load form details if formId is provided
-  loadFormDetails(formId: string): void {
-    this._formService.getFormById(formId).subscribe({
-      next: (data) => {
-        const newElements = Array.isArray(data.data)
-          ? data.data.flatMap((data) => this.mapFormToElement(data))
-          : this.mapFormToElement(data.data);
-
-        newElements.forEach((element) => {
-          this._formBuilderService.addElement(element); // add each element to the form builder
-        })
-
-        this.formTitle = data.data.title || 'Form Title';
-        this.formDescription = data.data.description || 'Form Description';
-        console.log('Loaded form details:', this.formElements);
-      },
-      error: (err) => {
-        console.error('Error loading form details:', err);
-      }
-    });
-  }
-
   // Load template details if templateId is provided
   loadTemplateDetails(templateId: string): void {
     console.log('Template ID:', templateId);
@@ -137,15 +169,44 @@ export class CanvasComponent implements OnInit, AfterViewInit {
           ? data.data.flatMap((data) => this.mapFormToElement(data))
           : this.mapFormToElement(data.data);
         newElements.forEach((element) => {
-          this._formBuilderService.addElement(element); // add each element to the form builder
-        })
+          this._formBuilderService.addElement(element);
+        });
         this.formTitle = data.data.title || 'Form Title';
         this.formDescription = data.data.description || 'Form Description';
-        console.log('Loaded template details:', this.formElements);
+        if (data.data.styling) {
+          this.styling = data.data.styling as Styling;
+          this.stylingChange.emit(this.styling);
+        }
+        console.log('Loaded template details:', data);
       },
       error: (err) => {
         console.error('Error loading template details:', err);
-      }
+      },
+    });
+  }
+
+  loadFormDetails(formId: string): void {
+    this._formService.getFormById(formId).subscribe({
+      next: (data) => {
+        const newElements = Array.isArray(data.data)
+          ? data.data.flatMap((data) => this.mapFormToElement(data))
+          : this.mapFormToElement(data.data);
+
+        newElements.forEach((element) => {
+          this._formBuilderService.addElement(element);
+        });
+
+        this.formTitle = data.data.title || 'Form Title';
+        this.formDescription = data.data.description || 'Form Description';
+        if (data.data.styling) {
+          this.styling = data.data.styling as Styling;
+          this.stylingChange.emit(this.styling);
+        }
+        console.log('Loaded form details:', data);
+      },
+      error: (err) => {
+        console.error('Error loading form details:', err);
+      },
     });
   }
 
@@ -157,22 +218,29 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       type: question.questionType,
       placeholder: '',
       options: question.questionOptions,
-      outLabel: question.questionText
+      outLabel: question.questionText,
     }));
   }
 
   // for changing of field title and description(placeholder)
   clearPlaceholder(field: 'formTitle' | 'formDescription', event: FocusEvent) {
     const element = event.target as HTMLElement;
-    if (element.innerText.trim() === 'Form Title' || element.innerText.trim() === 'Form Description') {
+    if (
+      element.innerText.trim() === 'Form Title' ||
+      element.innerText.trim() === 'Form Description'
+    ) {
       element.innerText = '';
     }
   }
-  restorePlaceholder(field: 'formTitle' | 'formDescription', event: FocusEvent) {
+  restorePlaceholder(
+    field: 'formTitle' | 'formDescription',
+    event: FocusEvent
+  ) {
     const element = event.target as HTMLElement;
     const text = element.innerText.trim();
     if (text === '') {
-      element.innerText = this[field] === this.formTitle ? 'Form Title' : 'Form Description'; // reset placeholder
+      element.innerText =
+        this[field] === this.formTitle ? 'Form Title' : 'Form Description'; // reset placeholder
     } else {
       this[field] = text; // save typed content
     }
@@ -215,7 +283,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       return;
     }
     // If formDescription is unchanged, set it to an empty string
-    const description = this.formDescription === 'Form Description' ? '' : this.formDescription;
+    const description =
+      this.formDescription === 'Form Description' ? '' : this.formDescription;
     // form details
     const formDetails: FormDetails = {
       title: this.formTitle,
@@ -238,7 +307,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         };
       }),
       privateSharingToken: undefined,
-      styling: undefined,
+      styling: this.styling, // Save styling with the form
     };
 
     console.log('Form Details:', formDetails);
@@ -251,11 +320,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error('Error updating form:', err);
-          this._toastr.error(err.error.message || 'Failed to update form. Please try again.');
-        }
+          this._toastr.error(
+            err.error.message || 'Failed to update form. Please try again.'
+          );
+        },
       });
-    }
-    else {
+    } else {
       // Call the service to create the form
       this._formService.createForm(formDetails).subscribe({
         next: () => {
@@ -265,7 +335,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         error: (err) => {
           console.error('Error creating form:', err);
           this._toastr.error('Failed to create form. Please try again.');
-        }
+        },
       });
     }
   }
@@ -313,7 +383,11 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   drop(event: CdkDragDrop<Element[]>) {
     console.log('canvas drop event:', event);
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
       this._formBuilderService.updateElements([...this.formElements]);
     } else {
       copyArrayItem(
@@ -334,7 +408,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
         const previews = document.querySelectorAll('.cdk-drag-preview');
         previews.forEach((preview) => {
           const rect = canvas.getBoundingClientRect();
-          preview.setAttribute('style', `top: ${rect.top}px; left: ${rect.left}px;`);
+          preview.setAttribute(
+            'style',
+            `top: ${rect.top}px; left: ${rect.left}px;`
+          );
         });
       });
     }
@@ -346,7 +423,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   signaturePadOptions: object = {
     minWidth: 1,
     canvasWidth: 500,
-    canvasHeight: 200
+    canvasHeight: 200,
   };
 
   drawComplete() {

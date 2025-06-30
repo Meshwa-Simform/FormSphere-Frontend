@@ -1,70 +1,119 @@
 .open-stylebar-button {
-    position: fixed;
-    top: 12%;
-    right: 20px;
-    z-index: 99;
+  position: fixed;
+  top: 12%;
+  right: 20px;
+  z-index: 99;
 }
 
 .open-stylebar-button button {
-    background-color: #2c2f39;
-    color: #fff;
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #2c2f39;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .mat-tooltip {
-    z-index: 1000 !important;
+  z-index: 1000 !important;
 }
 
 .form-elements-stylebar {
-    background-color: #2c2f39;
-    color: #fff;
-    padding: 10px;
-    height: 100vh;
-    position: fixed;
-    top: 4rem;
-    right: 0;
-    width: 300px;
-    transition: transform 0.3s ease;
-    transform: translateX(100%);
-    z-index: 100;
+  background-color: #2c2f39;
+  color: #fff;
+  padding: 10px;
+  height: 100vh;
+  position: fixed;
+  top: 4rem;
+  right: 0;
+  width: 300px;
+  transition: transform 0.3s ease;
+  transform: translateX(100%);
+  z-index: 100;
 }
 
 .form-elements-stylebar.open {
-    transform: translateX(0%);
+  transform: translateX(0%);
 }
 
-
 .header {
-    position: sticky;
-    top: 0;
-    background-color: #2c2f39;
-    z-index: 10;
+  position: sticky;
+  top: 0;
+  background-color: #2c2f39;
+  z-index: 10;
 }
 
 .stylebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+}
+
+.stylebar-content {
+  padding: 20px 10px;
+}
+
+.stylebar-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.field-row label {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 400;
+}
+
+.field-row input[type='color'] {
+  width: 50px;
+  height: 30px;
+  border: none;
+  background: white;
+  cursor: pointer;
+}
+
+.field-row input[type='number'] {
+  width: 50px;
+  height: 25px;
+  border: none;
+  background: white;
+  font-size: 19px;
+  padding-left: 10px;
+}
+
+.field-row select {
+  background: #232533;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 1rem;
+  margin-left: 10px;
 }
 
 @media screen and (max-width: 768px) {
-    .open-stylebar-button {
-        top: 90%;
-        right: 20px;
-    }
+  .open-stylebar-button {
+    top: 90%;
+    right: 20px;
+  }
 }
 
 @media screen and (max-width: 600px) {
-    .form-elements-stylebar {
-        top: 3.5rem
-    }
+  .form-elements-stylebar {
+    top: 3.5rem;
+  }
 }

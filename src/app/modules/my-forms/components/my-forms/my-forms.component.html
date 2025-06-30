@@ -1,18 +1,29 @@
 <mat-toolbar color="primary" class="nav-bar">
   <div class="logo">
-      <a routerLink="/" aria-label="Home">FormSphere</a>
+    <a routerLink="/" aria-label="Home">FormSphere</a>
   </div>
   <div class="nav">
     <ul>
       <li>
-        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+        <a mat-button routerLink="/templates" aria-label="Templates"
+          >Templates</a
+        >
       </li>
       <li>
-        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+        <a mat-button routerLink="/create-form" aria-label="Create Form"
+          >Create Form</a
+        >
       </li>
     </ul>
   </div>
-  <button mat-stroked-button aria-label="LogOut button" class="logout" (click)="logoutUser()">Logout</button>
+  <button
+    mat-stroked-button
+    aria-label="LogOut button"
+    class="logout"
+    (click)="logoutUser()"
+  >
+    Logout
+  </button>
 </mat-toolbar>
 
 <!-- Search Bar and Page Size -->
@@ -25,8 +36,14 @@
     (ngModelChange)="onSearchInputChange($event)"
     aria-label="Search"
   />
-  <select class="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" >
-    <option *ngFor="let size of pageSizes" [value]="size">{{ size }} / page</option>
+  <select
+    class="page-size-select"
+    [(ngModel)]="pageSize"
+    (change)="onPageSizeChange($event)"
+  >
+    <option *ngFor="let size of pageSizes" [value]="size">
+      {{ size }} / page
+    </option>
   </select>
 </div>
 
@@ -38,19 +55,21 @@
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button (click)="dialogRef.close(false)">Cancel</button>
-    <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Delete</button>
+    <button mat-raised-button color="warn" (click)="dialogRef.close(true)">
+      Delete
+    </button>
   </mat-dialog-actions>
 </ng-template>
 
 <!-- Main Content -->
 <div class="my-forms-container">
   <h1>My Forms</h1>
-  
+
   <!-- Display message if no forms are available -->
   <div *ngIf="forms.length === 0" class="no-forms">
     <p>No forms created yet.</p>
   </div>
-  
+
   <!-- Display forms if available -->
   <div class="forms-list" *ngIf="(forms.length || 0) !== 0">
     <mat-card *ngFor="let form of forms || []" class="form-card">
@@ -58,11 +77,22 @@
         {{ form.title }}
       </mat-card-title>
       <!-- Copy Button -->
-      <button mat-icon-button matSuffix (click)="copyLink('http://localhost:4200/shared-form/' + form.id)" class="copy-button" matTooltip="Copy Link">
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="copyLink('http://localhost:4200/shared-form/' + form.id)"
+        class="copy-button"
+        matTooltip="Copy Link"
+      >
         <mat-icon>content_copy</mat-icon>
       </button>
       <!-- 3-dot menu button -->
-      <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button" matTooltip="More Options">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+        class="menu-button"
+        matTooltip="More Options"
+      >
         <mat-icon>more_vert</mat-icon>
       </button>
       <!-- Dropdown menu -->
@@ -84,12 +114,20 @@
           Delete Form
         </button>
       </mat-menu>
-       <!-- Submenu for Share Link -->
-       <mat-menu #shareMenu="matMenu">
+      <!-- Submenu for Share Link -->
+      <mat-menu #shareMenu="matMenu">
         <div class="share-link-container">
           <mat-form-field appearance="outline" class="share-link-field">
-            <input matInput [value]="'http://localhost:4200/shared-form/' + form.id" readonly>
-            <button mat-icon-button matSuffix (click)="copyLink('http://localhost:4200/shared-form/' + form.id)">
+            <input
+              matInput
+              [value]="'http://localhost:4200/shared-form/' + form.id"
+              readonly
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="copyLink('http://localhost:4200/shared-form/' + form.id)"
+            >
               <mat-icon>content_copy</mat-icon>
             </button>
           </mat-form-field>
@@ -100,13 +138,29 @@
 
   <!-- Pagination Controls -->
   <div class="pagination-container" *ngIf="totalPages">
-    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt; Prev</button>
+    <button
+      mat-stroked-button
+      (click)="onPageChange(page - 1)"
+      [disabled]="page === 1"
+    >
+      &lt; Prev
+    </button>
     <ng-container *ngFor="let p of pageNumbers">
-      <button mat-stroked-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+      <button
+        mat-stroked-button
+        [color]="p === page ? 'primary' : ''"
+        (click)="onPageChange(p)"
+      >
         {{ p }}
       </button>
     </ng-container>
-    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">Next &gt;</button>
+    <button
+      mat-stroked-button
+      (click)="onPageChange(page + 1)"
+      [disabled]="page === totalPages"
+    >
+      Next &gt;
+    </button>
     <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
   </div>
 </div>

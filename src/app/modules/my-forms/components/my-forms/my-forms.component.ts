@@ -1,7 +1,7 @@
 import { Component, TemplateRef, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormService } from '../../../../services/forms/form.service';
-import { Form, FormOutput } from '../../interface/formOutput';
+import { Form } from '../../interface/formOutput';
 import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -11,10 +11,10 @@ import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-my-forms',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './my-forms.component.html',
-  styleUrl: './my-forms.component.css'
+  styleUrl: './my-forms.component.css',
 })
 export class MyFormsComponent implements OnInit, OnDestroy {
   forms: Form[] = [];
@@ -39,14 +39,16 @@ export class MyFormsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.searchSub = this.searchInputChanged.pipe(debounceTime(400)).subscribe(value => {
-      this.searchQuery = value.trim();
-      this.page = 1;
-      this.updateRoute();
-      this.getForms();
-    });
+    this.searchSub = this.searchInputChanged
+      .pipe(debounceTime(400))
+      .subscribe((value) => {
+        this.searchQuery = value.trim();
+        this.page = 1;
+        this.updateRoute();
+        this.getForms();
+      });
 
-    this._route.queryParamMap.subscribe(params => {
+    this._route.queryParamMap.subscribe((params) => {
       const pageParam = Number(params.get('page'));
       const pageSizeParam = Number(params.get('pageSize'));
       if (pageParam > 0) this.page = pageParam;
@@ -61,26 +63,31 @@ export class MyFormsComponent implements OnInit, OnDestroy {
   }
 
   getForms(): void {
-    this._formsService.getUserForms(this.page, this.pageSize, this.searchQuery).subscribe({
-      next: (data) => {
-        if (data.data && Array.isArray(data.data.forms)) {
-          this.forms = data.data.forms;
-          this.totalForms = data.data.total || data.data.forms.length;
-          this.page = data.data.page || this.page;
-          this.pageSize = data.data.pageSize || this.pageSize;
-        } else {
+    this._formsService
+      .getUserForms(this.page, this.pageSize, this.searchQuery)
+      .subscribe({
+        next: (data) => {
+          if (data.data && Array.isArray(data.data.forms)) {
+            this.forms = data.data.forms;
+            this.totalForms = data.data.total || data.data.forms.length;
+            this.page = data.data.page || this.page;
+            this.pageSize = data.data.pageSize || this.pageSize;
+          } else {
+            this.forms = [];
+            this.totalForms = 0;
+          }
+          this.totalPages = Math.max(
+            1,
+            Math.ceil(this.totalForms / this.pageSize)
+          );
+        },
+        error: (err) => {
+          console.error('Error fetching forms:', err);
           this.forms = [];
           this.totalForms = 0;
-        }
-        this.totalPages = Math.max(1, Math.ceil(this.totalForms / this.pageSize));
-      },
-      error: (err) => {
-        console.error('Error fetching forms:', err);
-        this.forms = [];
-        this.totalForms = 0;
-        this.totalPages = 1;
-      }
-    });
+          this.totalPages = 1;
+        },
+      });
   }
 
   onSearchInputChange(value: string): void {
@@ -107,7 +114,7 @@ export class MyFormsComponent implements OnInit, OnDestroy {
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: { page: this.page, pageSize: this.pageSize },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -169,7 +176,7 @@ export class MyFormsComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error deleting form:', err);
         this._tostr.error('Error deleting form');
-      }
-    })
+      },
+    });
   }
 }

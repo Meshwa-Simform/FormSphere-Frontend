@@ -14,7 +14,7 @@ import { debounceTime } from 'rxjs/operators';
   // eslint-disable-next-line
   standalone: false,
   templateUrl: './view-responses.component.html',
-  styleUrl: './view-responses.component.css'
+  styleUrl: './view-responses.component.css',
 })
 export class ViewResponsesComponent implements OnInit, OnDestroy {
   formId: string | null = null;
@@ -31,7 +31,7 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
   sortOptions = [
     { value: 'createdAt', label: 'Date' },
     { value: 'userName', label: 'Name' },
-    { value: 'userEmail', label: 'Email' }
+    { value: 'userEmail', label: 'Email' },
   ];
 
   private searchInputChanged: Subject<string> = new Subject<string>();
@@ -48,14 +48,16 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.formId = this._route.snapshot.paramMap.get('formId');
-    this.searchSub = this.searchInputChanged.pipe(debounceTime(400)).subscribe(value => {
-      this.searchQuery = value.trim();
-      this.page = 1;
-      this.updateRoute();
-      this.getResponses();
-    });
+    this.searchSub = this.searchInputChanged
+      .pipe(debounceTime(400))
+      .subscribe((value) => {
+        this.searchQuery = value.trim();
+        this.page = 1;
+        this.updateRoute();
+        this.getResponses();
+      });
 
-    this._route.queryParamMap.subscribe(params => {
+    this._route.queryParamMap.subscribe((params) => {
       const pageParam = Number(params.get('page'));
       const pageSizeParam = Number(params.get('pageSize'));
       const sortByParam = params.get('sortBy');
@@ -63,7 +65,8 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
       if (pageParam > 0) this.page = pageParam;
       if (pageSizeParam > 0) this.pageSize = pageSizeParam;
       if (sortByParam) this.sortBy = sortByParam;
-      if (sortOrderParam === 'asc' || sortOrderParam === 'desc') this.sortOrder = sortOrderParam;
+      if (sortOrderParam === 'asc' || sortOrderParam === 'desc')
+        this.sortOrder = sortOrderParam;
       this.getResponses();
       this.updateRoute();
     });
@@ -75,26 +78,31 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
 
   getResponses(): void {
     if (!this.formId) return;
-    this._responseService.getPaginatedResponses(
-      this.formId,
-      this.page,
-      this.pageSize,
-      this.searchQuery,
-      this.sortBy,
-      this.sortOrder
-    ).subscribe({
-      next: (res) => {
-        this.responses = res.data.responses;
-        this.totalResponses = res.data.total;
-        this.totalPages = Math.max(1, Math.ceil(this.totalResponses / this.pageSize));
-      },
-      error: (err) => {
-        this._toastx.error(err.error.message || 'Failed to fetch responses');
-        this.responses = [];
-        this.totalResponses = 0;
-        this.totalPages = 1;
-      }
-    });
+    this._responseService
+      .getPaginatedResponses(
+        this.formId,
+        this.page,
+        this.pageSize,
+        this.searchQuery,
+        this.sortBy,
+        this.sortOrder
+      )
+      .subscribe({
+        next: (res) => {
+          this.responses = res.data.responses;
+          this.totalResponses = res.data.total;
+          this.totalPages = Math.max(
+            1,
+            Math.ceil(this.totalResponses / this.pageSize)
+          );
+        },
+        error: (err) => {
+          this._toastx.error(err.error.message || 'Failed to fetch responses');
+          this.responses = [];
+          this.totalResponses = 0;
+          this.totalPages = 1;
+        },
+      });
   }
 
   onSearchInputChange(value: string): void {
@@ -135,13 +143,13 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
   updateRoute(): void {
     this._router.navigate([], {
       relativeTo: this._route,
-      queryParams: { 
-        page: this.page, 
-        pageSize: this.pageSize, 
-        sortBy: this.sortBy, 
-        sortOrder: this.sortOrder 
+      queryParams: {
+        page: this.page,
+        pageSize: this.pageSize,
+        sortBy: this.sortBy,
+        sortOrder: this.sortOrder,
       },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -172,10 +180,10 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error downloading file:', err);
-      }
+      },
     });
   }
-  
+
   // Helper method to extract file name from URL
   getFileNameFromUrl(fileUrl: string): string {
     return fileUrl.split('/').pop() || 'downloaded-file';
@@ -186,4 +194,3 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
     this._router.navigate(['/auth/login']);
   }
 }
-

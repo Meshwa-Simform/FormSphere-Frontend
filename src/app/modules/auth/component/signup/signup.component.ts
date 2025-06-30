@@ -1,5 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -9,10 +14,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-signup',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './signup.component.html',
-  styleUrl: './signup.component.css'
+  styleUrl: './signup.component.css',
 })
 export class SignupComponent implements OnInit {
   signUpForm: FormGroup;
@@ -27,28 +32,39 @@ export class SignupComponent implements OnInit {
   // Form controls for html checks
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
   email = new FormControl('', [Validators.required, Validators.email]);
-  password = new FormControl('', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/)]);
+  password = new FormControl('', [
+    Validators.required,
+    Validators.minLength(8),
+    Validators.pattern(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/
+    ),
+  ]);
   confirmPassword = new FormControl('', [Validators.required]);
 
   // Separate visibility toggles for each password field
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
 
-  constructor(private _fb: FormBuilder, private _authService: AuthService, private _toastr: ToastrService, private _router: Router, private _route: ActivatedRoute) {
+  constructor(
+    private _fb: FormBuilder,
+    private _authService: AuthService,
+    private _toastr: ToastrService,
+    private _router: Router,
+    private _route: ActivatedRoute
+  ) {
     this.signUpForm = this._fb.group({
       name: this.name,
       email: this.email,
       password: this.password,
-      confirmPassword: this.confirmPassword
+      confirmPassword: this.confirmPassword,
     });
 
     // Subscribe to password field changes to check match
-    merge(
-      this.password.valueChanges,
-      this.confirmPassword.valueChanges
-    ).pipe(takeUntilDestroyed()).subscribe(() => {
-      this.checkPasswordsMatch();
-    });
+    merge(this.password.valueChanges, this.confirmPassword.valueChanges)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.checkPasswordsMatch();
+      });
 
     // Subscribe to all field changes for validation
     merge(
@@ -56,9 +72,11 @@ export class SignupComponent implements OnInit {
       this.email.valueChanges,
       this.password.valueChanges,
       this.confirmPassword.valueChanges
-    ).pipe(takeUntilDestroyed()).subscribe(() => {
-      this.updateErrorMessages();
-    });
+    )
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.updateErrorMessages();
+      });
   }
 
   ngOnInit() {
@@ -75,9 +93,10 @@ export class SignupComponent implements OnInit {
           this._toastr.error(error.error.message);
         },
         complete: () => {
-          const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl') || '/';
+          const returnUrl =
+            this._route.snapshot.queryParamMap.get('returnUrl') || '/';
           this._router.navigate([returnUrl]);
-        }
+        },
       });
     } else {
       this.updateErrorMessages();
@@ -118,7 +137,9 @@ export class SignupComponent implements OnInit {
     } else if (this.password.hasError('minlength')) {
       this.passwordErrorMessage.set('Password must be at least 8 characters');
     } else if (this.password.hasError('pattern')) {
-      this.passwordErrorMessage.set('must contain alpha-numeric & special character');
+      this.passwordErrorMessage.set(
+        'must contain alpha-numeric & special character'
+      );
     } else {
       this.passwordErrorMessage.set('');
     }
@@ -141,7 +162,9 @@ export class SignupComponent implements OnInit {
       const errors = this.confirmPassword.errors;
       if (errors) {
         delete errors['passwordMismatch'];
-        this.confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
+        this.confirmPassword.setErrors(
+          Object.keys(errors).length ? errors : null
+        );
       }
       this.passwordsMatchError.set('');
     }
@@ -157,5 +180,4 @@ export class SignupComponent implements OnInit {
     event.preventDefault();
     this.hideConfirmPassword.set(!this.hideConfirmPassword());
   }
-
 }

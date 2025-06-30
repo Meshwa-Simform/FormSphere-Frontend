@@ -1,7 +1,23 @@
 <div class="main">
   <div class="tab-container">
-    <div class="tab active" tabindex="0" (click)="switchTab('forms')" (keydown.enter)="switchTab('forms')" (keydown.space)="switchTab('forms')">Forms</div>
-    <div class="tab" tabindex="0" (click)="switchTab('signatures')" (keydown.enter)="switchTab('forms')" (keydown.space)="switchTab('forms')">Signatures</div>
+    <div
+      class="tab active"
+      tabindex="0"
+      (click)="switchTab('forms')"
+      (keydown.enter)="switchTab('forms')"
+      (keydown.space)="switchTab('forms')"
+    >
+      Forms
+    </div>
+    <div
+      class="tab"
+      tabindex="0"
+      (click)="switchTab('signatures')"
+      (keydown.enter)="switchTab('forms')"
+      (keydown.space)="switchTab('forms')"
+    >
+      Signatures
+    </div>
   </div>
   <div class="content-wrapper">
     <div id="forms" class="content active">
@@ -28,10 +44,7 @@
 
         <!-- Right Section: Image -->
         <div class="image-section">
-          <img
-            src="images/forms.png"
-            alt="Forms UI"
-          />
+          <img src="images/forms.png" alt="Forms UI" />
         </div>
       </div>
     </div>
@@ -59,10 +72,7 @@
 
         <!-- Right Section: Image -->
         <div class="image-section">
-          <img
-            src="images/signature.png"
-            alt="Signature UI"
-          />
+          <img src="images/signature.png" alt="Signature UI" />
         </div>
       </div>
     </div>

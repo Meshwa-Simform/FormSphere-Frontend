@@ -8,9 +8,8 @@ describe('FormsnavComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FormsnavComponent]
-    })
-    .compileComponents();
+      declarations: [FormsnavComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FormsnavComponent);
     component = fixture.componentInstance;

@@ -186,7 +186,7 @@ mat-icon {
   padding: 0 8px;
 }
 
-.pagination-container button[mat-stroked-button][color="primary"] {
+.pagination-container button[mat-stroked-button][color='primary'] {
   background: #1976d2;
   color: #fff;
 }

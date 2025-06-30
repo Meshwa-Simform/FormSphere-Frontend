@@ -1,31 +1,39 @@
 <div class="main">
-    <div class="landing-background">
-        <div class="half-circle circle4"></div>
-        <div class="half-circle circle3"></div>
-        <div class="half-circle circle2"></div>
-        <div class="half-circle circle1"></div>
+  <div class="landing-background">
+    <div class="half-circle circle4"></div>
+    <div class="half-circle circle3"></div>
+    <div class="half-circle circle2"></div>
+    <div class="half-circle circle1"></div>
+  </div>
+  <app-header></app-header>
+  <div class="main-content">
+    <h1>Simplify Forms</h1>
+    <h1>Amplify Results</h1>
+    <div class="icon-buttons">
+      <div class="icon-button">
+        <mat-icon>event</mat-icon>
+      </div>
+      <div class="icon-button">
+        <mat-icon>gesture</mat-icon>
+      </div>
+      <div class="icon-button">
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="icon-button">
+        <mat-icon>draw</mat-icon>
+      </div>
+      <div class="icon-button">
+        <mat-icon>insights</mat-icon>
+      </div>
     </div>
-    <app-header></app-header>
-    <div class="main-content">
-        <h1>Simplify Forms</h1>
-        <h1>Amplify Results</h1>
-        <div class="icon-buttons">
-            <div class="icon-button">
-                <mat-icon>event</mat-icon>
-            </div>
-            <div class="icon-button">
-                <mat-icon>gesture</mat-icon>
-            </div>
-            <div class="icon-button">
-                <mat-icon>description</mat-icon>
-            </div>
-            <div class="icon-button">
-                <mat-icon>draw</mat-icon>
-            </div>
-            <div class="icon-button">
-                <mat-icon>insights</mat-icon>
-            </div>
-        </div>
-        <button mat-raised-button color="accent" [routerLink]="isLogin ? '/create-form' :'/auth/signup'" aria-label="Get Started" class="signup">Get Started</button>
-    </div>
+    <button
+      mat-raised-button
+      color="accent"
+      [routerLink]="isLogin ? '/create-form' : '/auth/signup'"
+      aria-label="Get Started"
+      class="signup"
+    >
+      Get Started
+    </button>
+  </div>
 </div>
