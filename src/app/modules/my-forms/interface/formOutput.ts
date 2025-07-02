@@ -24,7 +24,6 @@ export interface Form {
   questions: Question[];
   styling?: Styling;
   privateSharingToken?: string;
-  conditionalLogic?: conditionalLogic;
   createdAt: string;
   updatedAt: string;
 }
@@ -41,7 +40,7 @@ export interface Styling {
 export interface Question {
   id: string;
   formId: string;
-  validations: string[];
+  validations: JSON;
   pageNumber: number;
   questionType: string;
   questionText: string;
@@ -50,7 +49,9 @@ export interface Question {
   questionOrder: number;
   isRequired: boolean;
   isHidden: boolean;
-  conditionalLogic?: conditionalLogic[];
+  action?: string;
+  condition?: string;
+  ConditionalLogic?: conditionalLogic[];
   createdAt: string;
   updatedAt: string;
 }
@@ -59,6 +60,7 @@ export interface conditionalLogic {
   id: string;
   formId: string;
   questionId: string;
-  condition_check: string;
+  operator: string;
+  value: string;
   action_questionId: string[];
 }

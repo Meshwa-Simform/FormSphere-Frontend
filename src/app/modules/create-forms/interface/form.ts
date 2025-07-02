@@ -14,7 +14,6 @@ export interface FormDetails {
   questions: Question[];
   styling?: Styling;
   privateSharingToken?: string;
-  conditionalLogic?: conditionalLogic;
 }
 
 export interface Styling {
@@ -26,10 +25,17 @@ export interface Styling {
   fontSize: number;
 }
 
+export interface Validations {
+  required?: boolean;
+  minLength?: number | null;
+  maxLength?: number | null;
+  allowedChars?: string;
+}
+
 export interface Question {
   id?: string;
   formId?: string;
-  validations: string[];
+  validations: Validations; // <-- use Validations interface
   pageNumber: number;
   questionType: string;
   questionText: string;
@@ -38,12 +44,14 @@ export interface Question {
   questionOrder: number;
   isRequired: boolean;
   isHidden: boolean;
-  conditionalLogic?: conditionalLogic;
+  action?: string;
+  condition?: string;
+  conditionalLogic?: conditionalLogic[];
 }
 
 export interface conditionalLogic {
-  formId: string;
-  questionId: string;
-  condition_check: string;
+  questionId?: string;
+  operator: string;
+  value: string;
   action_questionId: string[];
 }

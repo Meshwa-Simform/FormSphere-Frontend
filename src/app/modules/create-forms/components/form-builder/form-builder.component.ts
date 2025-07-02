@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Styling } from '../../interface/form'; // Import the correct Styling interface
+import { Element } from '../../interface/element'; // Import your Element interface
 
 @Component({
   selector: 'app-form-builder',
@@ -18,6 +19,8 @@ export class FormBuilderComponent {
     fontFamily: 'Montserrat',
     fontSize: 16,
   };
+  selectedElement: Element | null = null;
+  elements: Element[] = [];
 
   onCanvasStylingChange(style: Styling) {
     // Ensure all required properties are set
@@ -36,4 +39,16 @@ export class FormBuilderComponent {
       fontSize: this.rawTheme.fontSize,
     };
   }
+
+  // Add a handler to receive selection from canvas
+  onElementSelected(element: Element | null) {
+    this.selectedElement = element;
+  }
+  
+  // Add a handler to receive elements from canvas
+  onElementsChanged(elements: Element[]) {
+    this.elements = elements;
+  }
+
+  
 }

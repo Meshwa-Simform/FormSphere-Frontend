@@ -144,7 +144,16 @@ export class SidebarComponent {
     const newItem = {
       ...item,
       options: item.options ? [...item.options] : undefined,
+      validations: { ...(item.validations || {}) }
     };
+
+    // Auto-add validation for email/number
+    if (newItem.type === 'email') {
+      newItem.validations.allowedChars = 'email';
+    }
+    if (newItem.type === 'number') {
+      newItem.validations.allowedChars = 'numbers';
+    }
 
     this._formBuilderService.addElement(newItem);
   }
