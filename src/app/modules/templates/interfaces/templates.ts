@@ -19,10 +19,22 @@ export interface TemplateOutput {
     questionType: string;
     questionText: string;
     questionOptions: string[];
-    validations: string[];
+    validations: JSON;
     questionAnswer: string | null;
     questionOrder: number;
     isRequired: boolean;
     isHidden: boolean;
+    action?: string;
+    condition?: string;
+    ConditionalLogic?: conditionalLogic[];
   }[];
+}
+
+export interface conditionalLogic {
+  id: string;
+  formId: string;
+  questionId: string;
+  operator: string;
+  value: string;
+  action_questionId: string[];
 }

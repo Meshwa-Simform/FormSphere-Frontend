@@ -22,7 +22,7 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../../../services/forms/form.service';
-import { FormDetails, Styling } from '../../interface/form';
+import { conditionalLogic, FormDetails, Styling, Validations } from '../../interface/form';
 import { Form } from '../../../my-forms/interface/formOutput';
 import { MatDialog } from '@angular/material/dialog';
 import { TemplatesService } from '../../../../services/templates/templates.service';
@@ -54,12 +54,15 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   isEditing = false;
   formId: string | null = null;
   templateId: string | null = null;
-  selectedElement: Element | null = null; // Track the selected element
   isDragging = false; // Track whether a drag operation is in progress
   isLogin = false;
 
   @Input() styling: Styling | undefined;
   @Output() stylingChange = new EventEmitter<Styling>();
+  @Output() selectedElementChange = new EventEmitter<Element | null>();
+  @Output() elements = new EventEmitter<Element[]>();
+  @Input() newFormElements: Element[] = []; // Input for form elements
+  @Input() selectedElement: Element | null = null; // <-- keep only this one
 
   constructor(
     private _formBuilderService: FormBuilderService,
@@ -79,6 +82,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
     this._formBuilderService.elements$.subscribe((elements) => {
       this.formElements = elements;
+      this.elements.emit(this.formElements); // Emit the updated elements
     });
     // Check if the user is logged in
     this._authService.authenticateUser().subscribe((isLoggedIn: boolean) => {
@@ -108,6 +112,14 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         ...changes['styling'].currentValue,
       };
     }
+    if (changes['newFormElements']) {
+      this.formElements = changes['newFormElements'].currentValue;
+      this._formBuilderService.updateElements([...this.formElements]); // Update the service with new elements
+      this.elements.emit(this.formElements); // Emit the new elements
+    }
+    if (changes['selectedElement']) {
+      this.selectedElement = changes['selectedElement'].currentValue;
+    }
   }
 
   resetFormState(): void {
@@ -116,6 +128,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     this.formDescription = 'Form Description';
     this.selectedElement = null;
     this._formBuilderService.clearElements(); // Clear elements in the service
+    this.elements.emit(this.formElements); // Emit the cleared elements
   }
 
   applyStyling(styling: Styling) {
@@ -137,6 +150,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     if (!this.isDragging) {
       // Only select the element if it's not being dragged
       this.selectedElement = element;
+      this.selectedElementChange.emit(this.selectedElement);
       event.stopPropagation(); // Prevent click from propagating to parent elements
     }
   }
@@ -146,10 +160,12 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.selectedElement === element) {
       // If the element is already selected, deselect it
       this.selectedElement = null;
+      this.selectedElementChange.emit(null);
       return;
     }
     // Set the selected element
     this.selectedElement = element;
+    this.selectedElementChange.emit(this.selectedElement);
   }
 
   // Method to delete the selected element
@@ -157,6 +173,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.selectedElement) {
       this._formBuilderService.removeElement(this.selectedElement); // Use the service to remove the element
       this.selectedElement = null; // Clear the selection
+      this.selectedElementChange.emit(null);
     }
   }
 
@@ -210,16 +227,48 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     });
   }
 
-  // Helper method to map Form/Tmplate to Element
+  // Helper method to map Form/Template to Element
   private mapFormToElement(form: Form | TemplateOutput): Element[] {
-    return form.questions.map((question) => ({
-      label: form.title,
-      icon: '',
-      type: question.questionType,
-      placeholder: '',
-      options: question.questionOptions,
-      outLabel: question.questionText,
-    }));
+     // Build a map from questionId to questionOrder (or index+1)
+    const questionIdToOrder: Record<string, number> = {};
+    form.questions.forEach((q, idx) => {
+      if (q.id) {
+        questionIdToOrder[q.id] = q.questionOrder ?? idx + 1;
+      }
+    });
+
+    return form.questions.map((question) => {
+      // Ensure validations object exists
+      const validations: Validations = (question.validations || {}) as Validations;
+
+      // Auto-add email/number validation if missing
+      if (question.questionType === 'email' && !validations.allowedChars) {
+        validations.allowedChars = 'email';
+      }
+      if (question.questionType === 'number' && !validations.allowedChars) {
+        validations.allowedChars = 'numbers';
+      }
+
+      return {
+        label: form.title,
+        icon: '',
+        type: question.questionType,
+        placeholder: '',
+        options: question.questionOptions,
+        outLabel: question.questionText,
+        action: question.action || '',
+        condition: question.condition || '',
+        conditionalLogic: question.ConditionalLogic?.map((logic) => ({
+          questionId: ((question.questionOrder ?? 0) + 1).toString() || '0',
+          operator: logic.operator,
+          value: logic.value,
+          action_questionId:  (logic.action_questionId || []).map((id: string) =>
+            questionIdToOrder[id] ? questionIdToOrder[id].toString() : id
+          ),
+        })) || [],
+        validations,
+      };
+    });
   }
 
   // for changing of field title and description(placeholder)
@@ -294,7 +343,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       noOfPages: 1,
       questions: this.formElements.map((element, index) => {
         return {
-          validations: [],
+          validations: element.validations ?? {},
           pageNumber: 1,
           questionType: element.type,
           questionText: element.outLabel,
@@ -303,7 +352,13 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           questionOrder: index + 1,
           isRequired: false,
           isHidden: false,
-          conditionalLogic: undefined,
+          conditionalLogic: (element.conditionalLogic || []).map((logic: conditionalLogic) => ({
+            operator: logic.operator ?? '',
+            value: logic.value ?? '',
+            action_questionId: logic.action_questionId ?? [],
+          })),
+          action: element.action || '',
+          condition: element.condition || '',
         };
       }),
       privateSharingToken: undefined,
@@ -357,6 +412,13 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   clearForm() {
     this.formElements = [];
     this._formBuilderService.clearElements();
+    this.formTitle = 'Form Title';
+    this.formDescription = 'Form Description';
+    this.selectedElement = null; // Clear the selected element
+    this.selectedElementChange.emit(null); // Emit null to clear selection in parent component
+    this.styling = getDefaultStyling(); // Reset styling to default
+    this.stylingChange.emit(this.styling); // Emit the default styling
+    this.elements.emit(this.formElements); // Emit the cleared elements
   }
 
   // Called when editing starts for question i.e. h2 tags as drag and drop prevented editing by default
@@ -377,6 +439,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.isEditing = false; // End editing mode
     console.log('Label updated:', field.outLabel);
+    this._formBuilderService.updateElements([...this.formElements]); // Update the elements in the service
+    this.elements.emit(this.formElements); // Emit the updated elements
   }
 
   // Drag and Drop

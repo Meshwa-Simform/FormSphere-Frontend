@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { FormService } from '../../../../services/forms/form.service';
 import { FormOutputWithId, Styling } from '../../interface/formOutput';
 import { SignaturePad } from 'angular2-signaturepad';
@@ -10,6 +10,7 @@ import { Answer } from '../../interface/response';
 import { Element } from '../../../create-forms/interface/element';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
+import { Validations, conditionalLogic } from '../../../create-forms/interface/form';
 
 @Component({
   selector: 'app-shared-form',
@@ -35,7 +36,8 @@ export class SharedFormComponent implements OnInit {
     private _responseService: ResponseService,
     private _tostr: ToastrService,
     private ngxService: NgxUiLoaderService,
-    private _fileUploadService: FileUploadService
+    private _fileUploadService: FileUploadService,
+    private cdr: ChangeDetectorRef // <-- add this
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +62,17 @@ export class SharedFormComponent implements OnInit {
         this.formDescription = data.data.description || 'Form Description';
         this.formElements =
           data.data.questions.map((q) => {
+            let validations: Validations = {};
+            // If validations is a string, parse it
+            if (typeof q.validations === 'string') {
+              try {
+                validations = JSON.parse(q.validations);
+              } catch {
+                validations = {};
+              }
+            } else if (q.validations) {
+              validations = q.validations as Validations;
+            }
             return {
               id: q.id,
               outLabel: q.questionText,
@@ -68,6 +81,10 @@ export class SharedFormComponent implements OnInit {
               isRequired: q.isRequired,
               label: q.questionText,
               icon: '',
+              validations,
+              action: q.action,
+              condition: q.condition,
+              conditionalLogic: q.ConditionalLogic || [],
             };
           }) || [];
         this.styling = data.data.styling;
@@ -92,15 +109,54 @@ export class SharedFormComponent implements OnInit {
           this.formGroup.addControl(element.id, this._fb.array(checkboxes));
         }
       } else {
+        const validators = this.getValidators(element.validations);
         const control = this._fb.control(
           element.defaultValue || '',
-          element.isRequired ? Validators.required : null
+          validators
         );
         if (element.id) {
           this.formGroup.addControl(element.id, control);
         }
       }
     });
+
+    // Subscribe to valueChanges AFTER controls are added
+    this.formGroup.valueChanges.subscribe(() => {
+      this.cdr.detectChanges();
+    });
+  }
+
+  getValidators(validations: Validations = {}): ValidatorFn[] {
+    const v: ValidatorFn[] = [];
+    if (validations.required) v.push(Validators.required);
+    if (validations.minLength != null) v.push(Validators.minLength(validations.minLength));
+    if (validations.maxLength != null) v.push(Validators.maxLength(validations.maxLength));
+    if (validations.allowedChars) {
+      switch (validations.allowedChars) {
+        case 'email':
+          v.push(Validators.email);
+          break;
+        case 'numbers':
+          v.push(Validators.pattern(/^[0-9]*$/));
+          break;
+        case 'letters':
+          // Use + if required, * if not required
+          v.push(
+            Validators.pattern(
+              validations.required ? /^[A-Za-z]+$/ : /^[A-Za-z]*$/
+            )
+          );
+          break;
+        case 'alphanumeric':
+          v.push(
+            Validators.pattern(
+              validations.required ? /^[A-Za-z0-9]+$/ : /^[A-Za-z0-9]*$/
+            )
+          );
+          break;
+      }
+    }
+    return v;
   }
 
   selectedFiles: Record<string, string | File> = {}; // Store files by field ID
@@ -164,9 +220,10 @@ export class SharedFormComponent implements OnInit {
             }
 
             case 'signature': {
-              const signatureData = !this.signaturePad.isEmpty()
-                ? this.signaturePad.toDataURL()
-                : null;
+              const signatureData =
+                this.signaturePad && !this.signaturePad.isEmpty()
+                  ? this.signaturePad.toDataURL()
+                  : '';
               return { ...baseData, responseAnswer: signatureData };
             }
 
@@ -205,7 +262,7 @@ export class SharedFormComponent implements OnInit {
         this._tostr.error('Error: Form ID is missing. Please try again.');
       }
     } else {
-      this._tostr.error('Please fill out all required fields.');
+      this._tostr.error('Please fill out all fields properly.');
     }
   }
   // signature field
@@ -219,5 +276,62 @@ export class SharedFormComponent implements OnInit {
 
   clearSignature() {
     this.signaturePad.clear();
+  }
+
+  shouldShowField(field: Element): boolean {
+    if (!field.conditionalLogic || !Array.isArray(field.conditionalLogic) || field.conditionalLogic.length === 0) return true;
+    const formValues = this.formGroup.getRawValue();
+    const logicType = (field.action || 'and').toLowerCase();
+    const conditionType = (field.condition || 'show').toLowerCase();
+
+    const results = field.conditionalLogic.map((logic: conditionalLogic) => {
+      // Always use action_questionId[0] for controlling field
+      const controllingId = Array.isArray(logic.action_questionId) && logic.action_questionId.length > 0
+        ? logic.action_questionId[0]
+        : undefined;
+      const targetField = this.formElements.find(f => f.id === controllingId);
+      let targetValue = controllingId ? formValues[controllingId] : undefined;
+
+      // Normalize value for checkboxes
+      if (targetField && targetField.type === 'checkbox' && Array.isArray(targetValue)) {
+        targetValue = (targetValue as boolean[])
+          .map((checked, idx) => checked ? (targetField.options ?? [])[idx] : null)
+          .filter(v => v !== null);
+      }
+
+      switch (logic.operator) {
+        case 'equals':
+          if (Array.isArray(targetValue)) {
+            return targetValue.includes(logic.value);
+          }
+          return targetValue == logic.value;
+        case 'not equals':
+          if (Array.isArray(targetValue)) {
+            return !targetValue.includes(logic.value);
+          }
+          return targetValue != logic.value;
+        case 'contains':
+          return targetValue.includes(logic.value);
+        case 'not contains':
+          return !targetValue.includes(logic.value);
+        case 'is empty':
+          return !targetValue || (Array.isArray(targetValue) ? targetValue.length === 0 : targetValue === '');
+        case 'is not empty':
+          return !!targetValue && (Array.isArray(targetValue) ? targetValue.length > 0 : targetValue !== '');
+        default:
+          return false;
+      }
+    });
+
+    let logicResult = false;
+    if (logicType === 'and') {
+      logicResult = results.every(Boolean);
+    } else if (logicType === 'or') {
+      logicResult = results.some(Boolean);
+    } else {
+      logicResult = results.every(Boolean); // fallback to 'and'
+    }
+
+    return conditionType === 'show' ? logicResult : !logicResult;
   }
 }

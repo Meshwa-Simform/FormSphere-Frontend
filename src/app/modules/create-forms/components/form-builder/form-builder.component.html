@@ -12,7 +12,10 @@
   <div class="canvas" [ngStyle]="canvasStyling">
     <app-canvas
       [styling]="rawTheme"
+      [selectedElement]="selectedElement"
       (stylingChange)="onCanvasStylingChange($event)"
+      (selectedElementChange)="onElementSelected($event)"
+      (elements)="onElementsChanged($event)"
     ></app-canvas>
   </div>
 
@@ -20,7 +23,11 @@
   <div class="style-panel">
     <app-stylebar
       [theme]="rawTheme"
+      [selectedElement]="selectedElement"
+      [formElements]="elements"
       (styleChange)="canvasStyling = $event.css; rawTheme = $event.theme"
+      (formElementsChange)="onElementsChanged($event)"
+      (selectedElementChange)="onElementSelected($event)"
     ></app-stylebar>
   </div>
 </div>
