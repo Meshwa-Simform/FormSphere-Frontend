@@ -81,9 +81,15 @@
         (opened)="onValidationPanelOpened()"
       >
         <mat-expansion-panel-header>
-          <mat-panel-title style="color: #fff !important;">Validations</mat-panel-title>
+          <mat-panel-title style="color: #fff !important"
+            >Validations</mat-panel-title
+          >
         </mat-expansion-panel-header>
-        <div class="validation-section" style="color: #fff !important;" *ngIf="validation">
+        <div
+          class="validation-section"
+          style="color: #fff !important"
+          *ngIf="validation"
+        >
           <div class="validation-row">
             <label for="required-toggle">Required</label>
             <mat-slide-toggle
@@ -133,24 +139,30 @@
         </div>
       </mat-expansion-panel>
       <!-- Logic Section as Expansion Panel -->
-      <mat-expansion-panel 
-        [(expanded)]="logicPanelOpen" 
+      <mat-expansion-panel
+        [(expanded)]="logicPanelOpen"
         [disabled]="!selectedElement"
-        (click)="onLogicPanelAttemptOpen()">
+        (click)="onLogicPanelAttemptOpen()"
+      >
         <mat-expansion-panel-header>
-          <mat-panel-title style="color: #fff !important;">Logic</mat-panel-title>
+          <mat-panel-title style="color: #fff !important"
+            >Logic</mat-panel-title
+          >
         </mat-expansion-panel-header>
-        <div class="logic-conditional-row" style="color: #fff !important;">
+        <div class="logic-conditional-row" style="color: #fff !important">
           <label for="logic-conditional-toggle-group">Hide conditionally</label>
-          <div id="logic-conditional-toggle-group" class="logic-conditional-toggle">
+          <div
+            id="logic-conditional-toggle-group"
+            class="logic-conditional-toggle"
+          >
             <button
-              [class.active]="logic?.condition === 'show'"
+              [class.active]="logic?.action === 'show'"
               (click)="setShowWhen('show')"
             >
               Show when
             </button>
             <button
-              [class.active]="logic?.condition === 'hide'"
+              [class.active]="logic?.action === 'hide'"
               (click)="setShowWhen('hide')"
             >
               Hide when
@@ -158,33 +170,85 @@
           </div>
         </div>
         <div class="logic-conditions-box">
-          <button
-            class="edit-logic-btn"
-            (click)="toggleEditLogic()"
-          >
+          <button class="edit-logic-btn" (click)="toggleEditLogic()">
             {{ editLogic ? 'Done' : 'Set conditional logic' }}
           </button>
           <div *ngIf="editLogic" class="logic-conditions-edit">
-            <div *ngIf="logic?.conditionalLogic?.length === 0" class="no-conditions">
+            <div
+              *ngIf="logic?.conditionalLogic?.length === 0"
+              class="no-conditions"
+            >
               No conditions specified yet
             </div>
-            <div *ngFor="let cond of logic?.conditionalLogic; let ci = index" class="logic-condition-row">
-              <select [(ngModel)]="cond.action_questionId[0]" (ngModelChange)="onLogicChange()">
+            <div
+              *ngFor="let cond of logic?.conditionalLogic; let ci = index"
+              class="logic-condition-row"
+            >
+              <!-- AND/OR dropdown above the first condition if more than one condition -->
+              <ng-container
+                *ngIf="
+                  logic &&
+                  logic.conditionalLogic &&
+                  logic.conditionalLogic.length > 1
+                "
+              >
+                <ng-container *ngIf="ci === 0">
+                  <select
+                    class="logic-andor"
+                    [(ngModel)]="logic.condition"
+                    (ngModelChange)="onLogicChange()"
+                    [disabled]="!logic"
+                  >
+                    <option value="and">And</option>
+                    <option value="or">Or</option>
+                  </select>
+                </ng-container>
+                <ng-container *ngIf="ci !== 0">
+                  <span class="logic-andor-placeholder"></span>
+                </ng-container>
+              </ng-container>
+              <select
+                [(ngModel)]="cond.action_questionId[0]"
+                (ngModelChange)="onLogicChange()"
+              >
                 <option value="0" disabled>Select...</option>
-                <option *ngFor="let f of availableFields; let idx = index" value={{availableFields.indexOf(f)+1}}>{{ f }}</option>
+                <option
+                  *ngFor="let f of availableFields; let idx = index"
+                  value="{{ availableFields.indexOf(f) + 1 }}"
+                >
+                  {{ f }}
+                </option>
               </select>
-              <select [(ngModel)]="cond.operator" (ngModelChange)="onLogicChange()">
+              <select
+                [(ngModel)]="cond.operator"
+                (ngModelChange)="onLogicChange()"
+              >
                 <option value="" disabled>Select...</option>
-                <option *ngFor="let op of operators" [value]="op">{{ op }}</option>
+                <option *ngFor="let op of operators" [value]="op">
+                  {{ op }}
+                </option>
               </select>
-              <ng-container *ngIf="cond.action_questionId[0] && isOptionField(cond.action_questionId[0]); else valueInput">
+              <ng-container
+                *ngIf="
+                  cond.action_questionId[0] &&
+                    isOptionField(cond.action_questionId[0]);
+                  else valueInput
+                "
+              >
                 <select
                   [(ngModel)]="cond.value"
                   placeholder="value"
                   (ngModelChange)="onLogicChange()"
                 >
                   <option value="" disabled>Value...</option>
-                  <option *ngFor="let option of getFieldOptions(cond.action_questionId[0])" [value]="option">{{ option }}</option>
+                  <option
+                    *ngFor="
+                      let option of getFieldOptions(cond.action_questionId[0])
+                    "
+                    [value]="option"
+                  >
+                    {{ option }}
+                  </option>
                 </select>
               </ng-container>
               <ng-template #valueInput>
@@ -198,7 +262,10 @@
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
-            <button class="add-condition-btn" (click)="addCondition(); $event.stopPropagation()">
+            <button
+              class="add-condition-btn"
+              (click)="addCondition(); $event.stopPropagation()"
+            >
               + Add condition
             </button>
           </div>

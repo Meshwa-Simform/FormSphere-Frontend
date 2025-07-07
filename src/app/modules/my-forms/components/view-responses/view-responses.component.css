@@ -105,7 +105,10 @@
 .form-preview {
   margin-top: 1rem;
   padding: 1rem;
-  background-color: #eef3fad9;
+  background-color: var(
+    --mdc-filled-text-field-disabled-container-color,
+    color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent)
+  );
   border-radius: 8px;
   /* border: 1px solid #e0e0e0; */
 }

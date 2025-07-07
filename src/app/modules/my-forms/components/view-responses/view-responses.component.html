@@ -46,11 +46,23 @@
     [(ngModel)]="searchInput"
     (ngModelChange)="onSearchInputChange($event)"
     aria-label="Search"
+    [ngStyle]="{
+      'background-color': formStyling?.pageColor,
+      color: formStyling?.fontColor,
+      'font-family': formStyling?.fontFamily || 'Montserrat',
+      border: '1px solid ' + formStyling?.fontColor,
+    }"
   />
   <select
     class="page-size-select"
     [(ngModel)]="pageSize"
     (change)="onPageSizeChange($event)"
+    [ngStyle]="{
+      'background-color': formStyling?.pageColor,
+      color: formStyling?.fontColor,
+      'font-family': formStyling?.fontFamily || 'Montserrat',
+      border: '1px solid ' + formStyling?.fontColor,
+    }"
   >
     <option *ngFor="let size of pageSizes" [value]="size">
       {{ size }} / page
@@ -63,6 +75,12 @@
       class="sort-select"
       [(ngModel)]="sortBy"
       (change)="onSortByChange($event)"
+      [ngStyle]="{
+        'background-color': formStyling?.pageColor,
+        color: formStyling?.fontColor,
+        'font-family': formStyling?.fontFamily || 'Montserrat',
+        border: '1px solid ' + formStyling?.fontColor,
+      }"
     >
       <option *ngFor="let opt of sortOptions" [value]="opt.value">
         {{ opt.label }}
@@ -73,6 +91,11 @@
       class="sort-order-btn"
       (click)="onSortOrderChange()"
       [attr.aria-label]="'Sort ' + sortOrder"
+      [ngStyle]="{
+        'background-color': formStyling?.pageColor,
+        color: formStyling?.fontColor,
+        'font-family': formStyling?.fontFamily || 'Montserrat',
+      }"
     >
       <mat-icon>{{
         sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'
@@ -82,34 +105,93 @@
 </div>
 
 <!-- Responses container -->
-<div class="responses-container">
-  <h1>Responses</h1>
+<div
+  class="responses-container"
+  [ngStyle]="{
+    'background-color': formStyling?.pageColor,
+    color: formStyling?.fontColor,
+    'font-family': formStyling?.fontFamily || 'Montserrat',
+    'font-size.px': formStyling?.fontSize || 16,
+  }"
+>
+  <h1
+    [ngStyle]="{
+      color: formStyling?.fontColor,
+      'font-family': formStyling?.fontFamily || 'Montserrat',
+    }"
+  >
+    Responses
+  </h1>
 
-  <div *ngIf="responses.length === 0" class="no-responses">
+  <div
+    *ngIf="responses.length === 0"
+    class="no-responses"
+    [ngStyle]="{
+      color: formStyling?.fontColor,
+      'font-family': formStyling?.fontFamily || 'Montserrat',
+    }"
+  >
     <p>No responses available for this form.</p>
   </div>
 
   <div *ngIf="responses.length > 0" class="forms-list">
-    <div *ngFor="let response of responses" class="response-card">
-      <h2>User: {{ response.userName }} ({{ response.userEmail }})</h2>
-      <p>Submitted on: {{ response.createdAt | date: 'medium' }}</p>
+    <div
+      *ngFor="let response of responses"
+      class="response-card"
+      [ngStyle]="{
+        'background-color': formStyling?.formColor || '#fff',
+      }"
+    >
+      <h2
+        [ngStyle]="{
+          color: formStyling?.fontColor,
+          'font-family': formStyling?.fontFamily || 'Montserrat',
+        }"
+      >
+        User: {{ response.userName }} ({{ response.userEmail }})
+      </h2>
+      <p
+        [ngStyle]="{
+          color: formStyling?.formColor === '#444444' ? '#fff' : '#444',
+        }"
+      >
+        Submitted on: {{ response.createdAt | date: 'medium' }}
+      </p>
 
       <div class="form-preview">
         <ng-container *ngFor="let answer of response.answers">
           <ng-container [ngSwitch]="answer.questionType">
             <!-- Heading -->
-            <h1 *ngSwitchCase="'heading'" class="form-header">
+            <h1
+              *ngSwitchCase="'heading'"
+              class="form-header"
+              [ngStyle]="{
+                color: formStyling?.fontColor,
+                'font-family': formStyling?.fontFamily || 'Montserrat',
+              }"
+            >
               {{ answer.questionText }}
             </h1>
 
             <!-- File -->
             <div *ngSwitchCase="'file'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
+              <p
+                class="question-text"
+                [ngStyle]="{
+                  color: formStyling?.fontColor,
+                  'font-family': formStyling?.fontFamily || 'Montserrat',
+                }"
+              >
+                {{ answer.questionText }}
+              </p>
               <a
                 href="#"
                 (click)="
                   downloadFile(answer.responseAnswer); $event.preventDefault()
                 "
+                [ngStyle]="{
+                  color: formStyling?.formColor === '#444444' ? '#fff' : '#444',
+                }"
               >
                 Download File
               </a>
@@ -117,7 +199,15 @@
 
             <!-- Signature -->
             <div *ngSwitchCase="'signature'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
+              <p
+                class="question-text"
+                [ngStyle]="{
+                  color: formStyling?.fontColor,
+                  'font-family': formStyling?.fontFamily || 'Montserrat',
+                }"
+              >
+                {{ answer.questionText }}
+              </p>
               <img
                 [src]="answer.responseAnswer"
                 alt="Signature"
@@ -127,8 +217,22 @@
 
             <!-- Default -->
             <div *ngSwitchDefault class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
+              <p
+                class="question-text"
+                [ngStyle]="{
+                  color: formStyling?.fontColor,
+                  'font-family': formStyling?.fontFamily || 'Montserrat',
+                }"
+              >
+                {{ answer.questionText }}
+              </p>
+              <p
+                [ngStyle]="{
+                  color: formStyling?.formColor === '#444444' ? '#fff' : '#444',
+                }"
+              >
+                {{ answer.responseAnswer }}
+              </p>
             </div>
           </ng-container>
         </ng-container>
@@ -142,6 +246,11 @@
       mat-stroked-button
       (click)="onPageChange(page - 1)"
       [disabled]="page === 1"
+      [ngStyle]="{
+        color: formStyling?.fontColor,
+        'font-family': formStyling?.fontFamily || 'Montserrat',
+        border: '1px solid ' + formStyling?.fontColor,
+      }"
     >
       &lt; Prev
     </button>
@@ -150,6 +259,11 @@
         mat-stroked-button
         [color]="p === page ? 'primary' : ''"
         (click)="onPageChange(p)"
+        [ngStyle]="{
+          color: formStyling?.fontColor,
+          'font-family': formStyling?.fontFamily || 'Montserrat',
+          border: '1px solid ' + formStyling?.fontColor,
+        }"
       >
         {{ p }}
       </button>
@@ -158,9 +272,21 @@
       mat-stroked-button
       (click)="onPageChange(page + 1)"
       [disabled]="page === totalPages"
+      [ngStyle]="{
+        color: formStyling?.fontColor,
+        'font-family': formStyling?.fontFamily || 'Montserrat',
+        border: '1px solid ' + formStyling?.fontColor,
+      }"
     >
       Next &gt;
     </button>
-    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+    <span
+      class="pagination-info"
+      [ngStyle]="{
+        color: formStyling?.fontColor,
+        'font-family': formStyling?.fontFamily || 'Montserrat',
+      }"
+      >Page {{ page }} of {{ totalPages }}</span
+    >
   </div>
 </div>

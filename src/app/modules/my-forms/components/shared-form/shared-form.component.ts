@@ -1,6 +1,11 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { FormService } from '../../../../services/forms/form.service';
 import { FormOutputWithId, Styling } from '../../interface/formOutput';
 import { SignaturePad } from 'angular2-signaturepad';
@@ -10,7 +15,10 @@ import { Answer } from '../../interface/response';
 import { Element } from '../../../create-forms/interface/element';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
-import { Validations, conditionalLogic } from '../../../create-forms/interface/form';
+import {
+  Validations,
+  conditionalLogic,
+} from '../../../create-forms/interface/form';
 
 @Component({
   selector: 'app-shared-form',
@@ -24,6 +32,7 @@ export class SharedFormComponent implements OnInit {
   formId: string | null = null;
   formTitle = 'Form Title';
   formDescription = 'Form Description';
+  logoUrl: string | null = null;
   formElements: Element[] = [];
   formGroup!: FormGroup;
   styling: Styling | undefined;
@@ -60,6 +69,7 @@ export class SharedFormComponent implements OnInit {
       next: (data: FormOutputWithId) => {
         this.formTitle = data.data.title || 'Form Title';
         this.formDescription = data.data.description || 'Form Description';
+        this.logoUrl = data.data.logoUrl || null;
         this.formElements =
           data.data.questions.map((q) => {
             let validations: Validations = {};
@@ -129,8 +139,10 @@ export class SharedFormComponent implements OnInit {
   getValidators(validations: Validations = {}): ValidatorFn[] {
     const v: ValidatorFn[] = [];
     if (validations.required) v.push(Validators.required);
-    if (validations.minLength != null) v.push(Validators.minLength(validations.minLength));
-    if (validations.maxLength != null) v.push(Validators.maxLength(validations.maxLength));
+    if (validations.minLength != null)
+      v.push(Validators.minLength(validations.minLength));
+    if (validations.maxLength != null)
+      v.push(Validators.maxLength(validations.maxLength));
     if (validations.allowedChars) {
       switch (validations.allowedChars) {
         case 'email':
@@ -235,7 +247,7 @@ export class SharedFormComponent implements OnInit {
             default: {
               return {
                 ...baseData,
-                responseAnswer: field.id ? formValues[field.id] || '' : '',
+                responseAnswer: field.id ? formValues[field.id].trim() || '' : '',
               };
             }
           }
@@ -279,24 +291,37 @@ export class SharedFormComponent implements OnInit {
   }
 
   shouldShowField(field: Element): boolean {
-    if (!field.conditionalLogic || !Array.isArray(field.conditionalLogic) || field.conditionalLogic.length === 0) return true;
+    if (
+      !field.conditionalLogic ||
+      !Array.isArray(field.conditionalLogic) ||
+      field.conditionalLogic.length === 0
+    )
+      return true;
     const formValues = this.formGroup.getRawValue();
-    const logicType = (field.action || 'and').toLowerCase();
-    const conditionType = (field.condition || 'show').toLowerCase();
+    const logicType = (field.action || 'show').toLowerCase();
+    const conditionType = (field.condition || 'and').toLowerCase();
 
     const results = field.conditionalLogic.map((logic: conditionalLogic) => {
       // Always use action_questionId[0] for controlling field
-      const controllingId = Array.isArray(logic.action_questionId) && logic.action_questionId.length > 0
-        ? logic.action_questionId[0]
-        : undefined;
-      const targetField = this.formElements.find(f => f.id === controllingId);
+      const controllingId =
+        Array.isArray(logic.action_questionId) &&
+        logic.action_questionId.length > 0
+          ? logic.action_questionId[0]
+          : undefined;
+      const targetField = this.formElements.find((f) => f.id === controllingId);
       let targetValue = controllingId ? formValues[controllingId] : undefined;
 
       // Normalize value for checkboxes
-      if (targetField && targetField.type === 'checkbox' && Array.isArray(targetValue)) {
+      if (
+        targetField &&
+        targetField.type === 'checkbox' &&
+        Array.isArray(targetValue)
+      ) {
         targetValue = (targetValue as boolean[])
-          .map((checked, idx) => checked ? (targetField.options ?? [])[idx] : null)
-          .filter(v => v !== null);
+          .map((checked, idx) =>
+            checked ? (targetField.options ?? [])[idx] : null
+          )
+          .filter((v) => v !== null);
       }
 
       switch (logic.operator) {
@@ -315,23 +340,33 @@ export class SharedFormComponent implements OnInit {
         case 'not contains':
           return !targetValue.includes(logic.value);
         case 'is empty':
-          return !targetValue || (Array.isArray(targetValue) ? targetValue.length === 0 : targetValue === '');
+          return (
+            !targetValue ||
+            (Array.isArray(targetValue)
+              ? targetValue.length === 0
+              : targetValue === '')
+          );
         case 'is not empty':
-          return !!targetValue && (Array.isArray(targetValue) ? targetValue.length > 0 : targetValue !== '');
+          return (
+            !!targetValue &&
+            (Array.isArray(targetValue)
+              ? targetValue.length > 0
+              : targetValue !== '')
+          );
         default:
           return false;
       }
     });
 
     let logicResult = false;
-    if (logicType === 'and') {
+    if (conditionType === 'and') {
       logicResult = results.every(Boolean);
-    } else if (logicType === 'or') {
+    } else if (conditionType === 'or') {
       logicResult = results.some(Boolean);
     } else {
       logicResult = results.every(Boolean); // fallback to 'and'
     }
 
-    return conditionType === 'show' ? logicResult : !logicResult;
+    return logicType === 'show' ? logicResult : !logicResult;
   }
 }

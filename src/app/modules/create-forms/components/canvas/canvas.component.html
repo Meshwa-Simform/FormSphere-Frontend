@@ -28,6 +28,40 @@
         : '16px',
   }"
 >
+  <!-- Logo Upload Section -->
+  <div class="logo-upload-section">
+    <ng-container *ngIf="!logoUrl">
+      <label
+        class="logo-upload-label"
+        (click)="triggerLogoInput()"
+        (keyup.enter)="triggerLogoInput()"
+        (keyup.space)="triggerLogoInput()"
+        for="logoInput"
+        tabindex="0"
+        role="button"
+        aria-label="Add your logo"
+      >
+        <span>+ ADD YOUR LOGO</span>
+      </label>
+    </ng-container>
+    <ng-container *ngIf="logoUrl">
+      <div class="logo-preview">
+        <img [src]="logoUrl" alt="Logo" class="logo-image" />
+        <button mat-stroked-button color="primary" (click)="triggerLogoInput()">
+          Change Logo
+        </button>
+      </div>
+    </ng-container>
+    <!-- Single file input, always present but hidden -->
+    <input
+      #logoInput
+      type="file"
+      accept="image/*"
+      style="display: none"
+      (change)="onLogoSelected($event)"
+    />
+  </div>
+
   <div class="form-preview-header">
     <h1
       class="form-title"

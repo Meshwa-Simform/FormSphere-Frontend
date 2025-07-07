@@ -54,6 +54,29 @@
     </div>
   </div>
 
+  <!-- Email Filter -->
+  <div class="email-filter">
+    <label for="emailFilter"
+      ><strong>Filter by Respondent Email:</strong></label
+    >
+    <select
+      id="emailFilter"
+      [(ngModel)]="selectedEmail"
+      (ngModelChange)="onEmailSelectionChange($event)"
+    >
+      <option value="">All Emails</option>
+      <option *ngFor="let email of allEmails" [value]="email">
+        {{ email }}
+      </option>
+    </select>
+    <div
+      *ngIf="filteredResponses.length === 0"
+      style="color: #d32f2f; margin-top: 0.5rem"
+    >
+      No responses selected.
+    </div>
+  </div>
+
   <!-- Summary Analytics -->
   <div class="summary-chart-container">
     <h2>Summary Analytics of Responses</h2>
@@ -61,7 +84,7 @@
       baseChart
       [datasets]="getSummaryChartData()"
       [labels]="getSummaryChartLabels()"
-      [options]="chartOptions"
+      [options]="getChartOptionsforSummary(emails)"
       [legend]="true"
       [type]="selectedChartType"
       width="400"
@@ -75,18 +98,21 @@
     class="chart-container"
     *ngFor="let question of questionAnalytics | keyvalue"
   >
-    <h2>{{ question.key }}</h2>
-    <p>Responses:</p>
-    <canvas
-      baseChart
-      [datasets]="getChartData(question.value)"
-      [labels]="getChartLabels(question.value)"
-      [options]="chartOptions"
-      [legend]="true"
-      [type]="selectedChartType"
-      width="400"
-      height="400"
-    >
-    </canvas>
+    <!-- Only show chart if not a heading -->
+    <ng-container *ngIf="questionTypes[question.key] !== 'heading'">
+      <h2>{{ question.key }}</h2>
+      <p>Responses:</p>
+      <canvas
+        baseChart
+        [datasets]="getChartData(question.value)"
+        [labels]="getChartLabels(question.value)"
+        [options]="getChartOptions(question.key)"
+        [legend]="true"
+        [type]="selectedChartType"
+        width="400"
+        height="400"
+      >
+      </canvas>
+    </ng-container>
   </div>
 </div>

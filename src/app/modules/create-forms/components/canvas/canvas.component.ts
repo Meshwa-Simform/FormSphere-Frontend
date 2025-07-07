@@ -22,12 +22,18 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../../../services/forms/form.service';
-import { conditionalLogic, FormDetails, Styling, Validations } from '../../interface/form';
+import {
+  conditionalLogic,
+  FormDetails,
+  Styling,
+  Validations,
+} from '../../interface/form';
 import { Form } from '../../../my-forms/interface/formOutput';
 import { MatDialog } from '@angular/material/dialog';
 import { TemplatesService } from '../../../../services/templates/templates.service';
 import { TemplateOutput } from '../../../templates/interfaces/templates';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
 
 function getDefaultStyling(): Styling {
   return {
@@ -56,6 +62,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   templateId: string | null = null;
   isDragging = false; // Track whether a drag operation is in progress
   isLogin = false;
+  logoUrl: string | null = null;
 
   @Input() styling: Styling | undefined;
   @Output() stylingChange = new EventEmitter<Styling>();
@@ -63,6 +70,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   @Output() elements = new EventEmitter<Element[]>();
   @Input() newFormElements: Element[] = []; // Input for form elements
   @Input() selectedElement: Element | null = null; // <-- keep only this one
+  @ViewChild('logoInput') logoInput!: { nativeElement: HTMLInputElement };
 
   constructor(
     private _formBuilderService: FormBuilderService,
@@ -73,7 +81,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     private _dialog: MatDialog,
     private _templateService: TemplatesService,
     private _authService: AuthService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private _fileUploadService: FileUploadService 
   ) {}
 
   ngOnInit(): void {
@@ -190,6 +199,9 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         });
         this.formTitle = data.data.title || 'Form Title';
         this.formDescription = data.data.description || 'Form Description';
+        if (data.data.logoUrl) {
+          this.logoUrl = data.data.logoUrl;
+        }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
           this.stylingChange.emit(this.styling);
@@ -215,6 +227,9 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
         this.formTitle = data.data.title || 'Form Title';
         this.formDescription = data.data.description || 'Form Description';
+        if (data.data.logoUrl) {
+          this.logoUrl = data.data.logoUrl;
+        }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
           this.stylingChange.emit(this.styling);
@@ -229,7 +244,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   // Helper method to map Form/Template to Element
   private mapFormToElement(form: Form | TemplateOutput): Element[] {
-     // Build a map from questionId to questionOrder (or index+1)
+    // Build a map from questionId to questionOrder (or index+1)
     const questionIdToOrder: Record<string, number> = {};
     form.questions.forEach((q, idx) => {
       if (q.id) {
@@ -239,7 +254,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
     return form.questions.map((question) => {
       // Ensure validations object exists
-      const validations: Validations = (question.validations || {}) as Validations;
+      const validations: Validations = (question.validations ||
+        {}) as Validations;
 
       // Auto-add email/number validation if missing
       if (question.questionType === 'email' && !validations.allowedChars) {
@@ -258,14 +274,16 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         outLabel: question.questionText,
         action: question.action || '',
         condition: question.condition || '',
-        conditionalLogic: question.ConditionalLogic?.map((logic) => ({
-          questionId: ((question.questionOrder ?? 0) + 1).toString() || '0',
-          operator: logic.operator,
-          value: logic.value,
-          action_questionId:  (logic.action_questionId || []).map((id: string) =>
-            questionIdToOrder[id] ? questionIdToOrder[id].toString() : id
-          ),
-        })) || [],
+        conditionalLogic:
+          question.ConditionalLogic?.map((logic) => ({
+            questionId: ((question.questionOrder ?? 0) + 1).toString() || '0',
+            operator: logic.operator,
+            value: logic.value,
+            action_questionId: (logic.action_questionId || []).map(
+              (id: string) =>
+                questionIdToOrder[id] ? questionIdToOrder[id].toString() : id
+            ),
+          })) || [],
         validations,
       };
     });
@@ -313,11 +331,49 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   addOption(field: Element) {
+    const MAX_OPTIONS = 20;
+    if ((field.options?.length ?? 0) >= MAX_OPTIONS) {
+      this._toastr.warning(`You can add up to ${MAX_OPTIONS} options only.`);
+      return;
+    }
     (field.options ??= []).push('');
   }
 
   removeOption(field: Element, index: number) {
     (field.options ??= []).splice(index, 1);
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      // Optionally: validate file type/size here
+      this._fileUploadService.uploadFile(file).subscribe({
+        next: (response) => {
+          this.logoUrl = response.url;
+          this._toastr.success('Logo uploaded successfully!');
+          // Reset the file input so the same file can be selected again
+          if (this.logoInput && this.logoInput.nativeElement) {
+            this.logoInput.nativeElement.value = '';
+          }
+        },
+        error: (err) => {
+          this._toastr.error('Error uploading logo. Please try again.');
+          console.error('Error uploading logo:', err);
+          // Reset the file input on error as well
+          if (this.logoInput && this.logoInput.nativeElement) {
+            this.logoInput.nativeElement.value = '';
+          }
+        },
+      });
+    }
+  }
+
+  // Add this method to trigger the file input click
+  triggerLogoInput(): void {
+    if (this.logoInput && this.logoInput.nativeElement) {
+      this.logoInput.nativeElement.click();
+    }
   }
 
   saveForm() {
@@ -338,7 +394,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     const formDetails: FormDetails = {
       title: this.formTitle,
       description: description,
-      logoUrl: null,
+      logoUrl: this.logoUrl, // <-- include logoUrl
       isSinglePage: true,
       noOfPages: 1,
       questions: this.formElements.map((element, index) => {
@@ -352,11 +408,13 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           questionOrder: index + 1,
           isRequired: false,
           isHidden: false,
-          conditionalLogic: (element.conditionalLogic || []).map((logic: conditionalLogic) => ({
-            operator: logic.operator ?? '',
-            value: logic.value ?? '',
-            action_questionId: logic.action_questionId ?? [],
-          })),
+          conditionalLogic: (element.conditionalLogic || []).map(
+            (logic: conditionalLogic) => ({
+              operator: logic.operator ?? '',
+              value: logic.value ?? '',
+              action_questionId: logic.action_questionId ?? [],
+            })
+          ),
           action: element.action || '',
           condition: element.condition || '',
         };
@@ -419,6 +477,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     this.styling = getDefaultStyling(); // Reset styling to default
     this.stylingChange.emit(this.styling); // Emit the default styling
     this.elements.emit(this.formElements); // Emit the cleared elements
+    this.logoUrl = null; // Reset logo
   }
 
   // Called when editing starts for question i.e. h2 tags as drag and drop prevented editing by default

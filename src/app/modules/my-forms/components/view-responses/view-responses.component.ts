@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { Styling } from '../../interface/formOutput';
+import { FormService } from '../../../../services/forms/form.service';
 
 @Component({
   selector: 'app-view-responses',
@@ -33,6 +35,7 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
     { value: 'userName', label: 'Name' },
     { value: 'userEmail', label: 'Email' },
   ];
+  formStyling: Styling | null = null;
 
   private searchInputChanged: Subject<string> = new Subject<string>();
   private searchSub?: Subscription;
@@ -43,7 +46,8 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
     private _authService: AuthService,
     private _router: Router,
     private _http: HttpClient,
-    private _toastx: ToastrService
+    private _toastx: ToastrService,
+    private _formSerice: FormService
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +107,15 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
           this.totalPages = 1;
         },
       });
+    this._formSerice.getFormById(this.formId).subscribe({
+      next: (form) => {
+        this.formStyling = form.data.styling ?? null;
+      },
+      error: (err) => {
+        console.error('Error fetching form styling:', err);
+        this.formStyling = null; // Reset styling on error
+      },
+    });
   }
 
   onSearchInputChange(value: string): void {
