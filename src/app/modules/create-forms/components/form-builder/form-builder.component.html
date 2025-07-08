@@ -1,5 +1,8 @@
 <div class="nav-bar">
-  <app-formsnav></app-formsnav>
+  <app-formsnav
+    [isPreviewMode]="isPreviewMode"
+    (previewToggle)="onPreviewToggle()"
+  ></app-formsnav>
 </div>
 
 <div class="form-builder-container">
@@ -9,14 +12,38 @@
   </div>
 
   <!-- Center: Canvas -->
-  <div class="canvas" [ngStyle]="canvasStyling">
+  <div class="canvas" [ngStyle]="canvasStyling" *ngIf="!isPreviewMode">
     <app-canvas
       [styling]="rawTheme"
       [selectedElement]="selectedElement"
+      [isPreviewMode]="isPreviewMode"
+      [previewFormElements]="elements"
+      [previewFormTitle]="formTitle"
+      [previewFormDescription]="formDescription"
+      [formTitle]="formTitle"
+      [formDescription]="formDescription"
+      [previewLogoUrl]="logoUrl"
       (stylingChange)="onCanvasStylingChange($event)"
       (selectedElementChange)="onElementSelected($event)"
       (elements)="onElementsChanged($event)"
+      (formTitleChange)="formTitle = $event"
+      (formDescriptionChange)="formDescription = $event"
+      (logoUrlChange)="logoUrl = $event"
     ></app-canvas>
+  </div>
+
+  <!-- Center: Preview -->
+  <div class="preview" *ngIf="isPreviewMode"
+   style="width: 100%;">
+    <app-shared-form
+      [styling]="rawTheme"
+      [previewElements]="elements"
+      [isPreviewMode]="isPreviewMode"
+      [previewStyling]="rawTheme"
+      [previewFormTitle]="formTitle"
+      [previewFormDescription]="formDescription"
+      [(previewLogoUrl)]="logoUrl"
+    ></app-shared-form>
   </div>
 
   <!-- Right: Style Panel -->

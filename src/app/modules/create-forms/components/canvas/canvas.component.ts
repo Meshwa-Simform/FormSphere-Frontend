@@ -7,7 +7,6 @@ import {
   Input,
   SimpleChanges,
   OnChanges,
-  Renderer2,
   Output,
   EventEmitter,
 } from '@angular/core';
@@ -71,6 +70,14 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() newFormElements: Element[] = []; // Input for form elements
   @Input() selectedElement: Element | null = null; // <-- keep only this one
   @ViewChild('logoInput') logoInput!: { nativeElement: HTMLInputElement };
+  @Input() isPreviewMode = false;
+  @Input() previewFormElements: Element[] = []; // Input for preview elements
+  @Input() previewFormTitle = '';
+  @Input() previewFormDescription = '';
+  @Input() previewLogoUrl: string | null = null; // URL for the logo image
+  @Output() formTitleChange = new EventEmitter<string>();
+  @Output() formDescriptionChange = new EventEmitter<string>();
+  @Output() logoUrlChange = new EventEmitter<string | null>();
 
   constructor(
     private _formBuilderService: FormBuilderService,
@@ -81,7 +88,6 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     private _dialog: MatDialog,
     private _templateService: TemplatesService,
     private _authService: AuthService,
-    private renderer: Renderer2,
     private _fileUploadService: FileUploadService 
   ) {}
 
@@ -106,12 +112,20 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       this.resetFormState();
 
       // Load form or template details based on the route
-      if (this.formId) {
+      if (this.formId && this.previewFormElements.length <= 0) {
         this.loadFormDetails(this.formId);
-      } else if (this.templateId) {
+      } else if (this.templateId  && this.previewFormElements.length <= 0) {
         this.loadTemplateDetails(this.templateId);
       }
     });
+    if (this.previewFormElements || this.previewFormTitle || this.previewFormDescription) {
+      this.formElements = [...this.previewFormElements];
+      this._formBuilderService.updateElements([...this.formElements]); // Update the service with new elements
+      this.formTitle = this.previewFormTitle;
+      this.formDescription = this.previewFormDescription;
+      this.logoUrl = this.previewLogoUrl;
+      this.elements.emit(this.formElements); // Emit the new elements
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -128,6 +142,10 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (changes['selectedElement']) {
       this.selectedElement = changes['selectedElement'].currentValue;
+    }
+    if (changes['previewLogoUrl']) {
+      this.logoUrl = changes['previewLogoUrl'].currentValue;
+      console.log('Logo URL changed:', this.logoUrl);
     }
   }
 
@@ -198,9 +216,12 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           this._formBuilderService.addElement(element);
         });
         this.formTitle = data.data.title || 'Form Title';
+        this.formTitleChange.emit(this.formTitle);
         this.formDescription = data.data.description || 'Form Description';
+        this.formDescriptionChange.emit(this.formDescription);
         if (data.data.logoUrl) {
           this.logoUrl = data.data.logoUrl;
+          this.logoUrlChange.emit(this.logoUrl); // Emit the new logo URL
         }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
@@ -226,9 +247,12 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         });
 
         this.formTitle = data.data.title || 'Form Title';
+        this.formTitleChange.emit(this.formTitle);
         this.formDescription = data.data.description || 'Form Description';
+        this.formDescriptionChange.emit(this.formDescription);
         if (data.data.logoUrl) {
           this.logoUrl = data.data.logoUrl;
+          this.logoUrlChange.emit(this.logoUrl); // Emit the new logo URL
         }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
@@ -310,6 +334,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         this[field] === this.formTitle ? 'Form Title' : 'Form Description'; // reset placeholder
     } else {
       this[field] = text; // save typed content
+      if (field === 'formTitle') {
+        this.formTitleChange.emit(this.formTitle);
+      } else if (field === 'formDescription') {
+        this.formDescriptionChange.emit(this.formDescription);
+      }
     }
   }
 
@@ -351,6 +380,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       this._fileUploadService.uploadFile(file).subscribe({
         next: (response) => {
           this.logoUrl = response.url;
+          this.logoUrlChange.emit(this.logoUrl); // Emit the new logo URL
           this._toastr.success('Logo uploaded successfully!');
           // Reset the file input so the same file can be selected again
           if (this.logoInput && this.logoInput.nativeElement) {

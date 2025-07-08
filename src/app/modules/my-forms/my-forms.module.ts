@@ -20,6 +20,7 @@ import { ThankYouComponent } from '../../shared/components/thank-you/thank-you.c
     SignaturePadModule,
     ThankYouComponent,
   ],
+  exports: [SharedFormComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MyFormsModule {}

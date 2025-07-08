@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   FormBuilder,
@@ -37,6 +37,21 @@ export class SharedFormComponent implements OnInit {
   formGroup!: FormGroup;
   styling: Styling | undefined;
 
+  @Input() isPreviewMode = false;
+  @Input() previewElements: Element[] = []; // Elements to display in preview mode
+  @Input() previewStyling: Styling = {
+    pageColor: '#f8f9fa',
+    formColor: '#fff',
+    fontColor: '#000',
+    fontFamily: 'Montserrat',
+    fontSize: 16,
+  };
+  @Output() elements = new EventEmitter<Element[]>(); // Should emit Element[]
+  @Input() previewFormTitle = '';
+  @Input() previewFormDescription = '';
+  @Input() previewLogoUrl: string | null = null; // URL for the logo image
+  @Output() previewLogoUrlChange = new EventEmitter<string | null>();
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -46,21 +61,37 @@ export class SharedFormComponent implements OnInit {
     private _tostr: ToastrService,
     private ngxService: NgxUiLoaderService,
     private _fileUploadService: FileUploadService,
-    private cdr: ChangeDetectorRef // <-- add this
+    private cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
-    this.ngxService.start(); // Start the loader
-
+    
     // Initialize the form group
     this.formGroup = this._fb.group({});
-
+    
     // Get the form ID from the route
     this.formId = this._route.snapshot.paramMap.get('formId');
-    if (this.formId) {
+    // Preview Mode
+    if( this.isPreviewMode ) {
+      this.ngxService.start(); // Start the loader
+      this.styling = this.previewStyling;
+      this.formTitle = this.previewFormTitle;
+      this.formDescription = this.previewFormDescription;
+      this.logoUrl = this.previewLogoUrl; // Use the preview logo URL
+      this.formElements = this.previewElements.map((q, ind) => {
+        return{
+          id : q.id || (ind+1).toString(),
+          ...q
+        }
+      })
+      this.elements.emit(this.formElements);
+      this.previewLogoUrlChange.emit(this.logoUrl)
+      this.initializeForm();
+      this.ngxService.stop();
+      return;
+    }else if (this.formId ) {
+      this.ngxService.start(); // Start the loader
       this.loadFormDetails(this.formId);
-    } else {
-      this.ngxService.stop(); // Stop the loader
     }
   }
 
@@ -199,7 +230,11 @@ export class SharedFormComponent implements OnInit {
   }
 
   submitForm(): void {
-    if (this.formGroup.valid) {
+    if(this.isPreviewMode) {
+      this._tostr.error('Cannot submit in preview mode.');
+      return;
+    }
+    else if (this.formGroup.valid) {
       const formValues = this.formGroup.value;
 
       // Transform the data into the desired format
