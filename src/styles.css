@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'inter', 'Montserrat'
 }
 html,
 body {
@@ -39,6 +39,9 @@ body {
 .mat-mdc-menu-content {
   background-color: #cee1f6d9 !important;
   color: #033367 !important;
+  font-weight: 700;
+  padding: 5px !important;
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12) !important;
 }
 
 .mat-mdc-menu-content button,
@@ -49,6 +52,21 @@ body {
 .mat-mdc-menu-content button:hover {
   background-color: #9ec5f1d9 !important;
   color: #033367 !important;
+}
+
+/* Global override using CSS variables */
+.form-field-wrapper .mdc-line-ripple::after {
+  border-bottom-color: var(--ripple-focus-color) !important; /* on focus */
+}
+
+.form-field-wrapper .mdc-line-ripple::before {
+  border-bottom-color: var(--ripple-hover-color) !important; /* on hover */
+}
+
+ngx-ui-loader {
+  z-index: 999999 !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */

@@ -143,6 +143,7 @@ export class SidebarComponent {
     // Clone the item to ensure no shared references for options
     const newItem = {
       ...item,
+      id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9), // Unique ID
       options: item.options ? [...item.options] : undefined,
       validations: { ...(item.validations || {}) }
     };

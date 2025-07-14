@@ -14,7 +14,7 @@
       </li>
     </ul>
   </div>
-  <button
+  <!-- <button
     mat-stroked-button
     *ngIf="isLogin"
     aria-label="LogOut button"
@@ -22,7 +22,7 @@
     (click)="logoutUser()"
   >
     Logout
-  </button>
+  </button> -->
   <button
     mat-stroked-button
     *ngIf="!isLogin"
@@ -32,21 +32,37 @@
   >
     Login
   </button>
+   <!-- User Profile Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    [ngStyle]="{'color': '#033367'}" *ngIf="isLogin">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-profile-menu">
+      <div class="user-info">
+        <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+        <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+      </div>
+      <button mat-menu-item (click)="logoutUser()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
 </mat-toolbar>
 
 <!-- Main Content -->
 <div class="my-forms-container">
-  <h1>My Forms</h1>
+  <h1>Templates</h1>
 
   <!-- Display message if no forms are available -->
   <div *ngIf="templates?.length === 0" class="no-forms">
-    <p>No forms created yet.</p>
+    <p>No Templates found.</p>
   </div>
 
   <!-- Display forms if available -->
   <div class="forms-list" *ngIf="templates?.length !== 0">
-    <mat-card *ngFor="let form of templates" class="form-card">
-      <mat-card-title [routerLink]="['/templates', form.id]">
+    <mat-card *ngFor="let form of templates" class="form-card"  [routerLink]="['/templates', form.id]">
+      <mat-card-title matTooltip="Use Template">
         {{ form.title }}
       </mat-card-title>
     </mat-card>

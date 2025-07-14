@@ -27,14 +27,30 @@
       </li>
     </ul>
   </div>
-  <button
+  <!-- <button
     mat-stroked-button
     aria-label="LogOut button"
     class="logout"
     (click)="logoutUser()"
   >
     Logout
-  </button>
+  </button> -->
+   <!-- User Profile Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    [ngStyle]="{'color': '#033367'}">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-profile-menu">
+      <div class="user-info">
+        <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+        <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+      </div>
+      <button mat-menu-item (click)="logoutUser()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
 </mat-toolbar>
 
 <!-- Search Bar, Page Size, and Sort Controls -->
@@ -47,15 +63,6 @@
     (ngModelChange)="onSearchInputChange($event)"
     aria-label="Search"
   />
-  <select
-    class="page-size-select"
-    [(ngModel)]="pageSize"
-    (change)="onPageSizeChange($event)"
-  >
-    <option *ngFor="let size of pageSizes" [value]="size">
-      {{ size }} / page
-    </option>
-  </select>
   <div class="sort-bar">
     <label for="sortBy">Sort by:</label>
     <select
@@ -82,29 +89,48 @@
 </div>
 
 <!-- Responses container -->
-<div class="responses-container">
-  <h1>Responses</h1>
+<div
+  class="responses-container"
+>
+  <h1>
+    Responses
+  </h1>
 
-  <div *ngIf="responses.length === 0" class="no-responses">
+  <div
+    *ngIf="responses.length === 0"
+    class="no-responses"
+  >
     <p>No responses available for this form.</p>
   </div>
 
   <div *ngIf="responses.length > 0" class="forms-list">
-    <div *ngFor="let response of responses" class="response-card">
-      <h2>User: {{ response.userName }} ({{ response.userEmail }})</h2>
-      <p>Submitted on: {{ response.createdAt | date: 'medium' }}</p>
+    <div
+      *ngFor="let response of responses"
+      class="response-card"
+    >
+      <h2>
+        User: {{ response.userName }} ({{ response.userEmail }})
+      </h2>
+      <p>
+        Submitted on: {{ response.createdAt | date: 'medium' }}
+      </p>
 
       <div class="form-preview">
         <ng-container *ngFor="let answer of response.answers">
           <ng-container [ngSwitch]="answer.questionType">
             <!-- Heading -->
-            <h1 *ngSwitchCase="'heading'" class="form-header">
+            <h1
+              *ngSwitchCase="'heading'"
+              class="form-header"
+            >
               {{ answer.questionText }}
             </h1>
 
             <!-- File -->
             <div *ngSwitchCase="'file'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
+              <p>
+                {{ answer.questionText }}
+              </p>
               <a
                 href="#"
                 (click)="
@@ -117,7 +143,11 @@
 
             <!-- Signature -->
             <div *ngSwitchCase="'signature'" class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
+              <p
+                class="question-text"
+              >
+                {{ answer.questionText }}
+              </p>
               <img
                 [src]="answer.responseAnswer"
                 alt="Signature"
@@ -127,8 +157,14 @@
 
             <!-- Default -->
             <div *ngSwitchDefault class="form-field">
-              <p class="question-text">{{ answer.questionText }}</p>
-              <p>{{ answer.responseAnswer }}</p>
+              <p
+                class="question-text"
+              >
+                {{ answer.questionText }}
+              </p>
+              <p>
+                {{ answer.responseAnswer }}
+              </p>
             </div>
           </ng-container>
         </ng-container>
@@ -138,29 +174,37 @@
 
   <!-- Pagination Controls -->
   <div class="pagination-container" *ngIf="totalPages">
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page - 1)"
-      [disabled]="page === 1"
-    >
-      &lt; Prev
-    </button>
-    <ng-container *ngFor="let p of pageNumbers">
-      <button
-        mat-stroked-button
-        [color]="p === page ? 'primary' : ''"
-        (click)="onPageChange(p)"
+    <div class="page-select">
+      <span class="page-info"
+      >Rows per page</span>
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (change)="onPageSizeChange($event)"
       >
-        {{ p }}
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+    <div class="page-buttons">
+      <button mat-button (click)="onPageChange(page - 1)" [disabled]="page === 1">
+        &lt; Prev
       </button>
-    </ng-container>
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page + 1)"
-      [disabled]="page === totalPages"
-    >
-      Next &gt;
-    </button>
-    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+    
+      <ng-container *ngFor="let p of pageNumbers">
+        <button *ngIf="p !== '...'; else dots" [ngStyle]="p === page ? {background: '#002244', color: 'white'} : {}"
+          mat-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+          {{ p }}
+        </button>
+        <ng-template #dots>
+          <button mat-button disabled>...</button>
+        </ng-template>
+      </ng-container>
+    
+      <button mat-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">
+        Next &gt;
+      </button>
+    </div>
   </div>
 </div>

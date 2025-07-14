@@ -12,7 +12,7 @@
 
 .logo a {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700;
   color: #033367;
   text-decoration: none;
 }
@@ -29,13 +29,13 @@
   font-size: 1rem;
   color: #033367;
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .auth button {
   margin-left: 8px;
   color: #033367;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .login {

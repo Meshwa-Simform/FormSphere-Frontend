@@ -16,36 +16,32 @@
       </li>
     </ul>
   </div>
-  <button
+  <!-- <button
     mat-stroked-button
     aria-label="LogOut button"
     class="logout"
     (click)="logoutUser()"
   >
     Logout
-  </button>
+  </button> -->
+   <!-- User Profile Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    [ngStyle]="{'color': '#033367'}">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-profile-menu">
+      <div class="user-info">
+        <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+        <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+      </div>
+      <button mat-menu-item (click)="logoutUser()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
 </mat-toolbar>
 
-<!-- Search Bar and Page Size -->
-<div class="search-container">
-  <input
-    type="text"
-    class="search-input"
-    placeholder="Search by form title..."
-    [(ngModel)]="searchInput"
-    (ngModelChange)="onSearchInputChange($event)"
-    aria-label="Search"
-  />
-  <select
-    class="page-size-select"
-    [(ngModel)]="pageSize"
-    (change)="onPageSizeChange($event)"
-  >
-    <option *ngFor="let size of pageSizes" [value]="size">
-      {{ size }} / page
-    </option>
-  </select>
-</div>
 
 <!-- Confirmation Dialog Template -->
 <ng-template #deleteDialog let-dialogRef="dialogRef">
@@ -63,11 +59,22 @@
 
 <!-- Main Content -->
 <div class="my-forms-container">
-  <h1>My Forms</h1>
-
+  <!-- Search Bar and Page Size -->
+  <div class="search-container">
+    <h1>My Forms</h1>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by form title..."
+      [(ngModel)]="searchInput"
+      (ngModelChange)="onSearchInputChange($event)"
+      aria-label="Search"
+    />
+  </div>
+  
   <!-- Display message if no forms are available -->
   <div *ngIf="forms.length === 0" class="no-forms">
-    <p>No forms created yet.</p>
+    <p>No forms found {{searchQuery === '' ? '' : `for ${searchQuery}`}}</p>
   </div>
 
   <!-- Display forms if available -->
@@ -76,8 +83,32 @@
       <mat-card-title [routerLink]="['/update-form', form.id]">
         {{ form.title }}
       </mat-card-title>
+      <!-- Inline Action Icons -->
+      <div class="action-icons">
+        <button mat-icon-button (click)="viewResponses(form.id)" matTooltip="View Responses"
+          class="view-button">
+          <mat-icon>article</mat-icon>
+        </button>
+        <button mat-icon-button (click)="updateForm(form.id)" matTooltip="Update Form"
+          class="edit-button">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          matTooltip="Copy Share Link"
+          (click)="copyLink('http://localhost:4200/shared-form/' + form.id)"
+          class="share-button"
+        >
+          <mat-icon>share</mat-icon>
+        </button>
+        <button mat-icon-button (click)="openDeleteDialog(deleteDialog, form.id)" matTooltip="Delete Form"
+        class="delete-button">
+          <mat-icon color="warn">delete</mat-icon>
+        </button>
+      </div>
+
       <!-- Copy Button -->
-      <button
+      <!-- <button
         mat-icon-button
         matSuffix
         (click)="copyLink('http://localhost:4200/shared-form/' + form.id)"
@@ -85,18 +116,18 @@
         matTooltip="Copy Link"
       >
         <mat-icon>content_copy</mat-icon>
-      </button>
+      </button> -->
       <!-- 3-dot menu button -->
-      <button
+      <!-- <button
         mat-icon-button
         [matMenuTriggerFor]="menu"
         class="menu-button"
         matTooltip="More Options"
       >
         <mat-icon>more_vert</mat-icon>
-      </button>
+      </button> -->
       <!-- Dropdown menu -->
-      <mat-menu #menu="matMenu">
+      <!-- <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="viewResponses(form.id)">
           <mat-icon>article</mat-icon>
           View Responses
@@ -113,9 +144,9 @@
           <mat-icon>delete</mat-icon>
           Delete Form
         </button>
-      </mat-menu>
+      </mat-menu> -->
       <!-- Submenu for Share Link -->
-      <mat-menu #shareMenu="matMenu">
+      <!-- <mat-menu #shareMenu="matMenu">
         <div class="share-link-container">
           <mat-form-field appearance="outline" class="share-link-field">
             <input
@@ -132,35 +163,42 @@
             </button>
           </mat-form-field>
         </div>
-      </mat-menu>
+      </mat-menu> -->
     </mat-card>
   </div>
 
   <!-- Pagination Controls -->
   <div class="pagination-container" *ngIf="totalPages">
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page - 1)"
-      [disabled]="page === 1"
-    >
-      &lt; Prev
-    </button>
-    <ng-container *ngFor="let p of pageNumbers">
-      <button
-        mat-stroked-button
-        [color]="p === page ? 'primary' : ''"
-        (click)="onPageChange(p)"
+    <div class="page-select">
+      <span class="page-info">Rows per page</span>
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (change)="onPageSizeChange($event)"
       >
-        {{ p }}
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+    <div class="page-buttons">
+      <button mat-button (click)="onPageChange(page - 1)" [disabled]="page === 1" [ngStyle]="page === 1 ? {} : {color: '#033367'}">
+        &lt; Prev
       </button>
-    </ng-container>
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page + 1)"
-      [disabled]="page === totalPages"
-    >
-      Next &gt;
-    </button>
-    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+    
+      <ng-container *ngFor="let p of pageNumbers">
+        <button *ngIf="p !== '...'; else dots" [ngStyle]="p === page ? {background: '#002244', color: 'white'} : {color: '#033367'}"
+          mat-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+          {{ p }}
+        </button>
+        <ng-template #dots>
+          <button mat-button disabled>...</button>
+        </ng-template>
+      </ng-container>
+    
+      <button mat-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages" [ngStyle]="page === totalPages ? {} : {color: '#033367'}">
+        Next &gt;
+      </button>
+    </div>
   </div>
 </div>

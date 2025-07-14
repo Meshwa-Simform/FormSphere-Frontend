@@ -12,7 +12,6 @@
   width: 60%;
   max-width: 800px;
   min-width: 400px;
-  min-height: 600px;
   margin: 10px auto;
   padding: 20px;
   background-color: #ffffff;
@@ -86,4 +85,61 @@
 
 button {
   min-width: 120px;
+}
+
+/* Logo section styles */
+.logo-upload-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 18px;
+  min-height: 50px;
+}
+
+.logo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-image {
+  max-width: 200px;
+  max-height: 100px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.page-indicator {
+  text-align: center;
+  margin: 10px 0;
+  font-weight: 600;
+  color: #666;
+}
+
+.form-navigation {
+  margin-top: 20px;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.navigation-buttons button {
+  min-width: 100px;
+  padding: 10px 20px;
+}
+
+.form-buttons:not(.multi-page) {
+  text-align: center;
+}
+
+.form-buttons.multi-page {
+  margin-top: 20px;
+}
+
+.next-button{
+  justify-content: flex-end;
 }

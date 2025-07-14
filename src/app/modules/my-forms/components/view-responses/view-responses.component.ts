@@ -7,6 +7,9 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { Styling } from '../../interface/formOutput';
+import { FormService } from '../../../../services/forms/form.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-view-responses',
@@ -17,22 +20,25 @@ import { debounceTime } from 'rxjs/operators';
   styleUrl: './view-responses.component.css',
 })
 export class ViewResponsesComponent implements OnInit, OnDestroy {
+  userName = '';
+  userEmail = '';
   formId: string | null = null;
   responses: Responses[] = [];
   totalResponses = 0;
   searchQuery = '';
   searchInput = '';
   page = 1;
-  pageSize = 5;
-  pageSizes = [2, 5, 8, 10, 15, 20];
+  pageSize = 6;
+  pageSizes = [6, 9, 12, 15, 18];
   totalPages = 1;
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'desc';
   sortOptions = [
     { value: 'createdAt', label: 'Date' },
-    { value: 'userName', label: 'Name' },
-    { value: 'userEmail', label: 'Email' },
+    { value: 'name', label: 'Name' },
+    { value: 'email', label: 'Email' },
   ];
+  formStyling: Styling | null = null;
 
   private searchInputChanged: Subject<string> = new Subject<string>();
   private searchSub?: Subscription;
@@ -43,17 +49,22 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
     private _authService: AuthService,
     private _router: Router,
     private _http: HttpClient,
-    private _toastx: ToastrService
+    private _toastx: ToastrService,
+    private _formSerice: FormService,
+    private _ngxService: NgxUiLoaderService
   ) {}
 
   ngOnInit(): void {
+    this._ngxService.start();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.userName = user.name;
+    this.userEmail = user.email;
     this.formId = this._route.snapshot.paramMap.get('formId');
     this.searchSub = this.searchInputChanged
       .pipe(debounceTime(400))
       .subscribe((value) => {
         this.searchQuery = value.trim();
         this.page = 1;
-        this.updateRoute();
         this.getResponses();
       });
 
@@ -68,7 +79,6 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
       if (sortOrderParam === 'asc' || sortOrderParam === 'desc')
         this.sortOrder = sortOrderParam;
       this.getResponses();
-      this.updateRoute();
     });
   }
 
@@ -95,14 +105,27 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
             1,
             Math.ceil(this.totalResponses / this.pageSize)
           );
+          this.updatePageNumbers();
+          this._ngxService.stop()
         },
         error: (err) => {
           this._toastx.error(err.error.message || 'Failed to fetch responses');
           this.responses = [];
           this.totalResponses = 0;
           this.totalPages = 1;
+          this.updatePageNumbers();
+          this._ngxService.stop();
         },
       });
+    this._formSerice.getFormById(this.formId).subscribe({
+      next: (form) => {
+        this.formStyling = form.data.styling ?? null;
+      },
+      error: (err) => {
+        console.error('Error fetching form styling:', err);
+        this.formStyling = null; // Reset styling on error
+      },
+    });
   }
 
   onSearchInputChange(value: string): void {
@@ -110,60 +133,70 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
     this.searchInputChanged.next(value);
   }
 
-  onPageChange(newPage: number): void {
+  onPageChange(newPage: number | string): void {
+    if( typeof newPage === 'string' ) return;
     if (newPage < 1 || newPage > this.totalPages) return;
     this.page = newPage;
-    this.updateRoute();
     this.getResponses();
+    this.updatePageNumbers();
   }
 
   onPageSizeChange(event: Event) {
     const value = (event.target as HTMLSelectElement)?.value;
     this.pageSize = Number(value);
     this.page = 1;
-    this.updateRoute();
     this.getResponses();
+    this.updatePageNumbers();
   }
 
   onSortByChange(event: Event) {
     const value = (event.target as HTMLSelectElement)?.value;
     this.sortBy = value;
     this.page = 1;
-    this.updateRoute();
     this.getResponses();
   }
 
   onSortOrderChange() {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     this.page = 1;
-    this.updateRoute();
     this.getResponses();
   }
 
-  updateRoute(): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {
-        page: this.page,
-        pageSize: this.pageSize,
-        sortBy: this.sortBy,
-        sortOrder: this.sortOrder,
-      },
-      queryParamsHandling: 'merge',
-    });
-  }
 
-  get pageNumbers(): number[] {
-    const total = this.totalPages;
-    const current = this.page;
-    const delta = 2;
-    let start = Math.max(1, current - delta);
-    let end = Math.min(total, current + delta);
-    if (current <= delta) end = Math.min(total, 1 + 2 * delta);
-    if (current + delta > total) start = Math.max(1, total - 2 * delta);
-    const pages = [];
-    for (let i = start; i <= end; i++) pages.push(i);
-    return pages;
+  pageNumbers: (number | string)[] = [];
+
+  updatePageNumbers(): void {
+    this.pageNumbers = [];
+
+    if (this.totalPages <= 5) {
+      // Show all pages if few pages
+      for (let i = 1; i <= this.totalPages; i++) {
+        this.pageNumbers.push(i);
+      }
+    } else {
+      // Always show first page
+      this.pageNumbers.push(1);
+
+      // Show dots if current page > 3
+      if (this.page > 3) {
+        this.pageNumbers.push('...');
+      }
+
+      // Show middle pages
+      const start = Math.max(2, this.page - 1);
+      const end = Math.min(this.totalPages - 1, this.page + 1);
+      for (let i = start; i <= end; i++) {
+        this.pageNumbers.push(i);
+      }
+
+      // Show dots if current page < totalPages - 2
+      if (this.page < this.totalPages - 2) {
+        this.pageNumbers.push('...');
+      }
+
+      // Always show last page
+      this.pageNumbers.push(this.totalPages);
+    }
   }
 
   downloadFile(fileUrl: string): void {

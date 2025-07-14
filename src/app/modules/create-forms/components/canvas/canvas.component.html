@@ -12,372 +12,496 @@
   </mat-dialog-actions>
 </ng-template>
 
-<div
-  class="form-preview"
-  [ngStyle]="{
-    'background-color':
-      styling && styling.formColor ? styling.formColor : '#fff',
-    color: styling && styling.fontColor ? styling.fontColor : '#000',
-    'font-family':
-      styling && styling.fontFamily ? styling.fontFamily : 'Montserrat',
-    'font-size':
-      styling && styling.fontSize
-        ? typeof styling.fontSize === 'number'
-          ? styling.fontSize + 'px'
-          : styling.fontSize
-        : '16px',
-  }"
->
-  <div class="form-preview-header">
-    <h1
-      class="form-title"
-      [ngStyle]="{
-        color: styling && styling.fontColor ? styling.fontColor : '#000',
-        'font-family':
-          styling && styling.fontFamily ? styling.fontFamily : 'Montserrat',
-        'font-size.px': styling && styling.fontSize ? styling.fontSize + 4 : 20,
-      }"
-      contenteditable="true"
-      (focus)="clearPlaceholder('formTitle', $event)"
-      (blur)="restorePlaceholder('formTitle', $event)"
-    >
-      {{ formTitle }}
-    </h1>
-    <h3
-      class="form-subtitle"
-      [ngStyle]="{
-        color: styling && styling.fontColor ? styling.fontColor : '#000',
-        'font-family':
-          styling && styling.fontFamily ? styling.fontFamily : 'Montserrat',
-        'font-size.px': styling && styling.fontSize ? styling.fontSize : 16,
-      }"
-      contenteditable="true"
-      (focus)="clearPlaceholder('formDescription', $event)"
-      (blur)="restorePlaceholder('formDescription', $event)"
-    >
-      {{ formDescription }}
-    </h3>
+<div class="form-data">
+  <div class="form-logo">
+    <div class="form-cover-wrapper" *ngIf="!logoUrl">
+      <div class="form-cover-break" (click)="triggerLogoInput()" role="button" tabindex="0"
+      (keyup)="triggerLogoInput()">
+        + ADD YOUR LOGO
+      </div>
+      <input
+        #logoInput
+        type="file"
+        accept="image/*"
+        style="display: none"
+        (change)="onLogoSelected($event)"
+      />
+    </div>
+    <div *ngIf="logoUrl" class="logo-preview">
+      <img [src]="logoUrl" alt="Logo" class="logo-image" />
+      <button mat-button color="primary" (click)="triggerLogoInput()">
+        Change Logo
+      </button>
+    </div>
   </div>
-
   <div
-    class="form-canvas"
-    [style.background]="
-      styling && styling.formColor ? styling.formColor : '#f8f9fa'
-    "
-    [style.color]="styling && styling.fontColor ? styling.fontColor : '#000'"
-    [style.font-family]="
-      styling && styling.fontFamily ? styling.fontFamily : 'Montserrat'
-    "
-    [style.font-size]="
-      styling && styling.fontSize
-        ? typeof styling.fontSize === 'number'
-          ? styling.fontSize + 'px'
-          : styling.fontSize
-        : '16px'
-    "
-    cdkDropList
-    id="targetList"
-    [cdkDropListConnectedTo]="['sourceList']"
-    [cdkDropListData]="formElements"
-    (cdkDropListDropped)="drop($event)"
+    class="form-preview"
+    [ngStyle]="{
+      'background-color':
+        styling && styling.formColor ? styling.formColor : '#fff',
+      color: styling && styling.fontColor ? styling.fontColor : '#01458e',
+      'font-family':
+        styling && styling.fontFamily ? styling.fontFamily : 'Inter',
+      'font-size':
+        styling && styling.fontSize
+          ? typeof styling.fontSize === 'number'
+            ? styling.fontSize + 'px'
+            : styling.fontSize
+          : '16px',
+    }"
   >
-    <ng-container *ngIf="formElements.length === 0">
-      <div class="empty-canvas">
-        <p>Click or Drag and drop elements here to create your form.</p>
-      </div>
-    </ng-container>
-    <ng-container *ngFor="let field of formElements">
-      <div
-        cdkDrag
-        [cdkDragData]="field"
-        [cdkDragDisabled]="isEditing"
-        cdkDragLockAxis="y"
-        cdkDragBoundary=".form-canvas"
-        (cdkDragStarted)="onDragStart()"
-        (cdkDragEnded)="onDragEnd()"
-        tabindex="0"
-        (click)="selectElement(field)"
-        (keydown.enter)="selectElement(field)"
-        (keydown.space)="selectElement(field)"
-        [class.selected]="field === selectedElement"
+    <!-- Logo Upload Section -->
+    <!-- <div class="logo-upload-section">
+      <ng-container *ngIf="!logoUrl">
+        <label
+          class="logo-upload-label"
+          (click)="triggerLogoInput()"
+          (keyup.enter)="triggerLogoInput()"
+          (keyup.space)="triggerLogoInput()"
+          for="logoInput"
+          tabindex="0"
+          role="button"
+          aria-label="Add your logo"
+        >
+          <span>+ ADD YOUR LOGO</span>
+        </label>
+      </ng-container>
+      <ng-container *ngIf="logoUrl">
+        <div class="logo-preview">
+          <img [src]="logoUrl" alt="Logo" class="logo-image" />
+          <button mat-stroked-button color="primary" (click)="triggerLogoInput()">
+            Change Logo
+          </button>
+        </div>
+      </ng-container>
+      <input
+        #logoInput
+        type="file"
+        accept="image/*"
+        style="display: none"
+        (change)="onLogoSelected($event)"
+      />
+    </div> -->
+
+    <div class="form-preview-header">
+      <h1
+        class="form-title"
+        [ngStyle]="{
+          color: styling && styling.fontColor ? styling.fontColor : '#01458e',
+          'font-family':
+            styling && styling.fontFamily ? styling.fontFamily : 'Inter',
+          'font-size.px': styling && styling.fontSize ? styling.fontSize + 4 : 20,
+        }"
+        contenteditable="true"
+        (focus)="clearPlaceholder('formTitle', $event)"
+        (blur)="restorePlaceholder('formTitle', $event)"
       >
-        <!-- Render field input -->
-        <ng-container [ngSwitch]="field.type">
-          <!-- Headings -->
-          <h1
-            *ngSwitchCase="'heading'"
-            class="form-heading"
-            contenteditable="true"
-            (focus)="onEditStart()"
-            [style.font-size]="
-              styling && styling.fontSize
-                ? typeof styling.fontSize === 'number'
-                  ? styling.fontSize + 'px'
-                  : styling.fontSize
-                : '16px'
-            "
-            (blur)="updateLabel(field, $event)"
-          >
-            {{ field.outLabel }}
-          </h1>
+        {{ formTitle }}
+      </h1>
+      <h3
+        class="form-subtitle"
+        [ngStyle]="{
+          color: styling && styling.fontColor ? styling.fontColor : '#01458e',
+          'font-family':
+            styling && styling.fontFamily ? styling.fontFamily : 'Inter',
+          'font-size.px': styling && styling.fontSize ? styling.fontSize : 16,
+        }"
+        contenteditable="true"
+        (focus)="clearPlaceholder('formDescription', $event)"
+        (blur)="restorePlaceholder('formDescription', $event)"
+      >
+        {{ formDescription }}
+      </h3>
+    </div>
 
-          <!-- Editable label for each field -->
-          <h2
-            *ngIf="field.type !== 'heading'"
-            class="form-subHeading"
-            contenteditable="true"
-            [style.font-size]="
-              styling && styling.fontSize
-                ? typeof styling.fontSize === 'number'
-                  ? styling.fontSize + 'px'
-                  : styling.fontSize
-                : '16px'
-            "
-            (focus)="onEditStart()"
-            (blur)="updateLabel(field, $event)"
-          >
-            {{ field.outLabel }}
-          </h2>
-          <!-- Text / Email / Number -->
-          <mat-form-field
-            *ngSwitchCase="'text'"
-            appearance="fill"
-            class="input-field form-field"
-          >
-            <input matInput disabled />
-            <mat-hint>{{ field.placeholder }}</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field
-            *ngSwitchCase="'email'"
-            appearance="fill"
-            class="input-field form-field"
-          >
-            <input matInput type="email" disabled />
-            <mat-hint>{{ field.placeholder }}</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field
-            *ngSwitchCase="'number'"
-            appearance="fill"
-            class="input-field form-field"
-          >
-            <input matInput type="number" disabled />
-            <mat-hint>{{ field.placeholder }}</mat-hint>
-          </mat-form-field>
-
-          <!-- Textarea -->
-          <mat-form-field
-            *ngSwitchCase="'textarea'"
-            appearance="fill"
-            class="input-field form-field"
-          >
-            <textarea matInput disabled></textarea>
-            <mat-hint>{{ field.placeholder }}</mat-hint>
-          </mat-form-field>
-
-          <!-- Date -->
-          <mat-form-field
-            *ngSwitchCase="'date'"
-            appearance="fill"
-            class="input-field form-field"
-          >
-            <input
-              matInput
-              [matDatepicker]="picker"
-              [placeholder]="field.placeholder || 'Select Date'"
-              disabled
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <mat-hint>Date</mat-hint>
-          </mat-form-field>
-
-          <!-- Dropdown -->
-          <div *ngSwitchCase="'dropdown'" class="form-card">
-            <div
-              *ngFor="let option of field.options; let i = index"
-              class="option-item"
-            >
-              <input
-                matInput
-                [value]="option"
-                (focus)="onOptionFocus($event, i)"
-                (blur)="updateOption(field, i, $event)"
-                placeholder="Option {{ i + 1 }}"
-                [ngStyle]="{
-                  'background-color':
-                    'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              />
-              <button
-                mat-icon-button
-                (click)="removeOption(field, i)"
-                [ngStyle]="{
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <button
-              mat-button
-              (click)="addOption(field)"
-              [ngStyle]="{
-                color:
-                  styling && styling.fontColor ? styling.fontColor : '#000',
-              }"
-            >
-              Add Option
-            </button>
-          </div>
-
-          <!-- Radio -->
-          <div *ngSwitchCase="'radio'" class="radio-group form-field">
-            <div
-              *ngFor="let option of field.options; let i = index"
-              class="option-item"
-            >
-              <mat-radio-button disabled [value]="option"></mat-radio-button>
-              <input
-                matInput
-                [value]="option"
-                (focus)="onOptionFocus($event, i)"
-                (blur)="updateOption(field, i, $event)"
-                placeholder="Option {{ i + 1 }}"
-                [ngStyle]="{
-                  'background-color':
-                    'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              />
-              <button
-                mat-icon-button
-                (click)="removeOption(field, i)"
-                [ngStyle]="{
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <button
-              mat-button
-              (click)="addOption(field)"
-              [ngStyle]="{
-                color:
-                  styling && styling.fontColor ? styling.fontColor : '#000',
-              }"
-            >
-              Add Option
-            </button>
-          </div>
-
-          <!-- Checkbox -->
-          <div *ngSwitchCase="'checkbox'" class="form-card">
-            <div
-              *ngFor="let option of field.options; let i = index"
-              class="option-item"
-            >
-              <mat-checkbox disabled [value]="option"></mat-checkbox>
-              <input
-                matInput
-                [value]="option"
-                (focus)="onOptionFocus($event, i)"
-                (blur)="updateOption(field, i, $event)"
-                placeholder="Option {{ i + 1 }}"
-                [ngStyle]="{
-                  'background-color':
-                    'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              />
-              <button
-                mat-icon-button
-                (click)="removeOption(field, i)"
-                [ngStyle]="{
-                  color:
-                    styling && styling.fontColor ? styling.fontColor : '#000',
-                }"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <button
-              mat-button
-              (click)="addOption(field)"
-              [ngStyle]="{
-                color:
-                  styling && styling.fontColor ? styling.fontColor : '#000',
-              }"
-            >
-              Add Option
-            </button>
-          </div>
-
-          <!-- File -->
-          <label *ngSwitchCase="'file'" class="input-field form-field">
-            <input type="file" disabled />
-          </label>
-
-          <!-- Signature -->
-          <mat-card *ngSwitchCase="'signature'" class="form-field">
-            <signature-pad
-              [options]="signaturePadOptions"
-              (onEnd)="drawComplete()"
-            ></signature-pad>
-
-            <div class="actions">
-              <button mat-raised-button color="warn" (click)="clearSignature()">
-                Clear
-              </button>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="saveSignature()"
-              >
-                Save
-              </button>
-            </div>
-          </mat-card>
-        </ng-container>
-
-        <!-- Drag button -->
-        <button
-          *ngIf="field === selectedElement"
-          class="drag-button"
-          cdkDragHandle
+    <div *ngFor="let page of pages; let i = index" class="form-page-wrapper">
+      <!-- Only show current page -->
+      <div *ngIf="i === currentPageIndex">
+        <!-- Page Header -->
+        <div class="page-label"
+        (mouseenter)="hoveredPageIndex = i"
+          (mouseleave)="hoveredPageIndex = -1"
+          (click)="removePage(i) "
+          tabindex="0"
+          (keyup)="triggerLogoInput()">
+          {{ hoveredPageIndex === i ? 'Remove Page' : 'Page '+ (i + 1) }}</div>
+        <div
+          class="form-canvas"
+          [style.background]="
+            styling && styling.formColor ? styling.formColor : '#fff'
+          "
+          [style.color]="styling && styling.fontColor ? styling.fontColor : '#01458e'"
+          [style.font-family]="
+            styling && styling.fontFamily ? styling.fontFamily : 'Inter'
+          "
+          [style.font-size]="
+            styling && styling.fontSize
+              ? typeof styling.fontSize === 'number'
+                ? styling.fontSize + 'px'
+                : styling.fontSize
+              : '16px'
+          "
+          cdkDropList
+          id="targetList"
+          [cdkDropListConnectedTo]="['sourceList']"
+          [cdkDropListData]="pages[currentPageIndex]"
+          (cdkDropListDropped)="drop($event)"
         >
-          <mat-icon>drag_indicator</mat-icon>
-        </button>
+          <ng-container *ngIf="pages[currentPageIndex].length === 0">
+            <div class="empty-canvas">
+              <p>Click or Drag and drop elements here to create your form.</p>
+            </div>
+          </ng-container>
+          <ng-container *ngFor="let field of pages[currentPageIndex]">
+            <div
+              cdkDrag
+              [cdkDragData]="field"
+              [cdkDragDisabled]="isEditing"
+              cdkDragLockAxis="y"
+              cdkDragBoundary=".form-canvas"
+              (cdkDragStarted)="onDragStart()"
+              (cdkDragEnded)="onDragEnd()"
+              tabindex="0"
+              (click)="selectElement(field)"
+              (keydown.enter)="selectElement(field)"
+              (keydown.space)="selectElement(field)"
+              [class.selected]="field === selectedElement"
+            >
+              <!-- Render field input -->
+              <ng-container [ngSwitch]="field.type">
+                <!-- Headings -->
+                <h1
+                  *ngSwitchCase="'heading'"
+                  class="form-heading"
+                  contenteditable="true"
+                  (focus)="onEditStart()"
+                  [ngStyle]="{
+                    'font-size': styling && styling.fontSize ? styling.fontSize + 'px' : '16px',
+                    'font-family': styling && styling.fontFamily ? styling.fontFamily : 'Inter'
+                  }"
+                  (blur)="updateLabel(field, $event)"
+                >
+                  {{ field.outLabel }}
+                </h1>
 
-        <!-- Delete button for the selected element -->
-        <button
-          *ngIf="field === selectedElement"
-          class="delete-button"
-          (click)="deleteElement()"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
+                <!-- Editable label for each field -->
+                <h2
+                  *ngIf="field.type !== 'heading'"
+                  class="form-subHeading"
+                  contenteditable="true"
+                  [ngStyle]="{
+                    'font-size': styling && styling.fontSize ? styling.fontSize + 'px' : '16px',
+                    'font-family': styling && styling.fontFamily ? styling.fontFamily : 'Inter'
+                  }"
+                  (focus)="onEditStart()"
+                  (blur)="updateLabel(field, $event)"
+                >
+                  {{ field.outLabel }}
+                </h2>
+                <!-- Text / Email / Number -->
+                <mat-form-field
+                  *ngSwitchCase="'text'"
+                  appearance="outline"
+                  class="input-field form-field"
+                >
+                  <input matInput disabled />
+                </mat-form-field>
+
+                <mat-form-field
+                  *ngSwitchCase="'email'"
+                  appearance="outline"
+                  class="input-field form-field"
+                >
+                  <input matInput type="email" disabled />
+                </mat-form-field>
+
+                <mat-form-field
+                  *ngSwitchCase="'number'"
+                  appearance="outline"
+                  class="input-field form-field"
+                >
+                  <input matInput type="number" disabled />
+                </mat-form-field>
+
+                <!-- Textarea -->
+                <mat-form-field
+                  *ngSwitchCase="'textarea'"
+                  appearance="outline"
+                  class="input-field form-field"
+                >
+                  <textarea matInput disabled></textarea>
+                </mat-form-field>
+
+                <!-- Date -->
+                <mat-form-field
+                  *ngSwitchCase="'date'"
+                  appearance="outline"
+                  class="input-field form-field"
+                >
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    disabled
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-hint>Date</mat-hint>
+                </mat-form-field>
+
+                <!-- Dropdown -->
+                <div *ngSwitchCase="'dropdown'" class="form-card">
+                  <div
+                    *ngFor="let option of field.options; let i = index"
+                    class="option-item"
+                  >
+                    <input
+                      matInput
+                      [value]="option"
+                      (focus)="onOptionFocus($event, i)"
+                      (blur)="updateOption(field, i, $event)"
+                      placeholder="Option {{ i + 1 }}"
+                      [ngStyle]="{
+                        'background-color':
+                          'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    />
+                    <button
+                      mat-icon-button
+                      (click)="removeOption(field, i)"
+                      [ngStyle]="{
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <button
+                    mat-button
+                    (click)="addOption(field)"
+                    [ngStyle]="{
+                      color:
+                        styling && styling.fontColor ? styling.fontColor : '#01458e',
+                    }"
+                  >
+                    Add Option
+                  </button>
+                </div>
+
+                <!-- Radio -->
+                <div *ngSwitchCase="'radio'" class="radio-group form-field">
+                  <div
+                    *ngFor="let option of field.options; let i = index"
+                    class="option-item"
+                  >
+                    <mat-radio-button disabled [value]="option"></mat-radio-button>
+                    <input
+                      matInput
+                      [value]="option"
+                      (focus)="onOptionFocus($event, i)"
+                      (blur)="updateOption(field, i, $event)"
+                      placeholder="Option {{ i + 1 }}"
+                      [ngStyle]="{
+                        'background-color':
+                          'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    />
+                    <button
+                      mat-icon-button
+                      (click)="removeOption(field, i)"
+                      [ngStyle]="{
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <button
+                    mat-button
+                    (click)="addOption(field)"
+                    [ngStyle]="{
+                      color:
+                        styling && styling.fontColor ? styling.fontColor : '#01458e',
+                    }"
+                  >
+                    Add Option
+                  </button>
+                </div>
+
+                <!-- Checkbox -->
+                <div *ngSwitchCase="'checkbox'" class="form-card">
+                  <div
+                    *ngFor="let option of field.options; let i = index"
+                    class="option-item"
+                  >
+                    <mat-checkbox disabled [value]="option"></mat-checkbox>
+                    <input
+                      matInput
+                      [value]="option"
+                      (focus)="onOptionFocus($event, i)"
+                      (blur)="updateOption(field, i, $event)"
+                      placeholder="Option {{ i + 1 }}"
+                      [ngStyle]="{
+                        'background-color':
+                          'var(--mdc-filled-text-field-disabled-container-color, color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent))',
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    />
+                    <button
+                      mat-icon-button
+                      (click)="removeOption(field, i)"
+                      [ngStyle]="{
+                        color:
+                          styling && styling.fontColor ? styling.fontColor : '#01458e',
+                      }"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <button
+                    mat-button
+                    (click)="addOption(field)"
+                    [ngStyle]="{
+                      color:
+                        styling && styling.fontColor ? styling.fontColor : '#01458e',
+                    }"
+                  >
+                    Add Option
+                  </button>
+                </div>
+
+                <!-- File -->
+                <label *ngSwitchCase="'file'" class="input-field form-field">
+                  <input type="file" disabled />
+                </label>
+
+                <!-- Signature -->
+                <mat-card *ngSwitchCase="'signature'" class="form-field">
+                  <signature-pad
+                    [options]="signaturePadOptions"
+                    (onEnd)="drawComplete()"
+                  ></signature-pad>
+
+                  <div class="actions">
+                    <button mat-raised-button color="warn" (click)="clearSignature()">
+                      Clear
+                    </button>
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="saveSignature()"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </mat-card>
+              </ng-container>
+
+              <!-- Drag button -->
+              <button
+                *ngIf="field === selectedElement"
+                class="drag-button"
+                cdkDragHandle
+              >
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+
+              <!-- Delete button for the selected element -->
+              <button
+                *ngIf="field === selectedElement"
+                class="delete-button"
+                (click)="deleteElement()"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+        
+        <!-- Navigation and buttons for current page only -->
+        <!-- Single Page -->
+        <div class="form-submit-button" *ngIf="pages.length === 1" style="justify-content: flex-end;">
+          <button mat-flat-button color="primary" [ngStyle]="{
+            'background-color': styling?.pageColor,
+            color: styling?.fontColor,
+            'font-family': styling?.fontFamily || 'Inter',
+            'font-weight': 'bold'
+          }">Submit</button>
+        </div>
+
+        <!-- First Page -->
+        <div class="form-submit-button" *ngIf="pages.length > 1 && currentPageIndex === 0" style="justify-content: flex-end;">
+          <button mat-flat-button color="primary" (click)="goToPage(currentPageIndex + 1)" [ngStyle]="{
+            'background-color': '#2e69ff',
+            color: 'white'
+          }">Next</button>
+        </div>
+
+        <!-- Middle Pages -->
+        <div class="form-submit-button" *ngIf="pages.length > 1 && currentPageIndex > 0 && currentPageIndex < pages.length - 1">
+          <button mat-flat-button color="basic" (click)="goToPage(currentPageIndex - 1)" [ngStyle]="{
+            'background-color': '#ddd',
+            color: 'black'
+          }">Back</button>
+          <button mat-flat-button color="primary" (click)="goToPage(currentPageIndex + 1)" [ngStyle]="{
+            'background-color': '#2e69ff',
+            color: 'white'
+          }">Next</button>
+        </div>
+
+        <!-- Last Page -->
+        <div class="form-submit-button" *ngIf="pages.length > 1 && currentPageIndex === pages.length - 1">
+          <button mat-flat-button color="basic" (click)="goToPage(currentPageIndex - 1)" [ngStyle]="{
+            'background-color': '#ddd',
+            color: 'black'
+          }">Back</button>
+          <button mat-flat-button color="accent" [ngStyle]="{
+            'background-color': styling?.pageColor,
+            color: styling?.fontColor,
+            'font-family': styling?.fontFamily || 'Inter',
+            'font-weight': 'bold'
+          }">Submit</button>
+        </div>
+
+        <!-- Add New Page -->
+        <div
+          class="page-action"
+          (click)="addPage(currentPageIndex)"
+          tabindex="0"
+          (keyup)="triggerLogoInput()"
+        >'+ ADD NEW PAGE'</div>
       </div>
-    </ng-container>
-  </div>
+    </div>
 
+    <!-- Page Navigation -->
+    <div class="page-navigation" *ngIf="pages.length > 1">
+      <button 
+        *ngFor="let page of pages; let i = index"
+        mat-button
+        [color]="i === currentPageIndex ? 'primary' : ''"
+        (click)="goToPage(i)"
+        [ngStyle]="i === currentPageIndex ? {background: styling?.pageColor || '#002244', color: styling?.fontColor || 'black'} : { color: styling?.fontColor || 'black'}"
+      >
+        Page {{ i + 1 }}
+      </button>
+    </div>
+
+  </div>
   <div class="form-buttons">
     <button
       mat-flat-button
       color="accent"
       aria-label="Clear form"
-      [disabled]="formElements.length === 0"
+      [disabled]="getFlattenedElements().length === 0"
       (click)="openDeleteDialog(clearDialog)"
     >
       Clear Form

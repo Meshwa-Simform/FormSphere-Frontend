@@ -11,6 +11,7 @@ import { MaterialModule } from '../../shared/material.module';
 import { FormModule } from '../../shared/form.module';
 import { SignaturePadModule } from 'angular2-signaturepad';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MyFormsModule } from '../my-forms/my-forms.module';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     SignaturePadModule,
     DragDropModule,
     FormsnavComponent,
+    MyFormsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

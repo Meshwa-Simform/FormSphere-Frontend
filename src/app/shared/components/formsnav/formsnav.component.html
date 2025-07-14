@@ -10,7 +10,8 @@
     color="accent"
     aria-label="Preview button"
     class="preview-btn"
+    (click)="onPreviewClick()"
   >
-    Preview
+    {{ isPreviewMode ? 'Exit Preview' : 'Preview Form' }}
   </button>
 </mat-toolbar>

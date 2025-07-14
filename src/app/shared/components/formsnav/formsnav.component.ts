@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -12,11 +12,17 @@ import { CommonModule } from '@angular/common';
 })
 export class FormsnavComponent implements OnInit {
   formId: string | null = null;
+  @Input() isPreviewMode = false;
+  @Output() previewToggle = new EventEmitter<void>();
 
   constructor(private _route: ActivatedRoute) {}
 
   ngOnInit(): void {
     // Check if a formId is provided in the route
     this.formId = this._route.snapshot.paramMap.get('formId');
+  }
+
+  onPreviewClick() {
+    this.previewToggle.emit();
   }
 }

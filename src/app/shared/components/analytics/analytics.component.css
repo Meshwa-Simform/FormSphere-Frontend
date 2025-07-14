@@ -79,7 +79,8 @@
   margin: auto;
 }
 
-.chart-type-selector select {
+.chart-type-selector select,
+.email-filter select {
   height: 40px;
   font-size: 1rem;
   border-radius: 4px;
@@ -90,9 +91,20 @@
   color: #033367;
 }
 
-.chart-type-selector select:focus {
+.chart-type-selector select:focus,
+.email-filter select:focus {
   outline: none;
   border-color: #1976d2;
+}
+
+.chart-type-selector,
+.email-filter label {
+  font-weight: bold;
+  color: #033367;
+}
+
+.email-filter {
+  margin: 1rem 0;
 }
 
 .summary-chart-container {

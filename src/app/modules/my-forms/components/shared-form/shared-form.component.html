@@ -1,7 +1,7 @@
 <div
   class="shared-form-bg"
   [ngStyle]="{
-    'background-color': styling?.pageColor || '#f8f9fa',
+    'background-color': styling?.pageColor || '#c2dfff',
     'min-height': '100vh',
     width: '100vw',
     position: 'fixed',
@@ -14,17 +14,24 @@
   class="form-preview"
   [ngStyle]="{
     'background-color': styling?.formColor || '#fff',
-    color: styling?.fontColor || '#000',
-    'font-family': styling?.fontFamily || 'Montserrat',
+    color: styling?.fontColor || '#01458e',
+    'font-family': styling?.fontFamily || 'Inter',
     'font-size.px': styling?.fontSize || 16,
   }"
 >
+  <!-- Logo Display Section -->
+  <div class="logo-upload-section" *ngIf="logoUrl">
+    <div class="logo-preview">
+      <img [src]="logoUrl" alt="Logo" class="logo-image" />
+    </div>
+  </div>
+  
   <div class="form-preview-header">
     <h1
       class="form-title"
       [ngStyle]="{
-        color: styling?.fontColor || '#000',
-        'font-family': styling?.fontFamily || 'Montserrat',
+        color: styling?.fontColor || '#01458e',
+        'font-family': styling?.fontFamily || 'Inter',
         'font-size.px': styling && styling.fontSize ? styling.fontSize + 4 : 20,
       }"
     >
@@ -33,8 +40,8 @@
     <h3
       class="form-subtitle"
       [ngStyle]="{
-        color: styling?.fontColor || '#000',
-        'font-family': styling?.fontFamily || 'Montserrat',
+        color: styling?.fontColor || '#01458e',
+        'font-family': styling?.fontFamily || 'Inter',
         'font-size.px': styling?.fontSize ?? 16,
       }"
     >
@@ -42,30 +49,47 @@
     </h3>
   </div>
 
+  <!-- Page indicator for multi-page forms -->
+  <div class="page-indicator" *ngIf="isMultiPage()">
+    <span>Page {{ currentPageIndex + 1 }} of {{ totalPages }}</span>
+  </div>
+
   <form [formGroup]="formGroup" (ngSubmit)="submitForm()">
     <div
       class="form-canvas"
       [ngStyle]="{
         'background-color': styling?.formColor || '#fff',
-        color: styling?.fontColor || '#000',
-        'font-family': styling?.fontFamily || 'Montserrat',
+        color: styling?.fontColor || '#01458e',
+        'font-family': styling?.fontFamily || 'Inter',
         'font-size.px': styling?.fontSize || 16,
       }"
     >
-      <ng-container *ngFor="let field of formElements">
+      <!-- Display current page elements only -->
+      <ng-container *ngFor="let field of getCurrentPageElements()">
         <ng-container *ngIf="shouldShowField(field)">
           <ng-container [ngSwitch]="field.type">
+           <div
+              class="form-field-wrapper"
+              [ngStyle]="{
+                '--ripple-focus-color': styling?.fontColor,
+                '--ripple-hover-color': styling?.fontColor || '#ccc'
+              }"
+            >
             <!-- Header -->
             <h1
               *ngSwitchCase="'heading'"
               class="form-header"
               [ngStyle]="{
                 'font-size.px':
-                  styling && styling.fontSize ? styling.fontSize + 4 : 20,
+                  styling && styling.fontSize ? styling.fontSize : 16,
+                'font-family': 
+                  styling && styling.fontFamily ? styling.fontFamily : 'Inter'
               }"
             >
               {{ field.outLabel }}
-              <span *ngIf="field.validations?.required" style="color: red">*</span>
+              <span *ngIf="field.validations?.required" style="color: red"
+                >*</span
+              >
             </h1>
 
             <h2
@@ -73,16 +97,21 @@
               class="form-header"
               [ngStyle]="{
                 'font-size.px':
-                  styling && styling.fontSize ? styling.fontSize + 4 : 20,
+                  styling && styling.fontSize ? styling.fontSize : 16,
+                'font-family': 
+                  styling && styling.fontFamily ? styling.fontFamily : 'Inter'
               }"
             >
               {{ field.outLabel }}
-              <span *ngIf="field.validations?.required" style="color: red">*</span>
+              <span *ngIf="field.validations?.required" style="color: red"
+                >*</span
+              >
             </h2>
+
             <!-- Text -->
             <mat-form-field
               *ngSwitchCase="'text'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
               <input
@@ -91,32 +120,55 @@
                   field.type === 'email'
                     ? 'email'
                     : field.type === 'number'
-                    ? 'number'
-                    : 'text'
+                      ? 'number'
+                      : 'text'
                 "
                 [formControlName]="field.id || ''"
                 [placeholder]="field.placeholder || ''"
+                [style.color]="styling?.fontColor || '#01458e'"
               />
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -124,35 +176,59 @@
             <!-- Email -->
             <mat-form-field
               *ngSwitchCase="'email'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
               <input
                 matInput
-                type="email"
+                [type]="'email'"
                 [formControlName]="field.id || ''"
                 [placeholder]="field.placeholder || ''"
+                [style.color]="styling?.fontColor || '#01458e'"
+                autocomplete="off"
               />
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -160,7 +236,7 @@
             <!-- Number -->
             <mat-form-field
               *ngSwitchCase="'number'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
               <input
@@ -168,27 +244,50 @@
                 type="number"
                 [formControlName]="field.id || ''"
                 [placeholder]="field.placeholder || ''"
+                [style.color]="styling?.fontColor || '#01458e'"
               />
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -196,34 +295,57 @@
             <!-- Textarea -->
             <mat-form-field
               *ngSwitchCase="'textarea'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
               <textarea
                 matInput
                 [formControlName]="field.id || ''"
                 [placeholder]="field.placeholder || ''"
+                [style.color]="styling?.fontColor || '#01458e'"
               ></textarea>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -231,36 +353,62 @@
             <!-- Dropdown -->
             <mat-form-field
               *ngSwitchCase="'dropdown'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
-              <mat-select [formControlName]="field.id || ''">
+              <mat-select
+                [formControlName]="field.id || ''"
+                [style.color]="styling?.fontColor || '#01458e'"
+              >
                 <mat-option
                   *ngFor="let option of field.options"
                   [value]="option"
+                  [style.color]="styling?.fontColor || '#01458e'"
                   >{{ option }}</mat-option
                 >
               </mat-select>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -275,26 +423,48 @@
                   {{ option }}
                 </mat-radio-button>
               </mat-radio-group>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </div>
@@ -310,26 +480,48 @@
                   {{ option }}
                 </mat-checkbox>
               </div>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </div>
@@ -337,7 +529,7 @@
             <!-- Date -->
             <mat-form-field
               *ngSwitchCase="'date'"
-              appearance="fill"
+              appearance="outline"
               class="input-field form-field"
             >
               <input
@@ -351,26 +543,48 @@
                 [for]="picker"
               ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-form-field>
@@ -381,30 +595,52 @@
                 field.placeholder
               }}</label>
               <input
-                id="fileUpload-{{ field.id }}"
+                id="fileUpload-{{ field.id || '' }}"
                 type="file"
                 (change)="onFileSelected($event, field.id || '')"
               />
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </div>
@@ -423,36 +659,105 @@
                   Clear
                 </button>
               </div>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('email')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('email')"
+              >
                 Please enter a valid email address
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'letters'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'letters'
+                "
+              >
                 Only letters allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'numbers'">
+              <mat-error
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'numbers'
+                "
+              >
                 Only numbers allowed
               </mat-error>
               <mat-error
-                *ngIf="formGroup.get(field.id || '')?.hasError('pattern') && field.validations?.allowedChars === 'alphanumeric'">
+                *ngIf="
+                  formGroup.get(field.id || '')?.hasError('pattern') &&
+                  field.validations?.allowedChars === 'alphanumeric'
+                "
+              >
                 Only letters and numbers allowed
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('required')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('required')"
+              >
                 This field is required
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('minlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('minlength')"
+              >
                 Minimum length is {{ field.validations?.minLength }}
               </mat-error>
-              <mat-error *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')">
+              <mat-error
+                *ngIf="formGroup.get(field.id || '')?.hasError('maxlength')"
+              >
                 Maximum length is {{ field.validations?.maxLength }}
               </mat-error>
             </mat-card>
+           </div>
           </ng-container>
         </ng-container>
       </ng-container>
     </div>
 
-    <div class="form-buttons">
-      <button mat-flat-button color="primary" type="submit">Submit</button>
+    <!-- Navigation and Submit buttons -->
+    <div class="form-navigation">
+      <!-- Single page form -->
+      <div class="form-buttons" *ngIf="!isMultiPage()">
+        <button mat-flat-button color="primary" type="submit" [ngStyle]="{
+              'background-color': styling?.pageColor,
+              color: styling?.fontColor,
+              'font-family': styling?.fontFamily || 'Inter',
+              'font-weight': 'bold',
+            }">Submit</button>
+      </div>
+
+      <!-- Multi-page form navigation -->
+      <div class="form-buttons multi-page" *ngIf="isMultiPage()">
+        <!-- First page -->
+        <div *ngIf="isFirstPage()" class="navigation-buttons next-button">
+          <button mat-flat-button color="primary" type="button" (click)="goToNextPage()" [ngStyle]="{
+            'background-color': '#2e69ff',
+            color: 'white'
+          }">Next</button>
+        </div>
+
+        <!-- Middle pages -->
+        <div *ngIf="!isFirstPage() && !isLastPage()" class="navigation-buttons">
+          <button mat-flat-button color="basic" type="button" (click)="goToPreviousPage()" [ngStyle]="{
+            'background-color': '#ddd',
+            color: 'black'
+          }">Back</button>
+          <button mat-flat-button color="primary" type="button" (click)="goToNextPage()" [ngStyle]="{
+            'background-color': '#2e69ff',
+            color: 'white'
+          }">Next</button>
+        </div>
+
+        <!-- Last page -->
+        <div *ngIf="isLastPage()" class="navigation-buttons">
+          <button mat-flat-button color="basic" type="button" (click)="goToPreviousPage()" [ngStyle]="{
+            'background-color': '#ddd',
+            color: 'black'
+          }">Back</button>
+          <button mat-flat-button color="primary" type="submit" [ngStyle]="{
+            'background-color': styling?.pageColor,
+            color: styling?.fontColor,
+            'font-family': styling?.fontFamily || 'Inter',
+            'font-weight': 'bold'
+          }">Submit</button>
+        </div>
+      </div>
     </div>
   </form>
 </div>
