@@ -201,8 +201,8 @@ export class StylebarComponent implements OnChanges, OnInit {
       console.log('Logic Changed:', this.logic?.condition);
       this.selectedElement.conditionalLogic =
         this.logic?.conditionalLogic ?? [];
-      this.selectedElement.action = this.logic?.action ?? '';
-      this.selectedElement.condition = this.logic?.condition ?? '';
+      this.selectedElement.action = this.logic?.action ?? 'show';
+      this.selectedElement.condition = this.logic?.condition ?? 'and';
 
       const index = this.formElements.indexOf(this.selectedElement);
       // Replace with new object and update selection

@@ -37,13 +37,18 @@ export class SharedFormComponent implements OnInit {
   formGroup!: FormGroup;
   styling: Styling | undefined;
 
+  // Add pagination support
+  pages: Element[][] = [[]];
+  currentPageIndex = 0;
+  totalPages = 1;
+
   @Input() isPreviewMode = false;
   @Input() previewElements: Element[] = []; // Elements to display in preview mode
   @Input() previewStyling: Styling = {
-    pageColor: '#f8f9fa',
+    pageColor: '#c2dfff',
     formColor: '#fff',
-    fontColor: '#000',
-    fontFamily: 'Montserrat',
+    fontColor: '#01458e',
+    fontFamily: 'Inter',
     fontSize: 16,
   };
   @Output() elements = new EventEmitter<Element[]>(); // Should emit Element[]
@@ -59,13 +64,12 @@ export class SharedFormComponent implements OnInit {
     private _formService: FormService,
     private _responseService: ResponseService,
     private _tostr: ToastrService,
-    private ngxService: NgxUiLoaderService,
+    private _ngxService: NgxUiLoaderService,
     private _fileUploadService: FileUploadService,
     private cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
-    
     // Initialize the form group
     this.formGroup = this._fb.group({});
     
@@ -73,26 +77,63 @@ export class SharedFormComponent implements OnInit {
     this.formId = this._route.snapshot.paramMap.get('formId');
     // Preview Mode
     if( this.isPreviewMode ) {
-      this.ngxService.start(); // Start the loader
       this.styling = this.previewStyling;
       this.formTitle = this.previewFormTitle;
       this.formDescription = this.previewFormDescription;
-      this.logoUrl = this.previewLogoUrl; // Use the preview logo URL
+      this.logoUrl = this.previewLogoUrl;
+      
+      // Transform elements into pages structure
       this.formElements = this.previewElements.map((q, ind) => {
         return{
           id : q.id || (ind+1).toString(),
           ...q
         }
-      })
+      });
+      
+      // Convert to paginated structure
+      this.pages = this.transformElementsToPages(this.formElements);
+      this.currentPageIndex = 0;
+      this.totalPages = this.pages.length;
+      
       this.elements.emit(this.formElements);
-      this.previewLogoUrlChange.emit(this.logoUrl)
+      this.previewLogoUrlChange.emit(this.logoUrl);
       this.initializeForm();
-      this.ngxService.stop();
       return;
-    }else if (this.formId ) {
-      this.ngxService.start(); // Start the loader
+    } else if (this.formId) {
+      this._ngxService.start();
       this.loadFormDetails(this.formId);
     }
+  }
+
+  // Helper method to transform elements into pages structure
+  private transformElementsToPages(elements: Element[]): Element[][] {
+    if (elements.length === 0) {
+      return [[]];
+    }
+
+    // Find the maximum page number
+    const maxPageNumber = Math.max(...elements.map(e => e.pageNumber || 1), 1);
+    
+    // Initialize pages array
+    const pages: Element[][] = Array.from({ length: maxPageNumber }, () => []);
+    
+    // Distribute elements to their respective pages
+    elements.forEach(element => {
+      const pageIndex = (element.pageNumber || 1) - 1;
+      if (pageIndex >= 0 && pageIndex < pages.length) {
+        pages[pageIndex].push(element);
+      } else {
+        // If pageNumber is invalid, put it on the first page
+        pages[0].push({ ...element, pageNumber: 1 });
+      }
+    });
+
+    // Ensure at least one page exists
+    if (pages.length === 0) {
+      pages.push([]);
+    }
+
+    return pages;
   }
 
   loadFormDetails(formId: string): void {
@@ -126,20 +167,29 @@ export class SharedFormComponent implements OnInit {
               action: q.action,
               condition: q.condition,
               conditionalLogic: q.ConditionalLogic || [],
+              pageNumber: q.pageNumber || 1,
+              questionOrder: q.questionOrder || 1,
             };
           }) || [];
+        
+        // Convert to paginated structure
+        this.pages = this.transformElementsToPages(this.formElements);
+        this.currentPageIndex = 0;
+        this.totalPages = this.pages.length;
+        
         this.styling = data.data.styling;
         this.initializeForm();
-        this.ngxService.stop(); // Stop the loader
+        this._ngxService.stop();
       },
       error: (err: Error) => {
         console.error('Error loading form details:', err);
-        this.ngxService.stop(); // Stop the loader
+        this._ngxService.stop();
       },
     });
   }
 
   initializeForm(): void {
+    // Initialize form controls for all elements across all pages
     this.formElements.forEach((element) => {
       if (element.type === 'checkbox') {
         // Create a FormArray for checkboxes
@@ -282,7 +332,7 @@ export class SharedFormComponent implements OnInit {
             default: {
               return {
                 ...baseData,
-                responseAnswer: field.id ? formValues[field.id].trim() || '' : '',
+                responseAnswer: field.id ? formValues[field.id] : '',
               };
             }
           }
@@ -325,6 +375,45 @@ export class SharedFormComponent implements OnInit {
     this.signaturePad.clear();
   }
 
+  // Navigation methods
+  goToNextPage(): void {
+    if (this.currentPageIndex < this.totalPages - 1) {
+      this.currentPageIndex++;
+    }
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPageIndex > 0) {
+      this.currentPageIndex--;
+    }
+  }
+
+  goToPage(index: number): void {
+    if (index >= 0 && index < this.totalPages) {
+      this.currentPageIndex = index;
+    }
+  }
+
+  // Get current page elements
+  getCurrentPageElements(): Element[] {
+    return this.pages[this.currentPageIndex] || [];
+  }
+
+  // Check if it's the first page
+  isFirstPage(): boolean {
+    return this.currentPageIndex === 0;
+  }
+
+  // Check if it's the last page
+  isLastPage(): boolean {
+    return this.currentPageIndex === this.totalPages - 1;
+  }
+
+  // Check if form has multiple pages
+  isMultiPage(): boolean {
+    return this.totalPages > 1;
+  }
+
   shouldShowField(field: Element): boolean {
     if (
       !field.conditionalLogic ||
@@ -332,6 +421,7 @@ export class SharedFormComponent implements OnInit {
       field.conditionalLogic.length === 0
     )
       return true;
+    
     const formValues = this.formGroup.getRawValue();
     const logicType = (field.action || 'show').toLowerCase();
     const conditionType = (field.condition || 'and').toLowerCase();

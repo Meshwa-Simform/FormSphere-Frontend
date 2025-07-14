@@ -104,6 +104,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
     this._formBuilderService.elements$.subscribe((elements) => {
       this.formElements = elements;
+      this.distributeElementsToPages(elements);
       this.elements.emit(this.formElements); // Emit the updated elements
     });
     // Check if the user is logged in
@@ -127,6 +128,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     });
     if (this.previewFormElements || this.previewFormTitle || this.previewFormDescription) {
       this.formElements = [...this.previewFormElements];
+      this.distributeElementsToPages(this.formElements);
       this._formBuilderService.updateElements([...this.formElements]); // Update the service with new elements
       this.formTitle = this.previewFormTitle;
       this.formDescription = this.previewFormDescription;
@@ -144,11 +146,20 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     }
     if (changes['newFormElements']) {
       this.formElements = changes['newFormElements'].currentValue;
+      this.distributeElementsToPages(this.formElements);
       this._formBuilderService.updateElements([...this.formElements]); // Update the service with new elements
       this.elements.emit(this.formElements); // Emit the new elements
     }
     if (changes['selectedElement']) {
-      this.selectedElement = changes['selectedElement'].currentValue;
+      const newSelectedElement = changes['selectedElement'].currentValue;
+      const oldSelectedElement = changes['selectedElement'].previousValue;
+      
+      this.selectedElement = newSelectedElement;
+      
+      // If we have both old and new elements, update the reference in pages
+      if (oldSelectedElement && newSelectedElement && oldSelectedElement !== newSelectedElement) {
+        this.updateElementReferenceInPages(oldSelectedElement, newSelectedElement);
+      }
     }
     if (changes['previewLogoUrl']) {
       this.logoUrl = changes['previewLogoUrl'].currentValue;
@@ -158,6 +169,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   resetFormState(): void {
     this.formElements = [];
+    this.pages = [[]]; // Reset to single empty page
+    this.currentPageIndex = 0;
     this.formTitle = 'Form Title';
     this.formDescription = 'Form Description';
     this.selectedElement = null;
@@ -205,9 +218,18 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   // Method to delete the selected element
   deleteElement(): void {
     if (this.selectedElement) {
-      this._formBuilderService.removeElement(this.selectedElement); // Use the service to remove the element
+      // Find and remove the element from the current page
+      const currentPage = this.pages[this.currentPageIndex];
+      const elementIndex = currentPage.findIndex(el => el === this.selectedElement);
+      if (elementIndex > -1) {
+        currentPage.splice(elementIndex, 1);
+      }
+      
       this.selectedElement = null; // Clear the selection
       this.selectedElementChange.emit(null);
+      
+      // Update the flattened elements and emit
+      this.emitFlattenedElements();
     }
   }
 
@@ -220,9 +242,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         const newElements = Array.isArray(data.data)
           ? data.data.flatMap((data) => this.mapFormToElement(data))
           : this.mapFormToElement(data.data);
-        newElements.forEach((element) => {
-          this._formBuilderService.addElement(element);
-        });
+        
+        this.formElements = newElements;
+        this.distributeElementsToPages(this.formElements);
+        this._formBuilderService.updateElements([...this.formElements]);
+        
         this.formTitle = data.data.title || 'Form Title';
         this.formTitleChange.emit(this.formTitle);
         this.formDescription = data.data.description || 'Form Description';
@@ -235,6 +259,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           this.styling = data.data.styling as Styling;
           this.stylingChange.emit(this.styling);
         }
+        this.elements.emit(this.formElements);
         console.log('Loaded template details:', data);
       },
       error: (err) => {
@@ -252,9 +277,9 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           ? data.data.flatMap((data) => this.mapFormToElement(data))
           : this.mapFormToElement(data.data);
 
-        newElements.forEach((element) => {
-          this._formBuilderService.addElement(element);
-        });
+        this.formElements = newElements;
+        this.distributeElementsToPages(this.formElements);
+        this._formBuilderService.updateElements([...this.formElements]);
 
         this.formTitle = data.data.title || 'Form Title';
         this.formTitleChange.emit(this.formTitle);
@@ -268,6 +293,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
           this.styling = data.data.styling as Styling;
           this.stylingChange.emit(this.styling);
         }
+        this.elements.emit(this.formElements);
         console.log('Loaded form details:', data);
       },
       error: (err) => {
@@ -420,8 +446,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   saveForm() {
-    // Check if formElements is empty
-    if (this.formElements.length === 0) {
+    // Get flattened elements
+    const flattenedElements = this.getFlattenedElements();
+    
+    // Check if form is empty
+    if (flattenedElements.length === 0) {
       this._toastr.warning('The form is empty. Please add some elements.');
       return;
     }
@@ -433,13 +462,14 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     // If formDescription is unchanged, set it to an empty string
     const description =
       this.formDescription === 'Form Description' ? '' : this.formDescription;
+    
     // form details
     const formDetails: FormDetails = {
       title: this.formTitle,
       description: description,
       logoUrl: this.logoUrl, // <-- include logoUrl
-      noOfPages: 1,
-      questions: this.formElements.map((element, index) => {
+      noOfPages: this.pages.length,
+      questions: flattenedElements.map((element, index) => {
         return {
           validations: element.validations ?? {},
           questionType: element.type,
@@ -511,6 +541,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   clearForm() {
     this.formElements = [];
+    this.pages = [[]]; // Reset to single empty page
+    this.currentPageIndex = 0;
     this._formBuilderService.clearElements();
     this.formTitle = 'Form Title';
     this.formDescription = 'Form Description';
@@ -540,29 +572,37 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.isEditing = false; // End editing mode
     console.log('Label updated:', field.outLabel);
-    this._formBuilderService.updateElements([...this.formElements]); // Update the elements in the service
-    this.elements.emit(this.formElements); // Emit the updated elements
+    this.emitFlattenedElements(); // Update and emit flattened elements
   }
 
   // Drag and Drop
   drop(event: CdkDragDrop<Element[]>) {
     console.log('canvas drop event:', event);
+    const currentPage = this.pages[this.currentPageIndex];
+    
     if (event.previousContainer === event.container) {
+      // Reordering within the same page
       moveItemInArray(
-        event.container.data,
+        currentPage,
         event.previousIndex,
         event.currentIndex
       );
-      this._formBuilderService.updateElements([...this.formElements]);
     } else {
+      // Adding new element from sidebar to current page
       copyArrayItem(
         event.previousContainer.data,
-        event.container.data,
+        currentPage,
         event.previousIndex,
         event.currentIndex
       );
-      this._formBuilderService.updateElements([...this.formElements]);
+      // Set the page number for the new element
+      const newElement = currentPage[event.currentIndex];
+      if (newElement) {
+        newElement.pageNumber = this.currentPageIndex + 1;
+      }
     }
+    
+    this.emitFlattenedElements();
   }
 
   // Optional: Adjust drag preview position for scrolling
@@ -606,6 +646,132 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     } else {
       const dataURL = this.signaturePad.toDataURL();
       console.log('Saved signature image:', dataURL);
+    }
+  }
+
+  // Multi-page navigation methods
+  goToPage(index: number): void {
+    if (index >= 0 && index < this.pages.length) {
+      this.currentPageIndex = index;
+    }
+  }
+
+  addPage(afterIndex: number): void {
+    // Insert new empty page after the specified index
+    this.pages.splice(afterIndex + 1, 0, []);
+    // Navigate to the new page
+    this.goToPage(afterIndex + 1);
+    // Update element page numbers for elements after the inserted page
+    this.updateElementPageNumbers();
+  }
+
+  removePage(pageIndex: number): void {
+    // Cannot remove the last remaining page
+    if (this.pages.length <= 1) {
+      this._toastr.warning('Cannot remove the last page.');
+      return;
+    }
+
+    // Move elements from the page being removed to the previous page (or next if it's the first page)
+    const elementsToMove = this.pages[pageIndex];
+    if (elementsToMove.length > 0) {
+      const targetPageIndex = pageIndex > 0 ? pageIndex - 1 : 0;
+      elementsToMove.forEach(element => {
+        element.pageNumber = targetPageIndex + 1;
+        this.pages[targetPageIndex].push(element);
+      });
+    }
+
+    // Remove the page
+    this.pages.splice(pageIndex, 1);
+
+    // Adjust current page index if necessary
+    if (this.currentPageIndex >= this.pages.length) {
+      this.currentPageIndex = this.pages.length - 1;
+    } else if (this.currentPageIndex > pageIndex) {
+      this.currentPageIndex--;
+    }
+
+    // Update element page numbers for remaining pages
+    this.updateElementPageNumbers();
+    this.emitFlattenedElements();
+  }
+
+  getFlattenedElements(): Element[] {
+    // Flatten the pages structure into a single array
+    const flattened: Element[] = [];
+    this.pages.forEach((page, pageIndex) => {
+      page.forEach(element => {
+        // Ensure pageNumber is set correctly
+        element.pageNumber = pageIndex + 1;
+        flattened.push(element);
+      });
+    });
+    return flattened;
+  }
+
+  private updateElementPageNumbers(): void {
+    // Update page numbers for all elements based on their current page position
+    this.pages.forEach((page, pageIndex) => {
+      page.forEach(element => {
+        element.pageNumber = pageIndex + 1;
+      });
+    });
+  }
+
+  private emitFlattenedElements(): void {
+    // Get flattened elements and emit them
+    this.formElements = this.getFlattenedElements();
+    this.elements.emit(this.formElements);
+    this._formBuilderService.updateElements([...this.formElements]);
+  }
+
+  private distributeElementsToPages(elements: Element[]): void {
+    // Clear existing pages
+    this.pages = [];
+    
+    if (elements.length === 0) {
+      this.pages = [[]];
+      return;
+    }
+
+    // Find the maximum page number
+    const maxPageNumber = Math.max(...elements.map(e => e.pageNumber || 1), 1);
+    
+    // Initialize pages array
+    this.pages = Array.from({ length: maxPageNumber }, () => []);
+    
+    // Distribute elements to their respective pages
+    elements.forEach(element => {
+      const pageIndex = (element.pageNumber || 1) - 1;
+      if (pageIndex >= 0 && pageIndex < this.pages.length) {
+        element.pageNumber = pageIndex + 1; // Ensure pageNumber is set
+        this.pages[pageIndex].push(element);
+      } else {
+        // If pageNumber is invalid, put it on the first page
+        element.pageNumber = 1;
+        this.pages[0].push(element);
+      }
+    });
+
+    // Ensure at least one page exists
+    if (this.pages.length === 0) {
+      this.pages.push([]);
+    }
+  }
+
+  private updateElementReferenceInPages(oldElement: Element, newElement: Element): void {
+    // Find and replace the old element reference with the new one in pages
+    for (const [pageIndex, page] of this.pages.entries()) {
+      for (const [elementIndex, element] of page.entries()) {
+        if (element === oldElement) {
+          // Replace the old element reference with the new one
+          this.pages[pageIndex][elementIndex] = newElement;
+          // Update the flattened elements to reflect the change
+          this.emitFlattenedElements();
+          return;
+        }
+      }
     }
   }
 }
