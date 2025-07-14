@@ -10,7 +10,6 @@ import { SignaturePadModule } from 'angular2-signaturepad';
 import { ViewResponsesComponent } from './components/view-responses/view-responses.component';
 import { ThankYouComponent } from '../../shared/components/thank-you/thank-you.component';
 
-
 @NgModule({
   declarations: [MyFormsComponent, SharedFormComponent, ViewResponsesComponent],
   imports: [
@@ -21,8 +20,7 @@ import { ThankYouComponent } from '../../shared/components/thank-you/thank-you.c
     SignaturePadModule,
     ThankYouComponent,
   ],
-  schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
-  ]
+  exports: [SharedFormComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class MyFormsModule { }
+export class MyFormsModule {}

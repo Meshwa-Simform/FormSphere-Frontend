@@ -1,13 +1,276 @@
 <!-- button to open the stylebar -->
 <div *ngIf="!isStylebarOpen" class="open-stylebar-button">
-    <button mat-fab color="primary" (click)="toggleStylebar()" matTooltip="Add Designs" matTooltipPosition="left"><mat-icon>imagesearch_roller</mat-icon></button>
+  <button
+    mat-fab
+    color="primary"
+    (click)="toggleStylebar()"
+    matTooltip="Add Designs"
+    matTooltipPosition="left"
+  >
+    <mat-icon>imagesearch_roller</mat-icon>
+  </button>
 </div>
 <!-- show style bar -->
 <div class="form-elements-stylebar" [class.open]="isStylebarOpen">
-    <div class="header">
-        <div class="stylebar-header">
-            <h3>Form Styles</h3>
-            <mat-icon (click)="toggleStylebar()">close</mat-icon>
-        </div>
+  <div class="header">
+    <div class="stylebar-header">
+      <h3>Form Styles</h3>
+      <mat-icon (click)="toggleStylebar()">close</mat-icon>
     </div>
+  </div>
+  <div class="stylebar-content">
+    <div class="stylebar-fields">
+      <div class="field-row">
+        <label for="background-color">Background</label>
+        <input
+          id="background-color"
+          type="color"
+          [(ngModel)]="theme.pageColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="form-background-color">Form background</label>
+        <input
+          id="form-background-color"
+          type="color"
+          [(ngModel)]="theme.formColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="font-color">Font Color</label>
+        <input
+          id="font-color"
+          type="color"
+          [(ngModel)]="theme.fontColor"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+      <div class="field-row">
+        <label for="font-select">Font</label>
+        <select
+          id="font-select"
+          [(ngModel)]="theme.fontFamily"
+          (ngModelChange)="onThemeChange()"
+        >
+          <option *ngFor="let font of fontOptions" [value]="font">
+            {{ font }}
+          </option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="font-size">Font size</label>
+        <input
+          id="font-size"
+          type="number"
+          [(ngModel)]="theme.fontSize"
+          min="8"
+          max="36"
+          step="1"
+          (ngModelChange)="onThemeChange()"
+        />
+      </div>
+    </div>
+    <!-- Logic Section as Expansion Panel -->
+    <mat-accordion class="logic-section">
+      <!-- Validation Section as Expansion Panel -->
+      <mat-expansion-panel
+        [(expanded)]="validationPanelOpen"
+        [disabled]="!selectedElement"
+        (opened)="onValidationPanelOpened()"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title style="color: #fff !important"
+            >Validations</mat-panel-title
+          >
+        </mat-expansion-panel-header>
+        <div
+          class="validation-section"
+          style="color: #fff !important"
+          *ngIf="validation"
+        >
+          <div class="validation-row">
+            <label for="required-toggle">Required</label>
+            <mat-slide-toggle
+              id="required-toggle"
+              [(ngModel)]="validation.required"
+              (change)="onValidationChange()"
+              color="primary"
+            ></mat-slide-toggle>
+          </div>
+          <div class="validation-row">
+            <label for="min-length-input">Min Length</label>
+            <input
+              id="min-length-input"
+              type="number"
+              min="0"
+              [(ngModel)]="validation.minLength"
+              (ngModelChange)="onValidationChange()"
+              placeholder="Min"
+            />
+          </div>
+          <div class="validation-row">
+            <label for="max-length-input">Max Length</label>
+            <input
+              id="max-length-input"
+              type="number"
+              min="0"
+              [(ngModel)]="validation.maxLength"
+              (ngModelChange)="onValidationChange()"
+              placeholder="Max"
+            />
+          </div>
+          <div class="validation-row">
+            <label for="allowed-chars-select">Allowed Characters</label>
+            <select
+              id="allowed-chars-select"
+              class="validation-select"
+              [(ngModel)]="validation.allowedChars"
+              (ngModelChange)="onValidationChange()"
+            >
+              <option value="">Any</option>
+              <option value="email">Email</option>
+              <option value="numbers">Only numbers</option>
+              <option value="letters">Only letters</option>
+              <option value="alphanumeric">Letters and numbers</option>
+            </select>
+          </div>
+        </div>
+      </mat-expansion-panel>
+      <!-- Logic Section as Expansion Panel -->
+      <mat-expansion-panel
+        [(expanded)]="logicPanelOpen"
+        [disabled]="!selectedElement"
+        (click)="onLogicPanelAttemptOpen()"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title style="color: #fff !important"
+            >Logic</mat-panel-title
+          >
+        </mat-expansion-panel-header>
+        <div class="logic-conditional-row" style="color: #fff !important">
+          <label for="logic-conditional-toggle-group">Hide conditionally</label>
+          <div
+            id="logic-conditional-toggle-group"
+            class="logic-conditional-toggle"
+          >
+            <button
+              [class.active]="logic?.action === 'show'"
+              (click)="setShowWhen('show')"
+            >
+              Show when
+            </button>
+            <button
+              [class.active]="logic?.action === 'hide'"
+              (click)="setShowWhen('hide')"
+            >
+              Hide when
+            </button>
+          </div>
+        </div>
+        <div class="logic-conditions-box">
+          <button class="edit-logic-btn" (click)="toggleEditLogic()">
+            {{ editLogic ? 'Done' : 'Set conditional logic' }}
+          </button>
+          <div *ngIf="editLogic" class="logic-conditions-edit">
+            <div
+              *ngIf="logic?.conditionalLogic?.length === 0"
+              class="no-conditions"
+            >
+              No conditions specified yet
+            </div>
+            <div
+              *ngFor="let cond of logic?.conditionalLogic; let ci = index"
+              class="logic-condition-row"
+            >
+              <!-- AND/OR dropdown above the first condition if more than one condition -->
+              <ng-container
+                *ngIf="
+                  logic &&
+                  logic.conditionalLogic &&
+                  logic.conditionalLogic.length > 1
+                "
+              >
+                <ng-container *ngIf="ci === 0">
+                  <select
+                    class="logic-andor"
+                    [(ngModel)]="logic.condition"
+                    (ngModelChange)="onLogicChange()"
+                    [disabled]="!logic"
+                  >
+                    <option value="and">And</option>
+                    <option value="or">Or</option>
+                  </select>
+                </ng-container>
+                <ng-container *ngIf="ci !== 0">
+                  <span class="logic-andor-placeholder"></span>
+                </ng-container>
+              </ng-container>
+              <select
+                [(ngModel)]="cond.action_questionId[0]"
+                (ngModelChange)="onLogicChange()"
+              >
+                <option value="0" disabled>Select...</option>
+                <option
+                  *ngFor="let f of availableFields; let idx = index"
+                  value="{{ availableFields.indexOf(f) + 1 }}"
+                >
+                  {{ f }}
+                </option>
+              </select>
+              <select
+                [(ngModel)]="cond.operator"
+                (ngModelChange)="onLogicChange()"
+              >
+                <option value="" disabled>Select...</option>
+                <option *ngFor="let op of operators" [value]="op">
+                  {{ op }}
+                </option>
+              </select>
+              <ng-container
+                *ngIf="
+                  cond.action_questionId[0] &&
+                    isOptionField(cond.action_questionId[0]);
+                  else valueInput
+                "
+              >
+                <select
+                  [(ngModel)]="cond.value"
+                  placeholder="value"
+                  (ngModelChange)="onLogicChange()"
+                >
+                  <option value="" disabled>Value...</option>
+                  <option
+                    *ngFor="
+                      let option of getFieldOptions(cond.action_questionId[0])
+                    "
+                    [value]="option"
+                  >
+                    {{ option }}
+                  </option>
+                </select>
+              </ng-container>
+              <ng-template #valueInput>
+                <input
+                  [(ngModel)]="cond.value"
+                  placeholder="value"
+                  (ngModelChange)="onLogicChange()"
+                />
+              </ng-template>
+              <button (click)="removeCondition(ci)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <button
+              class="add-condition-btn"
+              (click)="addCondition(); $event.stopPropagation()"
+            >
+              + Add condition
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
 </div>

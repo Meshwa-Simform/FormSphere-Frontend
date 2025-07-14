@@ -5,10 +5,14 @@
   <div class="nav">
     <ul>
       <li>
-        <a mat-button routerLink="/templates" aria-label="Templates">Templates</a>
+        <a mat-button routerLink="/templates" aria-label="Templates"
+          >Templates</a
+        >
       </li>
       <li *ngIf="isLogin">
-        <a mat-button routerLink="/create-form" aria-label="Create Form">Create Form</a>
+        <a mat-button routerLink="/create-form" aria-label="Create Form"
+          >Create Form</a
+        >
       </li>
       <li *ngIf="isLogin">
         <a mat-button routerLink="/my-forms" aria-label="My Forms">My Forms</a>
@@ -16,9 +20,50 @@
     </ul>
   </div>
   <div class="auth">
-    <button mat-stroked-button *ngIf="!isLogin" routerLink="/auth/login" aria-label="Login" class="login">Login</button>
-    <button mat-raised-button *ngIf="!isLogin" color="accent" routerLink="/auth/signup" aria-label="Get Started"
-      class="signup">Get Started</button>
-    <button mat-stroked-button *ngIf="isLogin" (click)="logout()" aria-label="Logout" class="logout">Logout</button>
+    <button
+      mat-stroked-button
+      *ngIf="!isLogin"
+      routerLink="/auth/login"
+      aria-label="Login"
+      class="login"
+    >
+      Login
+    </button>
+    <button
+      mat-raised-button
+      *ngIf="!isLogin"
+      color="accent"
+      routerLink="/auth/signup"
+      aria-label="Get Started"
+      class="signup"
+    >
+      Get Started
+    </button>
+    <!-- <button
+      mat-stroked-button
+      *ngIf="isLogin"
+      (click)="logout()"
+      aria-label="Logout"
+      class="logout"
+    >
+      Logout
+    </button> -->
   </div>
+  <!-- User Profile Menu -->
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    *ngIf="isLogin" [ngStyle]="{'color': '#033367'}">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu" class="user-profile-menu"
+    [ngStyle]="{'background-color': '#c0daf7d9', 'color': '#033367'}">
+    <div class="user-info">
+      <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+      <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+    </div>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </mat-menu>
 </mat-toolbar>

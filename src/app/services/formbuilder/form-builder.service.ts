@@ -3,10 +3,9 @@ import { BehaviorSubject } from 'rxjs';
 import { Element } from '../../modules/create-forms/interface/element';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FormBuilderService {
-
   private elementsSubject = new BehaviorSubject<Element[]>([]);
   elements$ = this.elementsSubject.asObservable();
 
@@ -21,8 +20,8 @@ export class FormBuilderService {
     this.currentElements = [];
     this.elementsSubject.next([]);
   }
-  
-  removeElement(selectedElement: Element){
+
+  removeElement(selectedElement: Element) {
     const index = this.currentElements.findIndex(
       (element) => element === selectedElement
     );
