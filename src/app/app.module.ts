@@ -12,9 +12,7 @@ import {
   NgxUiLoaderConfig,
   SPINNER,
   POSITION,
-  PB_DIRECTION,
-  NgxUiLoaderHttpModule,
-  NgxUiLoaderRouterModule,
+  PB_DIRECTION
 } from 'ngx-ui-loader';
 import { MyFormsModule } from './modules/my-forms/my-forms.module';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
@@ -50,11 +48,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
       autoDismiss: true,
     }),
     HttpClientModule,
-    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
-    NgxUiLoaderHttpModule.forRoot({ showForeground: true }),
-    NgxUiLoaderRouterModule.forRoot({
-      exclude: ['/auth/login', '/auth/signup'],
-    }),
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
   ],
   providers: [provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [AppComponent],

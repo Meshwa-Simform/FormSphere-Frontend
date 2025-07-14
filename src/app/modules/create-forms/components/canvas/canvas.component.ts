@@ -33,13 +33,14 @@ import { TemplatesService } from '../../../../services/templates/templates.servi
 import { TemplateOutput } from '../../../templates/interfaces/templates';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { FileUploadService } from '../../../../services/fileupload/file-upload.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 function getDefaultStyling(): Styling {
   return {
-    pageColor: '#f8f9fa',
+    pageColor: '#c2dfff',
     formColor: '#ffffff',
-    fontColor: '#000000',
-    fontFamily: 'Montserrat',
+    fontColor: '#01458e',
+    fontFamily: 'Inter',
     fontSize: 16,
   };
 }
@@ -62,6 +63,9 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
   isDragging = false; // Track whether a drag operation is in progress
   isLogin = false;
   logoUrl: string | null = null;
+  pages: Element[][] = [[]]; // each sub-array = one page
+  currentPageIndex = 0;
+  hoveredPageIndex = -1;
 
   @Input() styling: Styling | undefined;
   @Output() stylingChange = new EventEmitter<Styling>();
@@ -88,12 +92,15 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
     private _dialog: MatDialog,
     private _templateService: TemplatesService,
     private _authService: AuthService,
-    private _fileUploadService: FileUploadService 
+    private _fileUploadService: FileUploadService,
+    private _ngxService: NgxUiLoaderService
   ) {}
 
   ngOnInit(): void {
     this.styling = { ...getDefaultStyling(), ...this.styling };
     this.stylingChange.emit(this.styling);
+
+    this.pages = [[]]; // Ensure at least one page
 
     this._formBuilderService.elements$.subscribe((elements) => {
       this.formElements = elements;
@@ -114,7 +121,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       // Load form or template details based on the route
       if (this.formId && this.previewFormElements.length <= 0) {
         this.loadFormDetails(this.formId);
-      } else if (this.templateId  && this.previewFormElements.length <= 0) {
+      } else if (this.templateId && this.previewFormElements.length <= 0) {
         this.loadTemplateDetails(this.templateId);
       }
     });
@@ -206,6 +213,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
 
   // Load template details if templateId is provided
   loadTemplateDetails(templateId: string): void {
+    this._ngxService.start();
     console.log('Template ID:', templateId);
     this._templateService.getTemplateById(templateId).subscribe({
       next: (data) => {
@@ -221,7 +229,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         this.formDescriptionChange.emit(this.formDescription);
         if (data.data.logoUrl) {
           this.logoUrl = data.data.logoUrl;
-          this.logoUrlChange.emit(this.logoUrl); // Emit the new logo URL
+          this.logoUrlChange.emit(this.logoUrl);
         }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
@@ -233,9 +241,11 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         console.error('Error loading template details:', err);
       },
     });
+    this._ngxService.stop();
   }
 
   loadFormDetails(formId: string): void {
+    this._ngxService.start();
     this._formService.getFormById(formId).subscribe({
       next: (data) => {
         const newElements = Array.isArray(data.data)
@@ -252,7 +262,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         this.formDescriptionChange.emit(this.formDescription);
         if (data.data.logoUrl) {
           this.logoUrl = data.data.logoUrl;
-          this.logoUrlChange.emit(this.logoUrl); // Emit the new logo URL
+          this.logoUrlChange.emit(this.logoUrl);
         }
         if (data.data.styling) {
           this.styling = data.data.styling as Styling;
@@ -264,6 +274,7 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         console.error('Error loading form details:', err);
       },
     });
+    this._ngxService.stop();
   }
 
   // Helper method to map Form/Template to Element
@@ -298,6 +309,8 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
         outLabel: question.questionText,
         action: question.action || '',
         condition: question.condition || '',
+        pageNumber: question.pageNumber || 1, // Ensure pageNumber is included
+        questionOrder: question.questionOrder || 1, // Ensure questionOrder is included
         conditionalLogic:
           question.ConditionalLogic?.map((logic) => ({
             questionId: ((question.questionOrder ?? 0) + 1).toString() || '0',
@@ -425,17 +438,16 @@ export class CanvasComponent implements OnInit, AfterViewInit, OnChanges {
       title: this.formTitle,
       description: description,
       logoUrl: this.logoUrl, // <-- include logoUrl
-      isSinglePage: true,
       noOfPages: 1,
       questions: this.formElements.map((element, index) => {
         return {
           validations: element.validations ?? {},
-          pageNumber: 1,
           questionType: element.type,
           questionText: element.outLabel,
           questionOptions: element.options || [],
           questionAnswer: undefined,
-          questionOrder: index + 1,
+          pageNumber: element.pageNumber || 1,
+          questionOrder: element.questionOrder || index+1,
           isRequired: false,
           isHidden: false,
           conditionalLogic: (element.conditionalLogic || []).map(

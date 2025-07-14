@@ -36,15 +36,6 @@
     (ngModelChange)="onSearchInputChange($event)"
     aria-label="Search"
   />
-  <select
-    class="page-size-select"
-    [(ngModel)]="pageSize"
-    (change)="onPageSizeChange($event)"
-  >
-    <option *ngFor="let size of pageSizes" [value]="size">
-      {{ size }} / page
-    </option>
-  </select>
 </div>
 
 <!-- Confirmation Dialog Template -->
@@ -67,17 +58,17 @@
 
   <!-- Display message if no forms are available -->
   <div *ngIf="forms.length === 0" class="no-forms">
-    <p>No forms created yet.</p>
+    <p>No forms found {{searchQuery === '' ? '' : `for ${searchQuery}`}}</p>
   </div>
 
   <!-- Display forms if available -->
   <div class="forms-list" *ngIf="(forms.length || 0) !== 0">
-    <mat-card *ngFor="let form of forms || []" class="form-card">
-      <mat-card-title [routerLink]="['/update-form', form.id]">
+    <mat-card *ngFor="let form of forms || []" class="form-card" [routerLink]="['/update-form', form.id]">
+      <mat-card-title>
         {{ form.title }}
       </mat-card-title>
       <!-- Copy Button -->
-      <button
+      <!-- <button
         mat-icon-button
         matSuffix
         (click)="copyLink('http://localhost:4200/shared-form/' + form.id)"
@@ -85,7 +76,7 @@
         matTooltip="Copy Link"
       >
         <mat-icon>content_copy</mat-icon>
-      </button>
+      </button> -->
       <!-- 3-dot menu button -->
       <button
         mat-icon-button
@@ -138,29 +129,36 @@
 
   <!-- Pagination Controls -->
   <div class="pagination-container" *ngIf="totalPages">
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page - 1)"
-      [disabled]="page === 1"
-    >
-      &lt; Prev
-    </button>
-    <ng-container *ngFor="let p of pageNumbers">
-      <button
-        mat-stroked-button
-        [color]="p === page ? 'primary' : ''"
-        (click)="onPageChange(p)"
+    <div class="page-select">
+      <span class="page-info">Rows per page</span>
+      <select
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (change)="onPageSizeChange($event)"
       >
-        {{ p }}
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+    <div class="page-buttons">
+      <button mat-button (click)="onPageChange(page - 1)" [disabled]="page === 1" [ngStyle]="page === 1 ? {} : {color: '#033367'}">
+        &lt; Prev
       </button>
-    </ng-container>
-    <button
-      mat-stroked-button
-      (click)="onPageChange(page + 1)"
-      [disabled]="page === totalPages"
-    >
-      Next &gt;
-    </button>
-    <span class="pagination-info">Page {{ page }} of {{ totalPages }}</span>
+    
+      <ng-container *ngFor="let p of pageNumbers">
+        <button *ngIf="p !== '...'; else dots" [ngStyle]="p === page ? {background: '#002244', color: 'white'} : {color: '#033367'}"
+          mat-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
+          {{ p }}
+        </button>
+        <ng-template #dots>
+          <button mat-button disabled>...</button>
+        </ng-template>
+      </ng-container>
+    
+      <button mat-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages" [ngStyle]="page === totalPages ? {} : {color: '#033367'}">
+        Next &gt;
+      </button>
+    </div>
   </div>
 </div>

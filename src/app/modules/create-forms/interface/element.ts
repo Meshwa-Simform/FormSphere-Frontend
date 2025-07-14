@@ -14,6 +14,8 @@ export interface Element {
   condition?: string;
   conditionalLogic?: ConditionalLogic[];
   validations?: Validations;
+  pageNumber?: number;
+  questionOrder?: number;
 }
 
 export interface ConditionalLogic {

@@ -37,20 +37,19 @@ export class StylebarComponent implements OnChanges, OnInit {
     'Merriweather',
     'Work Sans',
     'Nunito',
-    'Helvetica',
     'Inter',
     'PT Sans',
     'Rubik',
     'Quicksand',
-    'Segoe UI',
+    'Lato',
   ];
 
-  // Default font is Montserrat
+  // Default font is Inter
   @Input() theme: Styling = {
-    pageColor: '#f8f9fa',
+    pageColor: '#c2dfff',
     formColor: '#ffffff',
-    fontColor: '#000000',
-    fontFamily: 'Montserrat',
+    fontColor: '#01458e',
+    fontFamily: 'Inter',
     fontSize: 16,
   };
 
@@ -108,8 +107,8 @@ export class StylebarComponent implements OnChanges, OnInit {
     if (changes['selectedElement']) {
       if (this.selectedElement) {
         this.logic = {
-          condition: this.logic?.condition || 'and',
-          action: this.logic?.action || 'show',
+          condition: this.selectedElement?.condition ?? 'and',
+          action: this.selectedElement?.action ?? 'show',
           conditionalLogic: this.selectedElement.conditionalLogic ?? [],
         };
         // Use validations for validation state
@@ -201,9 +200,9 @@ export class StylebarComponent implements OnChanges, OnInit {
     if (this.selectedElement) {
       console.log('Logic Changed:', this.logic?.condition);
       this.selectedElement.conditionalLogic =
-        this.logic?.conditionalLogic || [];
-      this.selectedElement.action = this.logic?.action || '';
-      this.selectedElement.condition = this.logic?.condition || '';
+        this.logic?.conditionalLogic ?? [];
+      this.selectedElement.action = this.logic?.action ?? '';
+      this.selectedElement.condition = this.logic?.condition ?? '';
 
       const index = this.formElements.indexOf(this.selectedElement);
       // Replace with new object and update selection
@@ -274,6 +273,6 @@ export class StylebarComponent implements OnChanges, OnInit {
   // Helper: get options for a field
   getFieldOptions(questionId: string): string[] {
     const field = this.formElements[+questionId - 1];
-    return field?.options || [];
+    return field?.options ?? [];
   }
 }

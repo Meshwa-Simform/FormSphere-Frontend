@@ -3,6 +3,7 @@ import { AuthService } from '../../../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { TemplatesService } from '../../../../services/templates/templates.service';
 import { TemplateOutput } from '../../interfaces/templates';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-templates',
@@ -19,9 +20,11 @@ export class TemplatesComponent implements OnInit {
   constructor(
     private _authService: AuthService,
     private _router: Router,
-    private _templateService: TemplatesService
+    private _templateService: TemplatesService,
+    private _ngxService: NgxUiLoaderService
   ) {}
   ngOnInit(): void {
+    this._ngxService.start();
     this._authService.authenticateUser().subscribe({
       next: (data) => {
         this.isLogin = data;
@@ -43,9 +46,11 @@ export class TemplatesComponent implements OnInit {
       next: (data) => {
         this.templates = data.data;
         console.log('Templates data : ', data);
+        this._ngxService.stop();
       },
       error: (err: Error) => {
         console.error('Error fetching templates:', err);
+        this._ngxService.stop();
       },
     });
   }

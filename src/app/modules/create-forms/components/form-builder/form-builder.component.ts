@@ -22,10 +22,10 @@ export class FormBuilderComponent {
 
   canvasStyling: Partial<Styling> = {};
   rawTheme: Styling = {
-    pageColor: '#f8f9fa',
+    pageColor: '#c2dfff',
     formColor: '#fff',
-    fontColor: '#000',
-    fontFamily: 'Montserrat',
+    fontColor: '#01458e',
+    fontFamily: 'Inter',
     fontSize: 16,
   };
   selectedElement: Element | null = null;
@@ -34,10 +34,10 @@ export class FormBuilderComponent {
   onCanvasStylingChange(style: Styling) {
     // Ensure all required properties are set
     this.rawTheme = {
-      pageColor: style.pageColor ?? '#f8f9fa',
+      pageColor: style.pageColor ?? '#c2dfff',
       formColor: style.formColor ?? '#fff',
-      fontColor: style.fontColor ?? '#000',
-      fontFamily: style.fontFamily ?? 'Montserrat',
+      fontColor: style.fontColor ?? '#01458e',
+      fontFamily: style.fontFamily ?? 'Inter',
       fontSize: style.fontSize ?? 16,
       ...(style.pageImage ? { pageImage: style.pageImage } : {}),
     };

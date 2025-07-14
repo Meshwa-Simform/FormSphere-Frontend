@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'inter', 'Montserrat'
 }
 html,
 body {
@@ -58,6 +58,12 @@ body {
 
 .form-field-wrapper .mdc-line-ripple::before {
   border-bottom-color: var(--ripple-hover-color) !important; /* on hover */
+}
+
+ngx-ui-loader {
+  z-index: 999999 !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */

@@ -7,7 +7,7 @@
 
 <div class="form-builder-container">
   <!-- Left: Sidebar -->
-  <div class="sidebar">
+  <div class="sidebar" *ngIf="!isPreviewMode">
     <app-sidebar></app-sidebar>
   </div>
 
@@ -47,7 +47,7 @@
   </div>
 
   <!-- Right: Style Panel -->
-  <div class="style-panel">
+  <div class="style-panel" *ngIf="!isPreviewMode">
     <app-stylebar
       [theme]="rawTheme"
       [selectedElement]="selectedElement"

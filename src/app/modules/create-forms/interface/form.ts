@@ -9,7 +9,7 @@ export interface FormDetails {
   title: string;
   description: string;
   logoUrl: string | null;
-  isSinglePage: boolean;
+  isSinglePage?: boolean;
   noOfPages: number;
   questions: Question[];
   styling?: Styling;
