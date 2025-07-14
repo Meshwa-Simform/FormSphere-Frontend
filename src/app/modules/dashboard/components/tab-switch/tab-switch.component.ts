@@ -3,10 +3,10 @@ import { Component, OnDestroy } from '@angular/core';
 @Component({
   selector: 'app-tab-switch',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './tab-switch.component.html',
-  styleUrl: './tab-switch.component.css'
+  styleUrl: './tab-switch.component.css',
 })
 export class TabSwitchComponent implements OnDestroy {
   currentTab = 0;
@@ -24,11 +24,17 @@ export class TabSwitchComponent implements OnDestroy {
     this.stopAutoSwitch();
 
     // Remove 'active' class from all tabs and contents
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document
+      .querySelectorAll('.tab')
+      .forEach((t) => t.classList.remove('active'));
+    document
+      .querySelectorAll('.content')
+      .forEach((c) => c.classList.remove('active'));
 
     // Add 'active' class to the clicked tab and its corresponding content
-    const tabElement = document.querySelector(`.tab:nth-child(${this.tabs.indexOf(tabId) + 1})`);
+    const tabElement = document.querySelector(
+      `.tab:nth-child(${this.tabs.indexOf(tabId) + 1})`
+    );
     if (tabElement) {
       tabElement.classList.add('active');
     }

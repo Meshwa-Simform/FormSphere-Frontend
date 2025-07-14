@@ -10,14 +10,15 @@ import { FormsnavComponent } from '../../shared/components/formsnav/formsnav.com
 import { MaterialModule } from '../../shared/material.module';
 import { FormModule } from '../../shared/form.module';
 import { SignaturePadModule } from 'angular2-signaturepad';
-import { DragDropModule } from '@angular/cdk/drag-drop'
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MyFormsModule } from '../my-forms/my-forms.module';
 
 @NgModule({
   declarations: [
     SidebarComponent,
     CanvasComponent,
     StylebarComponent,
-    FormBuilderComponent
+    FormBuilderComponent,
   ],
   imports: [
     CommonModule,
@@ -26,8 +27,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     FormModule,
     SignaturePadModule,
     DragDropModule,
-    FormsnavComponent
+    FormsnavComponent,
+    MyFormsModule
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class CreateFormsModule { }
+export class CreateFormsModule {}

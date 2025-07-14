@@ -5,17 +5,20 @@ import { AuthService } from '../../../../services/auth/auth.service';
 @Component({
   selector: 'app-auth-animation',
   // prettier-ignore
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   standalone: false,
   templateUrl: './auth-animation.component.html',
-  styleUrl: './auth-animation.component.css'
+  styleUrl: './auth-animation.component.css',
 })
 export class AuthAnimationComponent implements OnInit {
   isSignUpMode = false;
   isMobile = false;
 
-
-  constructor(private _route: ActivatedRoute,private _router : Router , private _authService:AuthService) {}
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _authService: AuthService
+  ) {}
   ngOnInit() {
     // Listen for route changes dynamically
     this._route.children.forEach((childRoute) => {
@@ -42,7 +45,8 @@ export class AuthAnimationComponent implements OnInit {
     this._authService.setMode(this.isSignUpMode);
 
     // Get the returnUrl from the current query parameters
-    const returnUrl = this._route.snapshot.queryParamMap.get('returnUrl') || '/';
+    const returnUrl =
+      this._route.snapshot.queryParamMap.get('returnUrl') || '/';
 
     // Navigate to the child route
     const mode = signUp ? 'signup' : 'login';

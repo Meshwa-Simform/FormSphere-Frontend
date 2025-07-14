@@ -15,6 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [],
@@ -33,7 +35,9 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatCardModule,
     MatTooltipModule,
     MatMenuModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatExpansionModule,
   ],
   exports: [
     MatFormFieldModule,
@@ -50,7 +54,9 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatCardModule,
     MatTooltipModule,
     MatMenuModule,
-    MatDialogModule
-  ]
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatExpansionModule,
+  ],
 })
-export class MaterialModule { }
+export class MaterialModule {}
