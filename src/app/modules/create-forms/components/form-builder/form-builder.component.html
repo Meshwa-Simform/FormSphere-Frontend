@@ -1,20 +1,60 @@
 <div class="nav-bar">
-    <app-formsnav></app-formsnav>
+  <app-formsnav
+    [isPreviewMode]="isPreviewMode"
+    (previewToggle)="onPreviewToggle()"
+  ></app-formsnav>
 </div>
 
 <div class="form-builder-container">
-    <!-- Left: Sidebar -->
-    <div class="sidebar">
-        <app-sidebar></app-sidebar>
-    </div>
+  <!-- Left: Sidebar -->
+  <div class="sidebar" *ngIf="!isPreviewMode">
+    <app-sidebar></app-sidebar>
+  </div>
 
-    <!-- Center: Canvas -->
-    <div class="canvas">
-        <app-canvas></app-canvas>
-    </div>
+  <!-- Center: Canvas -->
+  <div class="canvas" [ngStyle]="canvasStyling" *ngIf="!isPreviewMode">
+    <app-canvas
+      [styling]="rawTheme"
+      [selectedElement]="selectedElement"
+      [isPreviewMode]="isPreviewMode"
+      [previewFormElements]="elements"
+      [previewFormTitle]="formTitle"
+      [previewFormDescription]="formDescription"
+      [formTitle]="formTitle"
+      [formDescription]="formDescription"
+      [previewLogoUrl]="logoUrl"
+      (stylingChange)="onCanvasStylingChange($event)"
+      (selectedElementChange)="onElementSelected($event)"
+      (elements)="onElementsChanged($event)"
+      (formTitleChange)="formTitle = $event"
+      (formDescriptionChange)="formDescription = $event"
+      (logoUrlChange)="logoUrl = $event"
+    ></app-canvas>
+  </div>
 
-    <!-- Right: Style Panel -->
-    <div class="style-panel">
-        <app-stylebar></app-stylebar>
-    </div>
+  <!-- Center: Preview -->
+  <div class="preview" *ngIf="isPreviewMode"
+   style="width: 100%;">
+    <app-shared-form
+      [styling]="rawTheme"
+      [previewElements]="elements"
+      [isPreviewMode]="isPreviewMode"
+      [previewStyling]="rawTheme"
+      [previewFormTitle]="formTitle"
+      [previewFormDescription]="formDescription"
+      [(previewLogoUrl)]="logoUrl"
+    ></app-shared-form>
+  </div>
+
+  <!-- Right: Style Panel -->
+  <div class="style-panel" *ngIf="!isPreviewMode">
+    <app-stylebar
+      [theme]="rawTheme"
+      [selectedElement]="selectedElement"
+      [formElements]="elements"
+      (styleChange)="canvasStyling = $event.css; rawTheme = $event.theme"
+      (formElementsChange)="onElementsChanged($event)"
+      (selectedElementChange)="onElementSelected($event)"
+    ></app-stylebar>
+  </div>
 </div>

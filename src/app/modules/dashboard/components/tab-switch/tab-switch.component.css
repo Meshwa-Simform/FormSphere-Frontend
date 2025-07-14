@@ -1,6 +1,6 @@
-.main{
-    background-color: #bfd7f4b0;
-    margin-top: -8%;
+.main {
+  background-color: #bfd7f4b0;
+  margin-top: -8%;
 }
 .tab-container {
   display: flex;
@@ -17,7 +17,7 @@
   position: relative;
 }
 .tab.active::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 100%;
   height: 3px;
@@ -50,8 +50,8 @@
   margin: 0 auto;
 }
 .content.active {
-    display: block;
-  }
+  display: block;
+}
 /* Inner container for text and image */
 .content-inner {
   display: flex;
@@ -64,9 +64,9 @@
 .text-section {
   flex: 1;
 }
-.text-section h5{
-    color: #033367;
-    margin-bottom: 10px;
+.text-section h5 {
+  color: #033367;
+  margin-bottom: 10px;
 }
 .title {
   font-size: 1.2rem;

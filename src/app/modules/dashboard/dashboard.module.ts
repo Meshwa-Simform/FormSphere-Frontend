@@ -9,7 +9,6 @@ import { MaterialModule } from '../../shared/material.module';
 import { TabSwitchComponent } from './components/tab-switch/tab-switch.component';
 import { FooterComponent } from './components/footer/footer.component';
 
-
 @NgModule({
   declarations: [
     MainComponent,
@@ -18,10 +17,6 @@ import { FooterComponent } from './components/footer/footer.component';
     TabSwitchComponent,
     FooterComponent,
   ],
-  imports: [
-    CommonModule,
-    DashboardRoutingModule,
-    MaterialModule
-  ]
+  imports: [CommonModule, DashboardRoutingModule, MaterialModule],
 })
-export class DashboardModule { }
+export class DashboardModule {}

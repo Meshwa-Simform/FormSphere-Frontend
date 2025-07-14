@@ -5,35 +5,31 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from './modules/auth/auth.module';
 import { HttpClientModule, provideHttpClient } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import {
   NgxUiLoaderModule,
   NgxUiLoaderConfig,
   SPINNER,
   POSITION,
-  PB_DIRECTION,
-  NgxUiLoaderHttpModule,
-  NgxUiLoaderRouterModule
+  PB_DIRECTION
 } from 'ngx-ui-loader';
 import { MyFormsModule } from './modules/my-forms/my-forms.module';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
-  fgsType: SPINNER.threeStrings, 
+  fgsType: SPINNER.threeStrings,
   fgsPosition: POSITION.centerCenter,
   overlayColor: 'rgba(40, 40, 40, 0.98)',
   fgsColor: '#12A3EB',
   fgsSize: 120,
   pbDirection: PB_DIRECTION.leftToRight,
   pbThickness: 5,
-  hasProgressBar: true
+  hasProgressBar: true,
 };
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -49,14 +45,12 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
       preventDuplicates: true,
       tapToDismiss: true,
       maxOpened: 5,
-      autoDismiss: true
+      autoDismiss: true,
     }),
     HttpClientModule,
-    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
-    NgxUiLoaderHttpModule.forRoot({ showForeground: true }),
-    NgxUiLoaderRouterModule.forRoot({ exclude: ['/auth/login', '/auth/signup']})
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
   ],
   providers: [provideHttpClient(), provideCharts(withDefaultRegisterables())],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
