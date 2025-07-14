@@ -20,14 +20,16 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
   styleUrl: './view-responses.component.css',
 })
 export class ViewResponsesComponent implements OnInit, OnDestroy {
+  userName = '';
+  userEmail = '';
   formId: string | null = null;
   responses: Responses[] = [];
   totalResponses = 0;
   searchQuery = '';
   searchInput = '';
   page = 1;
-  pageSize = 5;
-  pageSizes = [2, 5, 8, 10, 15, 20];
+  pageSize = 6;
+  pageSizes = [6, 9, 12, 15, 18];
   totalPages = 1;
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'desc';
@@ -54,6 +56,9 @@ export class ViewResponsesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._ngxService.start();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.userName = user.name;
+    this.userEmail = user.email;
     this.formId = this._route.snapshot.paramMap.get('formId');
     this.searchSub = this.searchInputChanged
       .pipe(debounceTime(400))

@@ -1,7 +1,7 @@
 .my-forms-container {
-  min-height: 70vh;
+  min-height: 53vh;
   background: linear-gradient(135deg, #c9def6 0%, #f6faff 100%);
-  margin: 0 auto;
+  margin: 7rem auto;
   padding: 1rem 1rem 2rem 1rem;
   max-width: 1200px;
   border-radius: 32px;
@@ -9,7 +9,7 @@
 
 .my-forms-container h1 {
   text-align: center;
-  margin-bottom: 2.5rem;
+  /* margin-bottom: 2.5rem; */
   font-size: 3rem;
   color: #002244;
   font-weight: 800;
@@ -75,7 +75,7 @@
 
 .search-container {
   max-width: 900px;
-  margin: 6.5rem auto 1rem auto;
+  margin: 2rem auto 3.5rem auto;
   text-align: center;
   display: flex;
   align-items: center;
@@ -150,22 +150,64 @@
   margin-bottom: 0.5rem;
 }
 
-.form-card button[mat-icon-button] {
-  position: absolute;
-  top: 1.5rem;
-  color: #033367;
-  background: rgba(255,255,255,0.85);
+.action-icons button[mat-icon-button] {
   border-radius: 50%;
-  transition: background 0.2s, color 0.2s;
   z-index: 2;
 }
 
-.form-card button[mat-icon-button]:hover {
-  background: #e3f0ff;
-  color: #002244;
+.action-icons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: space-around;
 }
 
-.menu-button {
+.delete-button {
+  color: #d32f2f;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.delete-button:hover {
+  background: #ffebee;
+  color: #b01515;
+}
+
+.edit-button {
+  color: #014282;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.edit-button:hover {
+  background: #e3f0ff;
+  color: #033367;
+}
+
+.share-button {
+  color: #388e3c;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+
+.share-button:hover {
+  background: #cde9ce;
+  color: #268f2b;
+}
+
+.view-button {
+  color: #0288d1;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.view-button:hover {
+  background: #e3f0ff;
+  color: #135aa6;
+}
+
+/* .menu-button {
   right: 1.1rem;
 }
 
@@ -188,7 +230,7 @@ mat-form-field.share-link-field input {
 mat-icon {
   vertical-align: middle;
   font-size: 1.2rem;
-}
+} */
 
 .no-forms {
   text-align: center;

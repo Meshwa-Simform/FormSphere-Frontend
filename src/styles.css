@@ -39,6 +39,9 @@ body {
 .mat-mdc-menu-content {
   background-color: #cee1f6d9 !important;
   color: #033367 !important;
+  font-weight: 700;
+  padding: 5px !important;
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12) !important;
 }
 
 .mat-mdc-menu-content button,

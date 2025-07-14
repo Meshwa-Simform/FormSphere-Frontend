@@ -18,13 +18,15 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
   styleUrl: './my-forms.component.css',
 })
 export class MyFormsComponent implements OnInit, OnDestroy {
+  userName = '';
+  userEmail = '';
   forms: Form[] = [];
   totalForms = 0;
   searchQuery = '';
   searchInput = '';
   page = 1;
-  pageSize = 5;
-  pageSizes = [2, 5, 8, 10, 15, 20];
+  pageSize =6;
+  pageSizes = [6, 9, 12, 15, 18];
   totalPages = 1;
 
   private searchInputChanged: Subject<string> = new Subject<string>();
@@ -42,6 +44,9 @@ export class MyFormsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._ngxService.start();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.userName = user.name;
+    this.userEmail = user.email;
     this.searchSub = this.searchInputChanged
     .pipe(debounceTime(400))
     .subscribe((value) => {
