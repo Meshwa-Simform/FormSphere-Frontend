@@ -27,14 +27,33 @@
       </li>
     </ul>
   </div>
-  <button
+  <!-- <button
     mat-stroked-button
     aria-label="LogOut button"
     class="logout"
     (click)="logoutUser()"
   >
     Logout
-  </button>
+  </button> -->
+  <!-- User Profile Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+      [ngStyle]="{'color': '#033367','padding-right': '3rem', 'padding-bottom': '2.5rem', 'padding-left': '0'}">
+      <mat-icon
+      [ngStyle]="{'height': '50px', 'width': '50px', 'font-size': '2rem', 'padding': '0'}"
+      >account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-profile-menu"
+      [ngStyle]="{'background-color': '#c0daf7d9', 'color': '#033367'}">
+      <div class="user-info">
+        <p class="user-name">{{ logInUserName }}</p>
+        <p class="user-email">{{ logInUserEmail }}</p>
+      </div>
+      <button mat-menu-item (click)="logoutUser()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
 </mat-toolbar>
 
 <!-- Analytics Component Template -->
