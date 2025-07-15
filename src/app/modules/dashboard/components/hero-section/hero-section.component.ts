@@ -19,7 +19,6 @@ export class HeroSectionComponent implements OnInit {
       this.isLogin = isLoggedIn;
     });
   }
-
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     const icons = document.querySelectorAll('.icon-button');

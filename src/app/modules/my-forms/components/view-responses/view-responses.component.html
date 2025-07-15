@@ -27,14 +27,30 @@
       </li>
     </ul>
   </div>
-  <button
+  <!-- <button
     mat-stroked-button
     aria-label="LogOut button"
     class="logout"
     (click)="logoutUser()"
   >
     Logout
-  </button>
+  </button> -->
+   <!-- User Profile Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    [ngStyle]="{'color': '#033367'}">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-profile-menu">
+      <div class="user-info">
+        <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+        <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+      </div>
+      <button mat-menu-item (click)="logoutUser()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
 </mat-toolbar>
 
 <!-- Search Bar, Page Size, and Sort Controls -->
@@ -177,7 +193,7 @@
       </button>
     
       <ng-container *ngFor="let p of pageNumbers">
-        <button *ngIf="p !== '...'; else dots" [ngStyle]="p === page ? {background: formStyling?.formColor || '#002244', color: formStyling?.fontColor || 'white'} : {}"
+        <button *ngIf="p !== '...'; else dots" [ngStyle]="p === page ? {background: '#002244', color: 'white'} : {}"
           mat-button [color]="p === page ? 'primary' : ''" (click)="onPageChange(p)">
           {{ p }}
         </button>

@@ -8,3 +8,12 @@ export interface registerUser {
   password: string;
   confirmPassword: string;
 }
+
+export interface loginResponse{
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+  }
+}

@@ -14,6 +14,8 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
   styleUrl: './templates.component.css',
 })
 export class TemplatesComponent implements OnInit {
+  userName = '';
+  userEmail = '';
   templates: TemplateOutput[] = [];
   isLogin = false;
 
@@ -33,6 +35,9 @@ export class TemplatesComponent implements OnInit {
         console.error('Error fetching isLogin:', err);
       },
     });
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.userName = user.name;
+    this.userEmail = user.email;
     this.getTemplates();
   }
 
