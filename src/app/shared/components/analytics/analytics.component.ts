@@ -24,6 +24,8 @@ import type { TooltipItem } from 'chart.js';
   styleUrl: './analytics.component.css',
 })
 export class AnalyticsComponent implements OnInit {
+  logInUserName = '';
+  logInUserEmail = '';
   formId: string | null = null;
   responses: Responses[] = [];
   totalResponses = 0;
@@ -44,6 +46,9 @@ export class AnalyticsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.logInUserName = user.name;
+    this.logInUserEmail = user.email;
     this.formId = this._route.snapshot.paramMap.get('formId');
     if (this.formId) {
       this.getResponses(this.formId);
