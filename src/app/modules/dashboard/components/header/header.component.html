@@ -69,4 +69,21 @@
       </button>
     </mat-menu>
   </div>
+  <!-- User Profile Menu -->
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User Profile"
+    *ngIf="isLogin" [ngStyle]="{'color': '#033367'}">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu" class="user-profile-menu"
+    [ngStyle]="{'background-color': '#c0daf7d9', 'color': '#033367'}">
+    <div class="user-info">
+      <p class="user-name"><strong>UserName:</strong> {{ userName }}</p>
+      <p class="user-email"><strong>UserEmail:</strong> {{ userEmail }}</p>
+    </div>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </mat-menu>
 </mat-toolbar>
